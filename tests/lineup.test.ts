@@ -20,6 +20,7 @@ function pick(overrides: Partial<DraftPickRecord>): DraftPickRecord {
     eraId: 1,
     playerName: "Dev Player",
     franchiseName: "Dev Franchise",
+    franchiseAbbreviation: "DEV",
     eraLabel: "1980s",
     ...overrides,
   };

@@ -1,0 +1,51 @@
+.root {
+  display: grid;
+  gap: 16px;
+  animation: game-fade-up 420ms ease;
+}
+
+.banner {
+  border: 1px solid rgba(232, 184, 74, 0.35);
+  background: linear-gradient(180deg, rgba(232, 184, 74, 0.14), var(--panel));
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.kicker {
+  margin: 0;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+.title {
+  margin: 8px 0 0;
+  font-family: var(--font-display);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  color: var(--highlight);
+}
+
+.copy {
+  margin: 10px auto 0;
+  max-width: 28rem;
+  color: var(--text-muted);
+}
+
+.actions {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.teaser {
+  margin: 14px 0 0;
+  color: var(--accent);
+  font-weight: 600;
+}

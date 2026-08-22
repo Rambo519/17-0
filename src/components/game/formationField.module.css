@@ -1,0 +1,74 @@
+.root {
+  height: 100%;
+  min-height: 420px;
+  display: flex;
+}
+
+.field {
+  position: relative;
+  flex: 1;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid rgba(180, 255, 200, 0.14);
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.28), transparent 18%, transparent 82%, rgba(0, 0, 0, 0.28)),
+    repeating-linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.035) 0 2px,
+      transparent 2px 48px
+    ),
+    radial-gradient(circle at 50% 35%, rgba(120, 220, 160, 0.14), transparent 55%),
+    linear-gradient(180deg, #1c4a33 0%, #143526 55%, #102a1f 100%);
+  box-shadow: var(--shadow);
+  display: grid;
+  grid-template-rows: 1.1fr 0.85fr 0.85fr 0.85fr 1fr;
+  gap: clamp(8px, 1.6vw, 18px);
+  padding: clamp(16px, 3vw, 28px) clamp(12px, 2.5vw, 24px);
+}
+
+.yardLines {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, transparent 49.4%, rgba(255, 255, 255, 0.22) 49.4% 50.6%, transparent 50.6%),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent calc(12.5% - 1px),
+      rgba(255, 255, 255, 0.08) calc(12.5% - 1px),
+      rgba(255, 255, 255, 0.08) 12.5%
+    );
+  opacity: 0.55;
+}
+
+.rowWide,
+.rowCenter {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+}
+
+.rowWide {
+  justify-content: space-between;
+}
+
+.rowCenter {
+  justify-content: center;
+}
+
+.spacer {
+  flex: 1;
+}
+
+@media (max-width: 900px) {
+  .root {
+    min-height: 360px;
+  }
+
+  .field {
+    grid-template-rows: auto;
+    gap: 12px;
+  }
+}

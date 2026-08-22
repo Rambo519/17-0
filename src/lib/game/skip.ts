@@ -13,6 +13,7 @@ function toSpinResult(
   combination: {
     franchiseId: number;
     franchiseName: string;
+    franchiseAbbreviation: string;
     eraId: number;
     eraLabel: string;
     candidates: SpinResult["candidates"];
@@ -21,7 +22,11 @@ function toSpinResult(
 ): SpinResult {
   return {
     sessionId,
-    franchise: { id: combination.franchiseId, name: combination.franchiseName },
+    franchise: {
+      id: combination.franchiseId,
+      name: combination.franchiseName,
+      abbreviation: combination.franchiseAbbreviation,
+    },
     era: { id: combination.eraId, label: combination.eraLabel },
     openSlots,
     candidates: combination.candidates,

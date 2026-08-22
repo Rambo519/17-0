@@ -1,4 +1,4 @@
-import { and, asc, eq, exists, inArray, notInArray, sql } from "drizzle-orm";
+import { and, asc, eq, exists, inArray, notInArray, sql, type AnyColumn } from "drizzle-orm";
 
 import type { Database } from "@/db/client";
 import {
@@ -7,12 +7,15 @@ import {
   gamePicks,
   gameSessions,
   players,
+  playerSeasons,
   playerTeamEraCards,
   playerTeamEraPositions,
 } from "@/db/schema";
 import { isNormalizedPosition, type NormalizedPosition } from "@/lib/football/positions";
+import { asNullableNumber } from "@/lib/game/production";
 import type { DraftableCardFilter, GameRepository } from "@/lib/game/ports";
 import type {
+  CardProduction,
   DraftableCard,
   DraftPickRecord,
   GameSessionRecord,
@@ -25,6 +28,7 @@ const cardColumns = {
   playerName: players.displayName,
   franchiseId: playerTeamEraCards.franchiseId,
   franchiseName: franchises.canonicalName,
+  franchiseAbbreviation: franchises.canonicalAbbreviation,
   eraId: playerTeamEraCards.eraId,
   eraLabel: eras.label,
   firstSeason: playerTeamEraCards.firstSeason,
@@ -37,11 +41,36 @@ const cardGroupBy = [
   playerTeamEraCards.id,
   players.displayName,
   franchises.canonicalName,
+  franchises.canonicalAbbreviation,
   eras.label,
 ] as const;
 
 /** Positions come back as `text[]`; drop anything the game doesn't understand. */
 const positionsAggregate = sql<string[]>`array_agg(distinct ${playerTeamEraPositions.position}::text)`;
+
+function seasonSum(column: AnyColumn) {
+  return sql`
+    (
+      select sum(${column})
+      from ${playerSeasons}
+      where ${playerSeasons.playerId} = ${playerTeamEraCards.playerId}
+        and ${playerSeasons.franchiseId} = ${playerTeamEraCards.franchiseId}
+        and ${playerSeasons.season} between ${playerTeamEraCards.firstSeason}
+          and ${playerTeamEraCards.lastSeason}
+    )
+  `;
+}
+
+const productionColumns = {
+  games: seasonSum(playerSeasons.games),
+  passingYards: seasonSum(playerSeasons.passingYards),
+  passingTouchdowns: seasonSum(playerSeasons.passingTouchdowns),
+  rushingYards: seasonSum(playerSeasons.rushingYards),
+  rushingTouchdowns: seasonSum(playerSeasons.rushingTouchdowns),
+  receptions: seasonSum(playerSeasons.receptions),
+  receivingYards: seasonSum(playerSeasons.receivingYards),
+  receivingTouchdowns: seasonSum(playerSeasons.receivingTouchdowns),
+} as const;
 
 interface CardQueryRow {
   cardId: number;
@@ -49,6 +78,7 @@ interface CardQueryRow {
   playerName: string;
   franchiseId: number;
   franchiseName: string;
+  franchiseAbbreviation: string;
   eraId: number;
   eraLabel: string;
   firstSeason: number;
@@ -56,6 +86,27 @@ interface CardQueryRow {
   representativeSeason: number | null;
   draftable: boolean;
   positions: string[] | null;
+  games: unknown;
+  passingYards: unknown;
+  passingTouchdowns: unknown;
+  rushingYards: unknown;
+  rushingTouchdowns: unknown;
+  receptions: unknown;
+  receivingYards: unknown;
+  receivingTouchdowns: unknown;
+}
+
+function toProduction(row: CardQueryRow): CardProduction {
+  return {
+    games: asNullableNumber(row.games),
+    passingYards: asNullableNumber(row.passingYards),
+    passingTouchdowns: asNullableNumber(row.passingTouchdowns),
+    rushingYards: asNullableNumber(row.rushingYards),
+    rushingTouchdowns: asNullableNumber(row.rushingTouchdowns),
+    receptions: asNullableNumber(row.receptions),
+    receivingYards: asNullableNumber(row.receivingYards),
+    receivingTouchdowns: asNullableNumber(row.receivingTouchdowns),
+  };
 }
 
 function toDraftableCard(row: CardQueryRow): DraftableCard {
@@ -63,7 +114,22 @@ function toDraftableCard(row: CardQueryRow): DraftableCard {
     isNormalizedPosition(value),
   );
 
-  return { ...row, positions };
+  return {
+    cardId: row.cardId,
+    playerId: row.playerId,
+    playerName: row.playerName,
+    franchiseId: row.franchiseId,
+    franchiseName: row.franchiseName,
+    franchiseAbbreviation: row.franchiseAbbreviation,
+    eraId: row.eraId,
+    eraLabel: row.eraLabel,
+    firstSeason: row.firstSeason,
+    lastSeason: row.lastSeason,
+    representativeSeason: row.representativeSeason,
+    draftable: row.draftable,
+    positions,
+    production: toProduction(row),
+  };
 }
 
 export function createDrizzleGameRepository(db: Database): GameRepository {
@@ -101,6 +167,7 @@ export function createDrizzleGameRepository(db: Database): GameRepository {
           eraId: gamePicks.eraId,
           playerName: players.displayName,
           franchiseName: franchises.canonicalName,
+          franchiseAbbreviation: franchises.canonicalAbbreviation,
           eraLabel: eras.label,
         })
         .from(gamePicks)
@@ -113,7 +180,7 @@ export function createDrizzleGameRepository(db: Database): GameRepository {
 
     async findCard(cardId: number): Promise<DraftableCard | null> {
       const rows = await db
-        .select({ ...cardColumns, positions: positionsAggregate })
+        .select({ ...cardColumns, positions: positionsAggregate, ...productionColumns })
         .from(playerTeamEraCards)
         .innerJoin(players, eq(players.id, playerTeamEraCards.playerId))
         .innerJoin(franchises, eq(franchises.id, playerTeamEraCards.franchiseId))
@@ -126,7 +193,7 @@ export function createDrizzleGameRepository(db: Database): GameRepository {
         .groupBy(...cardGroupBy);
 
       const row = rows[0];
-      return row ? toDraftableCard(row) : null;
+      return row ? toDraftableCard(row as CardQueryRow) : null;
     },
 
     async listDraftableCards(filter: DraftableCardFilter): Promise<DraftableCard[]> {
@@ -160,7 +227,7 @@ export function createDrizzleGameRepository(db: Database): GameRepository {
       }
 
       const rows = await db
-        .select({ ...cardColumns, positions: positionsAggregate })
+        .select({ ...cardColumns, positions: positionsAggregate, ...productionColumns })
         .from(playerTeamEraCards)
         .innerJoin(players, eq(players.id, playerTeamEraCards.playerId))
         .innerJoin(franchises, eq(franchises.id, playerTeamEraCards.franchiseId))
@@ -172,7 +239,7 @@ export function createDrizzleGameRepository(db: Database): GameRepository {
         .where(and(...conditions))
         .groupBy(...cardGroupBy);
 
-      return rows.map(toDraftableCard);
+      return rows.map((row) => toDraftableCard(row as CardQueryRow));
     },
 
     async setCurrentSpin(

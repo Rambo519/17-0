@@ -1,0 +1,71 @@
+.empty,
+.highlight,
+.filled {
+  width: min(100%, 148px);
+  min-height: 64px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 10px;
+  text-align: center;
+}
+
+.empty,
+.highlight {
+  appearance: none;
+  cursor: pointer;
+  color: var(--text);
+  border: 1px dashed rgba(255, 255, 255, 0.28);
+  background: var(--slot-empty);
+}
+
+.empty:disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.highlight {
+  border-style: solid;
+  border-color: rgba(232, 184, 74, 0.85);
+  background: var(--slot-highlight);
+  box-shadow: 0 0 18px rgba(232, 184, 74, 0.28);
+  animation: game-pulse 1.6s ease-in-out infinite;
+}
+
+.filled {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: var(--slot-locked);
+  box-shadow: inset 0 0 0 1px rgba(62, 207, 142, 0.12);
+}
+
+.pos {
+  font-family: var(--font-display);
+  letter-spacing: 0.12em;
+  font-size: 0.95rem;
+  color: var(--highlight);
+}
+
+.player {
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.meta {
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .empty,
+  .highlight,
+  .filled {
+    width: min(100%, 120px);
+    min-height: 58px;
+  }
+}

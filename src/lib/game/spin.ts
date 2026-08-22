@@ -16,6 +16,7 @@ export interface SpinCandidate {
 export interface SpinCombination {
   franchiseId: number;
   franchiseName: string;
+  franchiseAbbreviation: string;
   eraId: number;
   eraLabel: string;
   candidates: SpinCandidate[];
@@ -23,7 +24,7 @@ export interface SpinCombination {
 
 export interface SpinResult {
   sessionId: string;
-  franchise: { id: number; name: string };
+  franchise: { id: number; name: string; abbreviation: string };
   era: { id: number; label: string };
   openSlots: LineupSlot[];
   candidates: SpinCandidate[];
@@ -52,6 +53,7 @@ export function buildSpinCombinations(
       combination = {
         franchiseId: card.franchiseId,
         franchiseName: card.franchiseName,
+        franchiseAbbreviation: card.franchiseAbbreviation,
         eraId: card.eraId,
         eraLabel: card.eraLabel,
         candidates: [],
@@ -111,7 +113,11 @@ export async function spinGame(
 
   return {
     sessionId,
-    franchise: { id: combination.franchiseId, name: combination.franchiseName },
+    franchise: {
+      id: combination.franchiseId,
+      name: combination.franchiseName,
+      abbreviation: combination.franchiseAbbreviation,
+    },
     era: { id: combination.eraId, label: combination.eraLabel },
     openSlots: state.openSlots,
     candidates: combination.candidates,
@@ -141,7 +147,11 @@ export async function loadCurrentSpin(
 
   return {
     sessionId: state.sessionId,
-    franchise: { id: first.card.franchiseId, name: first.card.franchiseName },
+    franchise: {
+      id: first.card.franchiseId,
+      name: first.card.franchiseName,
+      abbreviation: first.card.franchiseAbbreviation,
+    },
     era: { id: first.card.eraId, label: first.card.eraLabel },
     openSlots: state.openSlots,
     candidates,

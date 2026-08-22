@@ -1,0 +1,59 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  gap: 10px;
+}
+
+.toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 10px;
+  align-items: center;
+  padding: 0 2px;
+}
+
+.searchLabel {
+  grid-column: 1 / -1;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.search {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.28);
+  color: var(--text);
+  padding: 0.55rem 0.75rem;
+}
+
+.count {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0 2px 8px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 180px;
+  max-height: min(52vh, 560px);
+  flex: 1;
+}
+
+.empty {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 8px 2px;
+}

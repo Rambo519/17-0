@@ -1,0 +1,61 @@
+.root {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.btn,
+.used {
+  appearance: none;
+  text-align: left;
+  border-radius: 12px;
+  border: 1px solid var(--panel-border);
+  background: rgba(0, 0, 0, 0.22);
+  color: var(--text);
+  padding: 12px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 96px;
+}
+
+.btn:hover:not(:disabled) {
+  border-color: rgba(62, 207, 142, 0.4);
+}
+
+.btn:disabled,
+.used:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.used {
+  opacity: 0.45;
+}
+
+.title {
+  font-family: var(--font-display);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 1rem;
+}
+
+.detail {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  flex: 1;
+}
+
+.remaining {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.used .remaining {
+  color: var(--text-muted);
+}

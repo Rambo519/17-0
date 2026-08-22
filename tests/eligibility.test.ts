@@ -35,6 +35,7 @@ function stateWithFilledSlots(slots: LineupSlot[]) {
     eraId: 1,
     playerName: `Filled ${slot}`,
     franchiseName: "Franchise 1",
+    franchiseAbbreviation: "F1",
     eraLabel: "Era 1",
   }));
 

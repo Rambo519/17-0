@@ -1,0 +1,180 @@
+.shell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: 16px clamp(12px, 2vw, 28px) 28px;
+  gap: 16px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.panel {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 40%), var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.btn {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 0.7rem 1.2rem;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    transform 120ms ease,
+    opacity 120ms ease;
+}
+
+.btn:hover:not(:disabled) {
+  border-color: rgba(232, 184, 74, 0.45);
+  background: #1a2740;
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btnPrimary {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0.7rem 1.2rem;
+  cursor: pointer;
+  background: linear-gradient(180deg, #f0c86a, #d4a231);
+  color: #1a1408;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition:
+    background 160ms ease,
+    transform 120ms ease,
+    opacity 120ms ease;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background: linear-gradient(180deg, #f6d586, #e0b040);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btnSpin {
+  appearance: none;
+  width: 100%;
+  min-height: 3.4rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0.7rem 1.2rem;
+  cursor: pointer;
+  background: linear-gradient(180deg, #f0c86a, #d4a231);
+  color: #1a1408;
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  animation: game-pulse 2.4s ease-in-out infinite;
+}
+
+.btnSpin:hover:not(:disabled) {
+  background: linear-gradient(180deg, #f6d586, #e0b040);
+}
+
+.btnSpin:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  animation: none;
+}
+
+.btnGhost {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  border-radius: 999px;
+  padding: 0.7rem 1.2rem;
+  cursor: pointer;
+}
+
+.btnGhost:hover:not(:disabled) {
+  border-color: rgba(232, 184, 74, 0.45);
+  background: #1a2740;
+}
+
+.errorBanner {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  background: var(--danger-soft);
+  border: 1px solid rgba(255, 107, 107, 0.35);
+  color: #ffd5d5;
+  font-size: 0.95rem;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.95fr) minmax(320px, 1.05fr);
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+}
+
+.leftColumn,
+.rightColumn {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.mobileTabs {
+  display: none;
+  gap: 8px;
+}
+
+.mobileTab,
+.mobileTabActive {
+  appearance: none;
+  flex: 1;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  padding: 0.7rem 1.2rem;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text);
+}
+
+.mobileTabActive {
+  background: var(--highlight-soft);
+  border-color: rgba(232, 184, 74, 0.5);
+  color: var(--highlight);
+}
+
+@media (max-width: 900px) {
+  .board {
+    grid-template-columns: 1fr;
+  }
+
+  .mobileTabs {
+    display: flex;
+  }
+
+  .hideOnMobilePlayers .rightColumn,
+  .hideOnMobileLineup .leftColumn {
+    display: none;
+  }
+}

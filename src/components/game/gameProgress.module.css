@@ -1,0 +1,25 @@
+.root {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 8px;
+}
+
+.filled,
+.empty {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+}
+
+.filled {
+  background: var(--highlight);
+  border-color: var(--highlight);
+  box-shadow: 0 0 10px rgba(232, 184, 74, 0.45);
+}
+
+.empty {
+  background: transparent;
+}

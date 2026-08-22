@@ -14,6 +14,7 @@ export interface LineupSlotView {
     playerId: number;
     playerName: string;
     franchiseName: string;
+    franchiseAbbreviation: string;
     eraLabel: string;
     roundNumber: number;
   } | null;
@@ -58,6 +59,7 @@ export function toGameStateView(state: GameState): GameStateView {
               playerId: pick.playerId,
               playerName: pick.playerName,
               franchiseName: pick.franchiseName,
+              franchiseAbbreviation: pick.franchiseAbbreviation,
               eraLabel: pick.eraLabel,
               roundNumber: pick.roundNumber,
             }

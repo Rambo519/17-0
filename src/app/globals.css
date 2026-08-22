@@ -1,0 +1,95 @@
+:root {
+  --bg: #0b1220;
+  --bg-elevated: #121b2e;
+  --panel: #152238;
+  --panel-border: rgba(180, 210, 255, 0.12);
+  --field: #163a28;
+  --field-line: rgba(230, 245, 230, 0.18);
+  --field-glow: rgba(120, 220, 160, 0.12);
+  --text: #f2f6ff;
+  --text-muted: #93a0b8;
+  --highlight: #e8b84a;
+  --highlight-soft: rgba(232, 184, 74, 0.18);
+  --accent: #3ecf8e;
+  --accent-soft: rgba(62, 207, 142, 0.16);
+  --danger: #ff6b6b;
+  --danger-soft: rgba(255, 107, 107, 0.14);
+  --border: rgba(255, 255, 255, 0.1);
+  --slot-empty: rgba(255, 255, 255, 0.06);
+  --slot-highlight: rgba(232, 184, 74, 0.35);
+  --slot-locked: rgba(10, 18, 28, 0.72);
+  --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  --radius: 14px;
+  --font-display: var(--font-display), "Arial Narrow", Impact, sans-serif;
+  --font-body: var(--font-body), "Segoe UI", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+}
+
+body {
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(62, 207, 142, 0.08), transparent 55%),
+    radial-gradient(900px 500px at 90% 0%, rgba(232, 184, 74, 0.07), transparent 50%),
+    linear-gradient(180deg, #0a101c 0%, #0b1220 40%, #0d1626 100%);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+a {
+  color: var(--highlight);
+}
+
+:focus-visible {
+  outline: 2px solid var(--highlight);
+  outline-offset: 3px;
+}
+
+@keyframes game-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(232, 184, 74, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(232, 184, 74, 0);
+  }
+}
+
+@keyframes game-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes game-reveal {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
+}

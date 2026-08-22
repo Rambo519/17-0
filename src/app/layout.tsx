@@ -1,9 +1,23 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import { Bebas_Neue, Source_Sans_3 } from "next/font/google";
+
+import "./globals.css";
+
+const display = Bebas_Neue({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-display",
+});
+
+const body = Source_Sans_3({
+  subsets: ["latin"],
+  variable: "--font-body",
+});
 
 export const metadata: Metadata = {
   title: "16&0",
-  description: "Historical NFL team-building draft game",
+  description: "Build the perfect historical NFL offense.",
 };
 
 export const viewport: Viewport = {
@@ -13,18 +27,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <body
-        style={{
-          margin: 0,
-          padding: 0,
-          fontFamily: "ui-sans-serif, system-ui, sans-serif",
-          background: "#f7f7f8",
-          color: "#111",
-        }}
-      >
-        {children}
-      </body>
+    <html lang="en" className={`${display.variable} ${body.variable}`}>
+      <body>{children}</body>
     </html>
   );
 }

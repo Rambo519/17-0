@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 
 import type { NormalizedPosition } from "@/lib/football/positions";
+import { EMPTY_PRODUCTION } from "@/lib/game/production";
 import type { DraftableCardFilter, GameRepository } from "@/lib/game/ports";
 import type {
   DraftableCard,
@@ -26,12 +27,14 @@ export function card(
   overrides: Partial<DraftableCard> & { positions: NormalizedPosition[] },
 ): DraftableCard {
   const cardId = overrides.cardId ?? nextCardId++;
+  const franchiseId = overrides.franchiseId ?? 1;
   return {
     cardId,
     playerId: overrides.playerId ?? cardId,
     playerName: overrides.playerName ?? `Player ${cardId}`,
-    franchiseId: overrides.franchiseId ?? 1,
-    franchiseName: overrides.franchiseName ?? `Franchise ${overrides.franchiseId ?? 1}`,
+    franchiseId,
+    franchiseName: overrides.franchiseName ?? `Franchise ${franchiseId}`,
+    franchiseAbbreviation: overrides.franchiseAbbreviation ?? `F${franchiseId}`,
     eraId: overrides.eraId ?? 1,
     eraLabel: overrides.eraLabel ?? `Era ${overrides.eraId ?? 1}`,
     firstSeason: overrides.firstSeason ?? 1980,
@@ -39,6 +42,7 @@ export function card(
     representativeSeason: overrides.representativeSeason ?? null,
     draftable: overrides.draftable ?? true,
     positions: overrides.positions,
+    production: overrides.production ?? EMPTY_PRODUCTION,
   };
 }
 
@@ -54,6 +58,7 @@ export function createInMemoryGameRepository(cards: DraftableCard[]): InMemoryGa
       ...pick,
       playerName: source?.playerName ?? `Player ${pick.playerId}`,
       franchiseName: source?.franchiseName ?? `Franchise ${pick.franchiseId}`,
+      franchiseAbbreviation: source?.franchiseAbbreviation ?? `F${pick.franchiseId}`,
       eraLabel: source?.eraLabel ?? `Era ${pick.eraId}`,
     };
   }

@@ -33,7 +33,23 @@ export interface DraftPickRecord {
   eraId: number;
   playerName: string;
   franchiseName: string;
+  franchiseAbbreviation: string;
   eraLabel: string;
+}
+
+/**
+ * Aggregated production for a card's franchise stint inside its era window.
+ * Null means the source never recorded that value (distinct from zero).
+ */
+export interface CardProduction {
+  games: number | null;
+  passingYards: number | null;
+  passingTouchdowns: number | null;
+  rushingYards: number | null;
+  rushingTouchdowns: number | null;
+  receptions: number | null;
+  receivingYards: number | null;
+  receivingTouchdowns: number | null;
 }
 
 /**
@@ -46,6 +62,7 @@ export interface DraftableCard {
   playerName: string;
   franchiseId: number;
   franchiseName: string;
+  franchiseAbbreviation: string;
   eraId: number;
   eraLabel: string;
   positions: NormalizedPosition[];
@@ -53,6 +70,8 @@ export interface DraftableCard {
   lastSeason: number;
   representativeSeason: number | null;
   draftable: boolean;
+  /** Era-window totals for Classic mode display. */
+  production: CardProduction;
 }
 
 export interface SpinTarget {
