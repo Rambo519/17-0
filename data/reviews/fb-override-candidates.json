@@ -1,0 +1,235 @@
+{
+  "count": 6,
+  "combosCovered": [
+    [
+      "green-bay-packers",
+      "2020s"
+    ],
+    [
+      "las-vegas-raiders",
+      "1980s"
+    ],
+    [
+      "new-york-jets",
+      "1970s"
+    ],
+    [
+      "pittsburgh-steelers",
+      "1980s"
+    ],
+    [
+      "washington-commanders",
+      "2020s"
+    ]
+  ],
+  "unresolved": [
+    {
+      "era": "1960s",
+      "franchise": "Cincinnati Bengals",
+      "slug": "cincinnati-bengals"
+    },
+    {
+      "era": "1970s",
+      "franchise": "Arizona Cardinals",
+      "slug": "arizona-cardinals"
+    },
+    {
+      "era": "1970s",
+      "franchise": "Chicago Bears",
+      "slug": "chicago-bears"
+    },
+    {
+      "era": "1970s",
+      "franchise": "Cleveland Browns",
+      "slug": "cleveland-browns"
+    },
+    {
+      "era": "1970s",
+      "franchise": "Dallas Cowboys",
+      "slug": "dallas-cowboys"
+    },
+    {
+      "era": "1970s",
+      "franchise": "Denver Broncos",
+      "slug": "denver-broncos"
+    },
+    {
+      "era": "1970s",
+      "franchise": "Detroit Lions",
+      "slug": "detroit-lions"
+    },
+    {
+      "era": "1970s",
+      "franchise": "Green Bay Packers",
+      "slug": "green-bay-packers"
+    },
+    {
+      "era": "1970s",
+      "franchise": "Las Vegas Raiders",
+      "slug": "las-vegas-raiders"
+    },
+    {
+      "era": "1970s",
+      "franchise": "Los Angeles Chargers",
+      "slug": "los-angeles-chargers"
+    },
+    {
+      "era": "1970s",
+      "franchise": "Minnesota Vikings",
+      "slug": "minnesota-vikings"
+    },
+    {
+      "era": "1970s",
+      "franchise": "New York Giants",
+      "slug": "new-york-giants"
+    },
+    {
+      "era": "1970s",
+      "franchise": "Philadelphia Eagles",
+      "slug": "philadelphia-eagles"
+    },
+    {
+      "era": "1970s",
+      "franchise": "Pittsburgh Steelers",
+      "slug": "pittsburgh-steelers"
+    },
+    {
+      "era": "1970s",
+      "franchise": "San Francisco 49ers",
+      "slug": "san-francisco-49ers"
+    },
+    {
+      "era": "1970s",
+      "franchise": "Seattle Seahawks",
+      "slug": "seattle-seahawks"
+    },
+    {
+      "era": "1970s",
+      "franchise": "Tennessee Titans",
+      "slug": "tennessee-titans"
+    },
+    {
+      "era": "1970s",
+      "franchise": "Washington Commanders",
+      "slug": "washington-commanders"
+    },
+    {
+      "era": "1980s",
+      "franchise": "Atlanta Falcons",
+      "slug": "atlanta-falcons"
+    },
+    {
+      "era": "1980s",
+      "franchise": "Cincinnati Bengals",
+      "slug": "cincinnati-bengals"
+    },
+    {
+      "era": "1980s",
+      "franchise": "Los Angeles Chargers",
+      "slug": "los-angeles-chargers"
+    },
+    {
+      "era": "1980s",
+      "franchise": "New York Giants",
+      "slug": "new-york-giants"
+    },
+    {
+      "era": "1980s",
+      "franchise": "Washington Commanders",
+      "slug": "washington-commanders"
+    },
+    {
+      "era": "2020s",
+      "franchise": "Arizona Cardinals",
+      "slug": "arizona-cardinals"
+    },
+    {
+      "era": "2020s",
+      "franchise": "Cincinnati Bengals",
+      "slug": "cincinnati-bengals"
+    },
+    {
+      "era": "2020s",
+      "franchise": "Indianapolis Colts",
+      "slug": "indianapolis-colts"
+    },
+    {
+      "era": "2020s",
+      "franchise": "Los Angeles Rams",
+      "slug": "los-angeles-rams"
+    },
+    {
+      "era": "2020s",
+      "franchise": "Tampa Bay Buccaneers",
+      "slug": "tampa-bay-buccaneers"
+    }
+  ],
+  "overrides": [
+    {
+      "playerName": "Steve Smith",
+      "franchiseSlug": "las-vegas-raiders",
+      "fromSeason": 1987,
+      "toSeason": 1989,
+      "eligiblePositions": [
+        "FB"
+      ],
+      "reason": "nflverse players.csv career position=FB (1987-1995); on las-vegas-raiders roster as RB in 1980s (matched by gsis+career_window)",
+      "gsisId": "00-0015306"
+    },
+    {
+      "playerName": "Kerry Porter",
+      "franchiseSlug": "las-vegas-raiders",
+      "fromSeason": 1989,
+      "toSeason": 1989,
+      "eligiblePositions": [
+        "FB"
+      ],
+      "reason": "nflverse players.csv career position=FB (1987-1990); on las-vegas-raiders roster as RB in 1980s (matched by name+birth+career_window)",
+      "gsisId": "POR191673"
+    },
+    {
+      "playerName": "Woody Bennett",
+      "franchiseSlug": "new-york-jets",
+      "fromSeason": 1979,
+      "toSeason": 1979,
+      "eligiblePositions": [
+        "FB"
+      ],
+      "reason": "nflverse players.csv career position=FB (1979-1988); on new-york-jets roster as RB in 1970s (matched by name+birth+career_window)",
+      "gsisId": "BEN477572"
+    },
+    {
+      "playerName": "Merril Hoge",
+      "franchiseSlug": "pittsburgh-steelers",
+      "fromSeason": 1987,
+      "toSeason": 1989,
+      "eligiblePositions": [
+        "FB"
+      ],
+      "reason": "nflverse players.csv career position=FB (1987-1994); on pittsburgh-steelers roster as RB in 1980s (matched by gsis+career_window)",
+      "gsisId": "00-0007565"
+    },
+    {
+      "gsisId": "00-0035161",
+      "playerName": "John Lovett",
+      "franchiseSlug": "green-bay-packers",
+      "fromSeason": 2020,
+      "toSeason": 2020,
+      "eligiblePositions": [
+        "FB"
+      ],
+      "reason": "nflverse depth_charts_2020.csv lists position=FB for GB"
+    },
+    {
+      "gsisId": "00-0033296",
+      "playerName": "Alex Armah",
+      "franchiseSlug": "washington-commanders",
+      "fromSeason": 2023,
+      "toSeason": 2023,
+      "eligiblePositions": [
+        "FB"
+      ],
+      "reason": "nflverse depth_charts_2023.csv lists depth_position=FB for WAS"
+    }
+  ]
+}

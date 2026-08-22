@@ -1,0 +1,44 @@
+Zero-FB franchise-era combinations AFTER cleanup
+Count: 28
+
+## 1960s (1)
+- Cincinnati Bengals
+
+## 1970s (17)
+- Arizona Cardinals
+- Chicago Bears
+- Cleveland Browns
+- Dallas Cowboys
+- Denver Broncos
+- Detroit Lions
+- Green Bay Packers
+- Las Vegas Raiders
+- Los Angeles Chargers
+- Minnesota Vikings
+- New York Giants
+- Philadelphia Eagles
+- Pittsburgh Steelers
+- San Francisco 49ers
+- Seattle Seahawks
+- Tennessee Titans
+- Washington Commanders
+
+## 1980s (5)
+- Atlanta Falcons
+- Cincinnati Bengals
+- Los Angeles Chargers
+- New York Giants
+- Washington Commanders
+
+## 2020s (5)
+- Arizona Cardinals
+- Cincinnati Bengals
+- Indianapolis Colts
+- Los Angeles Rams
+- Tampa Bay Buccaneers
+
+FB coverage summary:
+  zero FB: 28
+  one FB: 39
+  two or more FB: 142
+  full-formation viable: 181 / 209

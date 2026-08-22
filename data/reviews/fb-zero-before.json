@@ -1,0 +1,2447 @@
+{
+  "count": 33,
+  "rows": [
+    {
+      "franchise": "Cincinnati Bengals",
+      "slug": "cincinnati-bengals",
+      "era": "1960s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 6,
+        "RB": 11,
+        "TE": 5,
+        "WR": 10
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Estes Banks",
+          "gsis": "",
+          "season": 1968,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Essex Johnson",
+          "gsis": "",
+          "season": 1968,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Ron Lamb",
+          "gsis": "",
+          "season": 1968,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Paul Robinson",
+          "gsis": "",
+          "season": 1968,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Tom Smiley",
+          "gsis": "",
+          "season": 1968,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Teddy Washington",
+          "gsis": "",
+          "season": 1968,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Essex Johnson",
+          "gsis": "",
+          "season": 1969,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Ron Lamb",
+          "gsis": "",
+          "season": 1969,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Arizona Cardinals",
+      "slug": "arizona-cardinals",
+      "era": "1970s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 28,
+        "RB": 71,
+        "TE": 25,
+        "WR": 46
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Cid Edwards",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "MacArthur Lane",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Charlie Pittman",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Johnny Roland",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Roy Shivers",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Paul White",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Cid Edwards",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "MacArthur Lane",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Chicago Bears",
+      "slug": "chicago-bears",
+      "era": "1970s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 31,
+        "RB": 63,
+        "TE": 24,
+        "WR": 56
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Craig Baynham",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Ronnie Bull",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Mike Hull",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Ralph Kurek",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Ross Montgomery",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Gale Sayers",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Don Shy",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Jim Grabowski",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Cleveland Browns",
+      "slug": "cleveland-browns",
+      "era": "1970s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 25,
+        "RB": 61,
+        "TE": 22,
+        "WR": 52
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Ken Brown",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Steve Engel",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Leroy Kelly",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Randy Minnear",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Reece Morrison",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Bo Scott",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Ken Brown",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Bo Cornell",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Dallas Cowboys",
+      "slug": "dallas-cowboys",
+      "era": "1970s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 25,
+        "RB": 61,
+        "TE": 24,
+        "WR": 44
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Walt Garrison",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Calvin Hill",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Dan Reeves",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Duane Thomas",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Claxton Welch",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Walt Garrison",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Calvin Hill",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Dan Reeves",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Denver Broncos",
+      "slug": "denver-broncos",
+      "era": "1970s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 31,
+        "RB": 60,
+        "TE": 23,
+        "WR": 49
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Bobby Anderson",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Willis Crenshaw",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Dick Davis",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Floyd Little",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Fran Lynch",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Clem Turner",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Wandy Williams",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Bobby Anderson",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Detroit Lions",
+      "slug": "detroit-lions",
+      "era": "1970s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 30,
+        "RB": 62,
+        "TE": 21,
+        "WR": 53
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Nick Eddy",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Mel Farr",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Bruce Maxwell",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Steve Owens",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Altie Taylor",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Bill Triplett",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Mel Farr",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Paul Gipson",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Green Bay Packers",
+      "slug": "green-bay-packers",
+      "era": "1970s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 33,
+        "RB": 69,
+        "TE": 22,
+        "WR": 50
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Donny Anderson",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Jim Grabowski",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Dave Hampton",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Larry Krause",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Perry Williams",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Travis Williams",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Donny Anderson",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "John Brockington",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Las Vegas Raiders",
+      "slug": "las-vegas-raiders",
+      "era": "1970s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 34,
+        "RB": 76,
+        "TE": 23,
+        "WR": 42
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Pete Banaszak",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Hewritt Dixon",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Don Highsmith",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Marv Hubbard",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Ted Koy",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Charlie Smith",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Larry Todd",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Pete Banaszak",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Los Angeles Chargers",
+      "slug": "los-angeles-chargers",
+      "era": "1970s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 31,
+        "RB": 64,
+        "TE": 31,
+        "WR": 50
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Gene Foster",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Mike Garrett",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Brad Hubbert",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Dickie Post",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Jeff Queen",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Dave Smith",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Russ Smith",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Leon Burns",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Minnesota Vikings",
+      "slug": "minnesota-vikings",
+      "era": "1970s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 28,
+        "RB": 59,
+        "TE": 27,
+        "WR": 42
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Bill Brown",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Clint Jones",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Jim Lindsey",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Dave Osborn",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Oscar Reed",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Bill Brown",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Leo Hayden",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Clint Jones",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "New York Giants",
+      "slug": "new-york-giants",
+      "era": "1970s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 30,
+        "RB": 70,
+        "TE": 29,
+        "WR": 46
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Bobby Duhon",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Tucker Frederickson",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Ron Johnson",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Ernie Koy",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Joe Morrison",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Les Shy",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Junior Coffey",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Bobby Duhon",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "New York Jets",
+      "slug": "new-york-jets",
+      "era": "1970s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 30,
+        "RB": 62,
+        "TE": 25,
+        "WR": 46
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Emerson Boozer",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Cliff McClain",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Chuck Mercein",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "George Nock",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Matt Snell",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Lee White",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Emerson Boozer",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Steve Harkey",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Philadelphia Eagles",
+      "slug": "philadelphia-eagles",
+      "era": "1970s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 27,
+        "RB": 67,
+        "TE": 26,
+        "WR": 46
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Lee Bouggess",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Harry Jones",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Leroy Keyes",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Cyril Pinder",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Larry Watkins",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Harry Wilson",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Tom Woodeshick",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Tom Bailey",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Pittsburgh Steelers",
+      "slug": "pittsburgh-steelers",
+      "era": "1970s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 30,
+        "RB": 59,
+        "TE": 23,
+        "WR": 50
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Warren Bankston",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Rocky Bleier",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Terry Cole",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "John Fuqua",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Dick Hoak",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Gene Mingo",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Preston Pearson",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Warren Bankston",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "San Francisco 49ers",
+      "slug": "san-francisco-49ers",
+      "era": "1970s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 28,
+        "RB": 65,
+        "TE": 24,
+        "WR": 46
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Doug Cunningham",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "John Isenbarger",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Jim Strong",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Jimmy Thomas",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Bill Tucker",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Ken Willard",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Doug Cunningham",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "John Isenbarger",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Seattle Seahawks",
+      "slug": "seattle-seahawks",
+      "era": "1970s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 13,
+        "RB": 26,
+        "TE": 10,
+        "WR": 18
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Andy Bolton",
+          "gsis": "",
+          "season": 1976,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Hugh McKinnis",
+          "gsis": "",
+          "season": 1976,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Ralph Nelson",
+          "gsis": "",
+          "season": 1976,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Bill Olds",
+          "gsis": "",
+          "season": 1976,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Oliver Ross",
+          "gsis": "",
+          "season": 1976,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Sherman Smith",
+          "gsis": "",
+          "season": 1976,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Don Testerman",
+          "gsis": "",
+          "season": 1976,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Tony Benjamin",
+          "gsis": "",
+          "season": 1977,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Tennessee Titans",
+      "slug": "tennessee-titans",
+      "era": "1970s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 30,
+        "RB": 71,
+        "TE": 24,
+        "WR": 60
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Woody Campbell",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Joe Dawkins",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Hoyle Granger",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Roy Hopkins",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Mike Richardson",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Tom Smiley",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Woody Campbell",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Joe Dawkins",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Washington Commanders",
+      "slug": "washington-commanders",
+      "era": "1970s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 28,
+        "RB": 65,
+        "TE": 27,
+        "WR": 46
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Larry Brown",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Bob Brunet",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Henry Dyer",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Charlie Harraway",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Dave Kopay",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Danny Pierce",
+          "gsis": "",
+          "season": 1970,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Larry Brown",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Bob Brunet",
+          "gsis": "",
+          "season": 1971,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Atlanta Falcons",
+      "slug": "atlanta-falcons",
+      "era": "1980s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 33,
+        "RB": 74,
+        "TE": 34,
+        "WR": 64
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Anthony Anderson",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "William Andrews",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Lynn Cain",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "James Mayberry",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Ray Strong",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "William Andrews",
+          "gsis": "",
+          "season": 1981,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Lynn Cain",
+          "gsis": "",
+          "season": 1981,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Mickey Fitzgerald",
+          "gsis": "",
+          "season": 1981,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Cincinnati Bengals",
+      "slug": "cincinnati-bengals",
+      "era": "1980s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 35,
+        "RB": 57,
+        "TE": 34,
+        "WR": 60
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Charles Alexander",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Archie Griffin",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Pete Johnson",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Nathan Poole",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Deacon Turner",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Charles Alexander",
+          "gsis": "",
+          "season": 1981,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Archie Griffin",
+          "gsis": "",
+          "season": 1981,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Jim Hargrove",
+          "gsis": "",
+          "season": 1981,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Las Vegas Raiders",
+      "slug": "las-vegas-raiders",
+      "era": "1980s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 32,
+        "RB": 77,
+        "TE": 29,
+        "WR": 57
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "I.M. Hipp",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Derrick Jensen",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Kenny King",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Ira Matthews",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Mark van Eeghen",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Art Whittington",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Mark van Eeghen",
+          "gsis": "",
+          "season": 1981,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Frank Hawkins",
+          "gsis": "",
+          "season": 1981,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Los Angeles Chargers",
+      "slug": "los-angeles-chargers",
+      "era": "1980s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "RB": 67,
+        "QB": 33,
+        "TE": 40,
+        "WR": 56
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "LaRue Harrington",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Hank Bauer",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "John Cappelletti",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Chuck Muncie",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Booker Russell",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Mike Thomas",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Clarence Williams",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Don Woods",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "New York Giants",
+      "slug": "new-york-giants",
+      "era": "1980s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 34,
+        "RB": 72,
+        "TE": 28,
+        "WR": 66
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Eddie Hicks",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Scott Laidlaw",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Leon Perry",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Art Best",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Jim Culbreath",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Larry Heater",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Mike Hogan",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Dennis Johnson",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Pittsburgh Steelers",
+      "slug": "pittsburgh-steelers",
+      "era": "1980s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 32,
+        "RB": 67,
+        "TE": 29,
+        "WR": 57
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Frank Pollard",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Rocky Bleier",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Russell Davis",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Franco Harris",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Greg Hawthorne",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Sidney Thornton",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Russell Davis",
+          "gsis": "",
+          "season": 1981,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Franco Harris",
+          "gsis": "",
+          "season": 1981,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Washington Commanders",
+      "slug": "washington-commanders",
+      "era": "1980s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "WR": 62,
+        "TE": 50,
+        "RB": 73,
+        "QB": 34
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Rickey Claitt",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Ike Forte",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Wilbur Jackson",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Clarence Harmon",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Bobby Hammond",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Buddy Hardeman",
+          "gsis": "",
+          "season": 1980,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Otis Wonsley",
+          "gsis": "",
+          "season": 1981,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Rickey Claitt",
+          "gsis": "",
+          "season": 1981,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Arizona Cardinals",
+      "slug": "arizona-cardinals",
+      "era": "2020s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "WR": 73,
+        "TE": 44,
+        "QB": 21,
+        "RB": 39
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "D.J. Foster",
+          "gsis": "00-0032577",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Kenyan Drake",
+          "gsis": "00-0033118",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Chase Edmonds",
+          "gsis": "00-0034681",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Jonathan Ward",
+          "gsis": "00-0035924",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Eno Benjamin",
+          "gsis": "00-0036383",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "James Conner",
+          "gsis": "00-0033553",
+          "season": 2021,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Chase Edmonds",
+          "gsis": "00-0034681",
+          "season": 2021,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Tavien Feaster",
+          "gsis": "00-0035825",
+          "season": 2021,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Cincinnati Bengals",
+      "slug": "cincinnati-bengals",
+      "era": "2020s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "WR": 65,
+        "RB": 41,
+        "TE": 37,
+        "QB": 25
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Giovani Bernard",
+          "gsis": "00-0030456",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Samaje Perine",
+          "gsis": "00-0033526",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Joe Mixon",
+          "gsis": "00-0033897",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Trayveon Williams",
+          "gsis": "00-0035291",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Rodney Anderson",
+          "gsis": "00-0035299",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Jacques Patrick",
+          "gsis": "00-0035760",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Samaje Perine",
+          "gsis": "00-0033526",
+          "season": 2021,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Joe Mixon",
+          "gsis": "00-0033897",
+          "season": 2021,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Green Bay Packers",
+      "slug": "green-bay-packers",
+      "era": "2020s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 21,
+        "TE": 49,
+        "WR": 77,
+        "RB": 42
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Malcolm Johnson",
+          "gsis": "00-0032068",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Tyler Ervin",
+          "gsis": "00-0032404",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Aaron Jones",
+          "gsis": "00-0033293",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "William Stanback",
+          "gsis": "00-0033508",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Jamaal Williams",
+          "gsis": "00-0033948",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Dexter Williams",
+          "gsis": "00-0034995",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Mike Weber",
+          "gsis": "00-0035303",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Patrick Taylor",
+          "gsis": "00-0035973",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Indianapolis Colts",
+      "slug": "indianapolis-colts",
+      "era": "2020s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 26,
+        "WR": 76,
+        "TE": 49,
+        "RB": 43
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Paul Perkins",
+          "gsis": "00-0032417",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Darius Jackson",
+          "gsis": "00-0033049",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Marlon Mack",
+          "gsis": "00-0033951",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Nyheim Hines",
+          "gsis": "00-0034367",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Jordan Wilkins",
+          "gsis": "00-0034400",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Bruce Anderson",
+          "gsis": "00-0035467",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Darius Anderson",
+          "gsis": "00-0036027",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Benny LeMay",
+          "gsis": "00-0036117",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Los Angeles Rams",
+      "slug": "los-angeles-rams",
+      "era": "2020s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "WR": 66,
+        "QB": 25,
+        "RB": 38,
+        "TE": 37
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Malcolm Brown",
+          "gsis": "00-0031806",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Darrell Henderson",
+          "gsis": "00-0035664",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Xavier Jones",
+          "gsis": "00-0036078",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Cam Akers",
+          "gsis": "00-0036414",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Raymond Calais",
+          "gsis": "00-0036435",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Buddy Howell",
+          "gsis": "00-0034449",
+          "season": 2021,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Sony Michel",
+          "gsis": "00-0034845",
+          "season": 2021,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Darrell Henderson",
+          "gsis": "00-0035664",
+          "season": 2021,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Tampa Bay Buccaneers",
+      "slug": "tampa-bay-buccaneers",
+      "era": "2020s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 22,
+        "RB": 40,
+        "TE": 38,
+        "WR": 74
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "LeSean McCoy",
+          "gsis": "00-0027029",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Kenjon Barner",
+          "gsis": "00-0030465",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "C.J. Prosise",
+          "gsis": "00-0032393",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "T.J. Logan",
+          "gsis": "00-0033789",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Leonard Fournette",
+          "gsis": "00-0033856",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Ronald Jones",
+          "gsis": "00-0034816",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Aca'Cedric Ware",
+          "gsis": "00-0035716",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Ke'Shawn Vaughn",
+          "gsis": "00-0036450",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    },
+    {
+      "franchise": "Washington Commanders",
+      "slug": "washington-commanders",
+      "era": "2020s",
+      "reason": "source does not label FB (RB present without depth FB)",
+      "position_counts": {
+        "QB": 29,
+        "WR": 83,
+        "RB": 45,
+        "TE": 42
+      },
+      "depth_fb_count": 0,
+      "position_fb_count": 0,
+      "depth_fb_examples": [],
+      "position_fb_examples": [],
+      "sample_rbs": [
+        {
+          "name": "Lamar Miller",
+          "gsis": "00-0029615",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Josh Ferguson",
+          "gsis": "00-0032377",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "J.D. McKissic",
+          "gsis": "00-0032602",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Peyton Barber",
+          "gsis": "00-0032741",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Jonathan Williams",
+          "gsis": "00-0032975",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Bryce Love",
+          "gsis": "00-0035256",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Javon Leake",
+          "gsis": "00-0035868",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        },
+        {
+          "name": "Michael Warren",
+          "gsis": "00-0036006",
+          "season": 2020,
+          "position": "RB",
+          "depth": "RB"
+        }
+      ]
+    }
+  ]
+}

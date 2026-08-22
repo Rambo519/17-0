@@ -1,3 +1,57 @@
 {
-  "overrides": []
+  "overrides": [
+    {
+      "gsisId": "00-0015306",
+      "playerName": "Steve Smith",
+      "franchiseSlug": "las-vegas-raiders",
+      "fromSeason": 1987,
+      "toSeason": 1989,
+      "eligiblePositions": ["FB"],
+      "reason": "nflverse players.csv career position=FB (1987-1995); on Raiders roster as RB in 1980s (matched by gsis+career_window)"
+    },
+    {
+      "gsisId": "POR191673",
+      "playerName": "Kerry Porter",
+      "franchiseSlug": "las-vegas-raiders",
+      "fromSeason": 1989,
+      "toSeason": 1989,
+      "eligiblePositions": ["FB"],
+      "reason": "nflverse players.csv career position=FB (1987-1990); on Raiders roster as RB in 1989 (matched by name+birth+career_window)"
+    },
+    {
+      "playerName": "Woody Bennett",
+      "franchiseSlug": "new-york-jets",
+      "fromSeason": 1979,
+      "toSeason": 1979,
+      "eligiblePositions": ["FB"],
+      "reason": "nflverse players.csv career position=FB (1979-1988); on Jets roster as RB in 1979 (name+birth match; no GSIS on imported row)"
+    },
+    {
+      "gsisId": "00-0007565",
+      "playerName": "Merril Hoge",
+      "franchiseSlug": "pittsburgh-steelers",
+      "fromSeason": 1987,
+      "toSeason": 1989,
+      "eligiblePositions": ["FB"],
+      "reason": "nflverse players.csv career position=FB (1987-1994); on Steelers roster as RB in late 1980s (matched by gsis+career_window)"
+    },
+    {
+      "gsisId": "00-0035161",
+      "playerName": "John Lovett",
+      "franchiseSlug": "green-bay-packers",
+      "fromSeason": 2020,
+      "toSeason": 2020,
+      "eligiblePositions": ["FB"],
+      "reason": "nflverse depth_charts_2020.csv lists position=FB for GB"
+    },
+    {
+      "gsisId": "00-0033296",
+      "playerName": "Alex Armah",
+      "franchiseSlug": "washington-commanders",
+      "fromSeason": 2023,
+      "toSeason": 2023,
+      "eligiblePositions": ["FB"],
+      "reason": "nflverse depth_charts_2023.csv lists depth_position=FB for WAS"
+    }
+  ]
 }

@@ -1,0 +1,53 @@
+Zero-FB franchise-era combinations BEFORE cleanup
+Source: npm run data:audit (2026-08-22)
+Count: 33
+
+## 1960s (1)
+- Cincinnati Bengals
+
+## 1970s (18)
+- Arizona Cardinals
+- Chicago Bears
+- Cleveland Browns
+- Dallas Cowboys
+- Denver Broncos
+- Detroit Lions
+- Green Bay Packers
+- Las Vegas Raiders
+- Los Angeles Chargers
+- Minnesota Vikings
+- New York Giants
+- New York Jets
+- Philadelphia Eagles
+- Pittsburgh Steelers
+- San Francisco 49ers
+- Seattle Seahawks
+- Tennessee Titans
+- Washington Commanders
+
+## 1980s (7)
+- Atlanta Falcons
+- Cincinnati Bengals
+- Las Vegas Raiders
+- Los Angeles Chargers
+- New York Giants
+- Pittsburgh Steelers
+- Washington Commanders
+
+## 2020s (7)
+- Arizona Cardinals
+- Cincinnati Bengals
+- Green Bay Packers
+- Indianapolis Colts
+- Los Angeles Rams
+- Tampa Bay Buccaneers
+- Washington Commanders
+
+Investigation notes (nflverse season rosters):
+- For all 33, roster position/depth_chart_position never labeled FB in-era.
+- Issue type: source does not label FB (RB rows present without depth FB).
+- Not an importer miss of depth_chart FB for these combos.
+
+Secondary evidence used for overrides:
+- nflverse players.csv career position=FB intersecting roster membership
+- nflverse depth_charts_*.csv FB labels (2020s)

@@ -546,45 +546,4 @@ export async function importNflverseHistoricalData(
 }
 
 /** Rebuild cards from player seasons already stored in the database. */
-export async function rebuildCardsFromDatabase(db: Database): Promise<number> {
-  const seasonRows = await db.select().from(playerSeasons);
-  const positionRows = await db.select().from(playerSeasonPositions);
-  const positionsBySeasonId = new Map<number, NormalizedPosition[]>();
-  for (const row of positionRows) {
-    const list = positionsBySeasonId.get(row.playerSeasonId) ?? [];
-    list.push(row.position);
-    positionsBySeasonId.set(row.playerSeasonId, list);
-  }
-
-  const eraRows = await db.select().from(eras);
-  const eraIdByLabel = new Map(eraRows.map((era) => [era.label, era.id]));
-
-  const stintMap = new Map<string, CardStintInput>();
-  for (const season of seasonRows) {
-    const era = eraDefinitionForSeason(season.season);
-    const eraId = era ? eraIdByLabel.get(era.label) : undefined;
-    if (eraId === undefined) continue;
-
-    const key = `${season.playerId}|${season.franchiseId}`;
-    const stint = stintMap.get(key) ?? {
-      playerId: season.playerId,
-      franchiseId: season.franchiseId,
-      seasons: [],
-    };
-    stint.seasons = [
-      ...stint.seasons,
-      {
-        season: season.season,
-        eraId,
-        positions: positionsBySeasonId.get(season.id) ?? [],
-        games: season.games,
-        rosterStatus: season.rosterStatus,
-        hasRosterEvidence: season.rosterStatus != null,
-      },
-    ];
-    stintMap.set(key, stint);
-  }
-
-  const cards = derivePlayerTeamEraCards([...stintMap.values()]);
-  return replacePlayerTeamEraCards(db, cards);
-}
+export { rebuildCardsFromDatabase, applyOverridesAndRebuildCards } from "@/data/cards/rebuildFromDatabase";
