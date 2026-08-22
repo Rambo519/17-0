@@ -50,6 +50,12 @@ export const playerSeasons = pgTable(
     receivingYards: integer("receiving_yards"),
     receivingTouchdowns: integer("receiving_touchdowns"),
 
+    /**
+     * Source roster status when available (e.g. ACT, DEV). Used for
+     * participation / draftable decisions when game counts are missing.
+     */
+    rosterStatus: text("roster_status"),
+
     source: text("source"),
 
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

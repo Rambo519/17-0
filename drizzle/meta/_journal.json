@@ -8,6 +8,13 @@
       "when": 1787424452858,
       "tag": "0000_swift_quasimodo",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1787429142204,
+      "tag": "0001_roster_status",
+      "breakpoints": true
     }
   ]
 }

@@ -13,3 +13,11 @@ coverage/
 next-env.d.ts
 
 .DS_Store
+
+# Historical source downloads and local import databases
+.data/
+.cache/
+
+# Regenerated coverage audits (re-run `npm run data:audit`)
+data/reports/*
+!data/reports/.gitkeep

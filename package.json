@@ -14,7 +14,13 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "db:seed": "tsx src/db/seed/run.ts"
+    "db:seed": "tsx src/db/seed/run.ts",
+    "data:download": "tsx src/data/cli/download.ts",
+    "data:import": "tsx src/data/cli/import.ts",
+    "data:build-cards": "tsx src/data/cli/buildCards.ts",
+    "data:audit": "tsx src/data/cli/audit.ts",
+    "data:sanity": "tsx src/data/cli/sanity.ts",
+    "data:refresh": "tsx src/data/cli/refresh.ts"
   },
   "dependencies": {
     "dotenv": "^17.4.2",

@@ -123,10 +123,43 @@ against it server-side.
 ## Development data
 
 `src/db/seed/devData.ts` is **development/testing data only**. The franchises
-and eras are real; every player and every statistic is fictional. It exists to
-exercise the engine (multi-position eligibility, two receivers, several
-decades, a relocation, a player with two franchises in one decade) until the
-real historical import is built.
+and eras are real; every player and every statistic is fictional. It remains
+available for fast engine tests via `npm run db:seed`.
+
+## Historical data (Phase 2)
+
+Real roster/player history is imported from **nflverse** public GitHub Release
+CSV assets (no scraping, no live third-party calls at Spin time).
+
+Import cutoff: **2025** (latest completed NFL season configured for this phase).
+Recorded in `data/manifests/nflverse.json` when you download.
+
+```bash
+npm run data:download   # caches CSVs under .cache/nflverse/ (gitignored)
+npm run data:import     # loads into local PGlite, or DATABASE_URL with opt-in
+npm run data:build-cards
+npm run data:audit      # writes data/reports/coverage-audit.*
+npm run data:sanity     # landmark player spot-checks against the imported DB
+npm run data:refresh    # download + import + audit
+```
+
+`npm run dev` never downloads or imports historical data automatically.
+
+**Destructive import safeguard:** `data:import` and `data:refresh` wipe game
+sessions, picks, players, franchises, eras, and related tables before
+reloading. Local PGlite (no `DATABASE_URL`) may reset automatically. Against
+`DATABASE_URL` / Postgres / Supabase you must set
+`ALLOW_DESTRUCTIVE_DATA_IMPORT=1` or the command aborts before deleting
+anything.
+
+Draftable threshold (centralized in `src/data/draftable.ts`): a card needs at
+least one normalized skill position and participation evidence (`games >= 1`
+when stats exist, otherwise `ACT` roster status). Manual position overrides live
+in `data/overrides/position-overrides.json` and apply after automatic
+normalization.
+
+Franchise abbreviation → lineage mapping is centralized in
+`src/data/franchises/aliases.ts` (season-aware for BAL / HOU / STL, etc.).
 
 ## Windows note
 

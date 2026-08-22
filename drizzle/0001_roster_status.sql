@@ -1,0 +1,1 @@
+ALTER TABLE "player_seasons" ADD COLUMN "roster_status" text;
