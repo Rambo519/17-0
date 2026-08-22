@@ -1,7 +1,7 @@
 import { index, integer, pgTable, serial, timestamp, unique, uuid } from "drizzle-orm/pg-core";
 
 import { playerTeamEraCards } from "./cards";
-import { gameStatusEnum, lineupSlotEnum } from "./enums";
+import { gameModeEnum, gameStatusEnum, lineupSlotEnum } from "./enums";
 import { eras } from "./eras";
 import { franchises } from "./franchises";
 import { players } from "./players";
@@ -13,6 +13,9 @@ import { players } from "./players";
 export const gameSessions = pgTable("game_sessions", {
   id: uuid("id").primaryKey().defaultRandom(),
   status: gameStatusEnum("status").notNull().default("ACTIVE"),
+  mode: gameModeEnum("mode").notNull().default("CLASSIC"),
+  teamSkipRemaining: integer("team_skip_remaining").notNull().default(1),
+  eraSkipRemaining: integer("era_skip_remaining").notNull().default(1),
   currentFranchiseId: integer("current_franchise_id").references(() => franchises.id, {
     onDelete: "set null",
   }),

@@ -45,7 +45,7 @@ describe("spinGame", () => {
 
   it("always returns at least one legally selectable player", async () => {
     for (const value of RNG_SAMPLES) {
-      const { id } = await repository.createSession();
+      const { id } = await repository.createSession({ mode: "CLASSIC" });
       const spin = await spinGame(repository, id, () => value);
 
       expect(spin.candidates.length).toBeGreaterThan(0);
@@ -58,7 +58,7 @@ describe("spinGame", () => {
   });
 
   it("stores the rolled franchise and era on the session", async () => {
-    const { id } = await repository.createSession();
+    const { id } = await repository.createSession({ mode: "CLASSIC" });
     const spin = await spinGame(repository, id, () => 0);
     const session = await repository.findSession(id);
 
@@ -68,7 +68,7 @@ describe("spinGame", () => {
 
   it("only rolls combinations that contain the last open position", async () => {
     for (const value of RNG_SAMPLES) {
-      const { id } = await repository.createSession();
+      const { id } = await repository.createSession({ mode: "CLASSIC" });
       await occupySlots(repository, id, ["QB", "RB", "FB", "WR1", "WR2"]);
 
       const spin = await spinGame(repository, id, () => value);
@@ -85,7 +85,7 @@ describe("spinGame", () => {
 
   it("stops offering WR-only combinations once both receiver slots are filled", async () => {
     for (const value of RNG_SAMPLES) {
-      const { id } = await repository.createSession();
+      const { id } = await repository.createSession({ mode: "CLASSIC" });
       await occupySlots(repository, id, ["WR1", "WR2"]);
 
       const spin = await spinGame(repository, id, () => value);
@@ -101,7 +101,7 @@ describe("spinGame", () => {
   });
 
   it("never offers a player who is already on the roster", async () => {
-    const { id } = await repository.createSession();
+    const { id } = await repository.createSession({ mode: "CLASSIC" });
     // Player 205 (RB/FB) is already used, leaving franchise 3 as the only
     // remaining source of a running back.
     await occupySlots(repository, id, ["QB", "FB", "WR1", "WR2", "TE"], [204, 205, 201, 202, 203]);
@@ -116,7 +116,7 @@ describe("spinGame", () => {
     const withoutTightEnds = createInMemoryGameRepository(
       multiTeamCards().filter((entry) => !entry.positions.includes("TE")),
     );
-    const { id } = await withoutTightEnds.createSession();
+    const { id } = await withoutTightEnds.createSession({ mode: "CLASSIC" });
     await occupySlots(withoutTightEnds, id, ["QB", "RB", "FB", "WR1", "WR2"]);
 
     await expect(spinGame(withoutTightEnds, id, () => 0)).rejects.toMatchObject({
@@ -125,7 +125,7 @@ describe("spinGame", () => {
   });
 
   it("refuses to spin a finished or unknown game", async () => {
-    const { id } = await repository.createSession();
+    const { id } = await repository.createSession({ mode: "CLASSIC" });
     await occupySlots(repository, id, ["QB", "RB", "FB", "WR1", "WR2", "TE"]);
 
     await expect(spinGame(repository, id, () => 0)).rejects.toBeInstanceOf(GameRuleError);

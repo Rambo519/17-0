@@ -3,11 +3,20 @@ import { positionsForSlots, type LineupSlot, type NormalizedPosition } from "@/l
 import { GameRuleError } from "./errors";
 import { buildLineup, filledSlots, isLineupComplete, openSlots, type Lineup } from "./lineup";
 import type { GameRepository } from "./ports";
-import type { DraftPickRecord, GameSessionRecord, GameStatus, SpinTarget } from "./types";
+import type {
+  DraftPickRecord,
+  GameMode,
+  GameSessionRecord,
+  GameStatus,
+  SpinTarget,
+} from "./types";
 
 export interface GameState {
   sessionId: string;
   status: GameStatus;
+  mode: GameMode;
+  teamSkipRemaining: number;
+  eraSkipRemaining: number;
   lineup: Lineup;
   picks: DraftPickRecord[];
   openSlots: LineupSlot[];
@@ -16,7 +25,10 @@ export interface GameState {
   /** Normalized positions that can still fill something. */
   usefulPositions: NormalizedPosition[];
   currentSpin: SpinTarget | null;
+  /** 1–6 while drafting; 7 after the sixth pick (lineup complete). */
   nextRoundNumber: number;
+  /** Current round to play (1–6); equals nextRoundNumber while ACTIVE. */
+  roundNumber: number;
   isComplete: boolean;
 }
 
@@ -27,6 +39,8 @@ export function deriveGameState(
   const ordered = [...picks].sort((a, b) => a.roundNumber - b.roundNumber);
   const lineup = buildLineup(ordered);
   const open = openSlots(lineup);
+  const nextRoundNumber = ordered.length + 1;
+  const complete = isLineupComplete(lineup);
 
   const currentSpin =
     session.currentFranchiseId !== null && session.currentEraId !== null
@@ -36,6 +50,9 @@ export function deriveGameState(
   return {
     sessionId: session.id,
     status: session.status,
+    mode: session.mode,
+    teamSkipRemaining: session.teamSkipRemaining,
+    eraSkipRemaining: session.eraSkipRemaining,
     lineup,
     picks: ordered,
     openSlots: open,
@@ -43,8 +60,9 @@ export function deriveGameState(
     draftedPlayerIds: ordered.map((pick) => pick.playerId),
     usefulPositions: positionsForSlots(open),
     currentSpin,
-    nextRoundNumber: ordered.length + 1,
-    isComplete: isLineupComplete(lineup),
+    nextRoundNumber,
+    roundNumber: complete ? Math.min(nextRoundNumber - 1, 6) : nextRoundNumber,
+    isComplete: complete,
   };
 }
 

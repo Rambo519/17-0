@@ -4,9 +4,20 @@ export const GAME_STATUSES = ["ACTIVE", "COMPLETE"] as const;
 
 export type GameStatus = (typeof GAME_STATUSES)[number];
 
+export const GAME_MODES = ["CLASSIC", "IQ"] as const;
+
+export type GameMode = (typeof GAME_MODES)[number];
+
+export function isGameMode(value: string): value is GameMode {
+  return (GAME_MODES as readonly string[]).includes(value);
+}
+
 export interface GameSessionRecord {
   id: string;
   status: GameStatus;
+  mode: GameMode;
+  teamSkipRemaining: number;
+  eraSkipRemaining: number;
   currentFranchiseId: number | null;
   currentEraId: number | null;
   createdAt: Date;

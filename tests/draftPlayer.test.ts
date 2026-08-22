@@ -38,7 +38,7 @@ async function spinAndDraft(cardId: number, lineupSlot: LineupSlot) {
 describe("draftPlayer", () => {
   beforeEach(async () => {
     repository = createInMemoryGameRepository(testCards());
-    const state = await startGame(repository);
+    const state = await startGame(repository, { mode: "CLASSIC" });
     sessionId = state.sessionId;
   });
 
@@ -89,7 +89,7 @@ describe("draftPlayer", () => {
     expect(asFullback.state.lineup.FB?.playerId).toBe(108);
 
     const other = createInMemoryGameRepository(testCards());
-    const fresh = await startGame(other);
+    const fresh = await startGame(other, { mode: "CLASSIC" });
     await spinGame(other, fresh.sessionId, () => 0);
     const asRunningBack = await draftPlayer(other, {
       sessionId: fresh.sessionId,

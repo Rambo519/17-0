@@ -68,8 +68,15 @@ function toDraftableCard(row: CardQueryRow): DraftableCard {
 
 export function createDrizzleGameRepository(db: Database): GameRepository {
   return {
-    async createSession(): Promise<GameSessionRecord> {
-      const [session] = await db.insert(gameSessions).values({}).returning();
+    async createSession(input): Promise<GameSessionRecord> {
+      const [session] = await db
+        .insert(gameSessions)
+        .values({
+          mode: input.mode,
+          teamSkipRemaining: 1,
+          eraSkipRemaining: 1,
+        })
+        .returning();
       if (!session) throw new Error("Failed to create game session.");
       return session;
     },
@@ -179,6 +186,44 @@ export function createDrizzleGameRepository(db: Database): GameRepository {
           currentEraId: target?.eraId ?? null,
         })
         .where(eq(gameSessions.id, sessionId));
+    },
+
+    async applySkipSpin({ sessionId, kind, franchiseId, eraId }): Promise<void> {
+      await db.transaction(async (tx) => {
+        const [session] = await tx
+          .select()
+          .from(gameSessions)
+          .where(eq(gameSessions.id, sessionId))
+          .limit(1);
+        if (!session) throw new Error(`Unknown session ${sessionId}`);
+
+        if (kind === "TEAM") {
+          if (session.teamSkipRemaining <= 0) {
+            throw new Error("Team skip already consumed.");
+          }
+          await tx
+            .update(gameSessions)
+            .set({
+              currentFranchiseId: franchiseId,
+              currentEraId: eraId,
+              teamSkipRemaining: session.teamSkipRemaining - 1,
+            })
+            .where(eq(gameSessions.id, sessionId));
+          return;
+        }
+
+        if (session.eraSkipRemaining <= 0) {
+          throw new Error("Era skip already consumed.");
+        }
+        await tx
+          .update(gameSessions)
+          .set({
+            currentFranchiseId: franchiseId,
+            currentEraId: eraId,
+            eraSkipRemaining: session.eraSkipRemaining - 1,
+          })
+          .where(eq(gameSessions.id, sessionId));
+      });
     },
 
     async commitPick({

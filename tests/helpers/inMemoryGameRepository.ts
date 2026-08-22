@@ -63,10 +63,13 @@ export function createInMemoryGameRepository(cards: DraftableCard[]): InMemoryGa
     picks,
     cards,
 
-    async createSession(): Promise<GameSessionRecord> {
+    async createSession(input): Promise<GameSessionRecord> {
       const session: GameSessionRecord = {
         id: randomUUID(),
         status: "ACTIVE",
+        mode: input.mode,
+        teamSkipRemaining: 1,
+        eraSkipRemaining: 1,
         currentFranchiseId: null,
         currentEraId: null,
         createdAt: new Date(),
@@ -106,6 +109,20 @@ export function createInMemoryGameRepository(cards: DraftableCard[]): InMemoryGa
       if (!session) throw new Error(`Unknown session ${sessionId}`);
       session.currentFranchiseId = target?.franchiseId ?? null;
       session.currentEraId = target?.eraId ?? null;
+    },
+
+    async applySkipSpin({ sessionId, kind, franchiseId, eraId }): Promise<void> {
+      const session = sessions.get(sessionId);
+      if (!session) throw new Error(`Unknown session ${sessionId}`);
+      if (kind === "TEAM") {
+        if (session.teamSkipRemaining <= 0) throw new Error("Team skip already consumed.");
+        session.teamSkipRemaining -= 1;
+      } else {
+        if (session.eraSkipRemaining <= 0) throw new Error("Era skip already consumed.");
+        session.eraSkipRemaining -= 1;
+      }
+      session.currentFranchiseId = franchiseId;
+      session.currentEraId = eraId;
     },
 
     async commitPick({ sessionId, pick, complete }): Promise<void> {
@@ -149,5 +166,111 @@ export function multiTeamCards(): DraftableCard[] {
     card({ cardId: 205, playerId: 205, positions: ["RB", "FB"], franchiseId: 2, eraId: 2 }),
     // Franchise 3 / Era 2: RB only.
     card({ cardId: 206, playerId: 206, positions: ["RB"], franchiseId: 3, eraId: 2 }),
+  ];
+}
+
+/**
+ * Two franchises sharing an era (for Team Skip) and one franchise spanning two
+ * eras (for Era Skip), each covering a full six-slot formation.
+ */
+export function skipScenarioCards(): DraftableCard[] {
+  const makeTeam = (franchiseId: number, eraId: number, base: number): DraftableCard[] => [
+    card({
+      cardId: base + 1,
+      playerId: base + 1,
+      franchiseId,
+      eraId,
+      franchiseName: `Franchise ${franchiseId}`,
+      eraLabel: `Era ${eraId}`,
+      positions: ["QB"],
+    }),
+    card({
+      cardId: base + 2,
+      playerId: base + 2,
+      franchiseId,
+      eraId,
+      franchiseName: `Franchise ${franchiseId}`,
+      eraLabel: `Era ${eraId}`,
+      positions: ["RB"],
+    }),
+    card({
+      cardId: base + 3,
+      playerId: base + 3,
+      franchiseId,
+      eraId,
+      franchiseName: `Franchise ${franchiseId}`,
+      eraLabel: `Era ${eraId}`,
+      positions: ["FB"],
+    }),
+    card({
+      cardId: base + 4,
+      playerId: base + 4,
+      franchiseId,
+      eraId,
+      franchiseName: `Franchise ${franchiseId}`,
+      eraLabel: `Era ${eraId}`,
+      positions: ["WR"],
+    }),
+    card({
+      cardId: base + 5,
+      playerId: base + 5,
+      franchiseId,
+      eraId,
+      franchiseName: `Franchise ${franchiseId}`,
+      eraLabel: `Era ${eraId}`,
+      positions: ["WR"],
+    }),
+    card({
+      cardId: base + 6,
+      playerId: base + 6,
+      franchiseId,
+      eraId,
+      franchiseName: `Franchise ${franchiseId}`,
+      eraLabel: `Era ${eraId}`,
+      positions: ["TE"],
+    }),
+  ];
+
+  return [
+    ...makeTeam(1, 1, 300),
+    ...makeTeam(2, 1, 400),
+    ...makeTeam(1, 2, 500),
+    // Franchise 3 / Era 1 has no FB — useful when only FB remains.
+    card({
+      cardId: 601,
+      playerId: 601,
+      franchiseId: 3,
+      eraId: 1,
+      franchiseName: "Franchise 3",
+      eraLabel: "Era 1",
+      positions: ["QB"],
+    }),
+    card({
+      cardId: 602,
+      playerId: 602,
+      franchiseId: 3,
+      eraId: 1,
+      franchiseName: "Franchise 3",
+      eraLabel: "Era 1",
+      positions: ["RB"],
+    }),
+    card({
+      cardId: 603,
+      playerId: 603,
+      franchiseId: 3,
+      eraId: 1,
+      franchiseName: "Franchise 3",
+      eraLabel: "Era 1",
+      positions: ["WR"],
+    }),
+    card({
+      cardId: 604,
+      playerId: 604,
+      franchiseId: 3,
+      eraId: 1,
+      franchiseName: "Franchise 3",
+      eraLabel: "Era 1",
+      positions: ["TE"],
+    }),
   ];
 }

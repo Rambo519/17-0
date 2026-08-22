@@ -16,6 +16,9 @@ import { card } from "./helpers/inMemoryGameRepository";
 const session: GameSessionRecord = {
   id: "00000000-0000-4000-8000-000000000000",
   status: "ACTIVE",
+  mode: "CLASSIC",
+  teamSkipRemaining: 1,
+  eraSkipRemaining: 1,
   currentFranchiseId: 1,
   currentEraId: 1,
   createdAt: new Date(),

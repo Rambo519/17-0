@@ -12,3 +12,9 @@ export const GAME_STATUSES = ["ACTIVE", "COMPLETE"] as const;
 export type GameStatus = (typeof GAME_STATUSES)[number];
 
 export const gameStatusEnum = pgEnum("game_status", GAME_STATUSES);
+
+export const GAME_MODES = ["CLASSIC", "IQ"] as const;
+
+export type GameMode = (typeof GAME_MODES)[number];
+
+export const gameModeEnum = pgEnum("game_mode", GAME_MODES);

@@ -10,6 +10,10 @@ export const GAME_ERROR_CODES = [
   "POSITION_NOT_ELIGIBLE",
   "NO_VALID_SPIN",
   "LINEUP_ALREADY_FULL",
+  "NO_TEAM_SKIP_REMAINING",
+  "NO_ERA_SKIP_REMAINING",
+  "NO_VALID_TEAM_SKIP",
+  "NO_VALID_ERA_SKIP",
 ] as const;
 
 export type GameErrorCode = (typeof GAME_ERROR_CODES)[number];
@@ -26,6 +30,10 @@ const HTTP_STATUS: Readonly<Record<GameErrorCode, number>> = {
   POSITION_NOT_ELIGIBLE: 422,
   NO_VALID_SPIN: 409,
   LINEUP_ALREADY_FULL: 409,
+  NO_TEAM_SKIP_REMAINING: 409,
+  NO_ERA_SKIP_REMAINING: 409,
+  NO_VALID_TEAM_SKIP: 409,
+  NO_VALID_ERA_SKIP: 409,
 };
 
 export class GameRuleError extends Error {

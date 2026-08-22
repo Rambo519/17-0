@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import type { LineupSlot } from "@/lib/football/positions";
 import type { SpinResult } from "@/lib/game/spin";
+import type { GameMode } from "@/lib/game/types";
 import type { GameStateView } from "@/lib/game/view";
 
 interface ApiPayload {
@@ -16,6 +17,7 @@ const buttonStyle = { padding: "6px 12px", cursor: "pointer" } as const;
 const cellStyle = { border: "1px solid #ccc", padding: 8, textAlign: "left" } as const;
 
 export default function DevGamePage() {
+  const [mode, setMode] = useState<GameMode>("CLASSIC");
   const [game, setGame] = useState<GameStateView | null>(null);
   const [spin, setSpin] = useState<SpinResult | null>(null);
   const [selectedCardId, setSelectedCardId] = useState<number | null>(null);
@@ -39,23 +41,35 @@ export default function DevGamePage() {
       }
 
       if (payload.game) setGame(payload.game);
+      if ("spin" in payload) setSpin(payload.spin ?? null);
       return payload;
     } finally {
       setBusy(false);
     }
   }
 
-  async function startGame() {
-    setSpin(null);
+  async function startNewGame() {
     setSelectedCardId(null);
-    await call("/api/game/start");
+    const payload = await call("/api/game/start", { mode });
+    if (!payload.error) setSpin(null);
   }
 
   async function doSpin() {
     if (!game) return;
     setSelectedCardId(null);
-    const payload = await call("/api/game/spin", { sessionId: game.sessionId });
-    setSpin(payload.spin ?? null);
+    await call("/api/game/spin", { sessionId: game.sessionId });
+  }
+
+  async function doTeamSkip() {
+    if (!game) return;
+    setSelectedCardId(null);
+    await call("/api/game/team-skip", { sessionId: game.sessionId });
+  }
+
+  async function doEraSkip() {
+    if (!game) return;
+    setSelectedCardId(null);
+    await call("/api/game/era-skip", { sessionId: game.sessionId });
   }
 
   async function pick(lineupSlot: LineupSlot) {
@@ -66,7 +80,6 @@ export default function DevGamePage() {
       lineupSlot,
     });
     if (!payload.error) {
-      setSpin(null);
       setSelectedCardId(null);
     }
   }
@@ -76,11 +89,34 @@ export default function DevGamePage() {
   return (
     <main style={{ padding: 24, maxWidth: 900 }}>
       <h1>Dev: draft engine harness</h1>
-      <p style={{ color: "#666" }}>Development data only. Not the final interface.</p>
+      <p style={{ color: "#666" }}>Phase 3 gameplay harness. Not the final interface.</p>
 
-      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-        <button style={buttonStyle} onClick={startGame} disabled={busy}>
-          Start Game
+      <div style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 12 }}>
+        <label>
+          <input
+            type="radio"
+            name="mode"
+            checked={mode === "CLASSIC"}
+            onChange={() => setMode("CLASSIC")}
+            disabled={busy}
+          />{" "}
+          CLASSIC
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="mode"
+            checked={mode === "IQ"}
+            onChange={() => setMode("IQ")}
+            disabled={busy}
+          />{" "}
+          IQ
+        </label>
+      </div>
+
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
+        <button style={buttonStyle} onClick={startNewGame} disabled={busy}>
+          {game ? "Start New Game" : "Start Game"}
         </button>
         <button
           style={buttonStyle}
@@ -88,6 +124,20 @@ export default function DevGamePage() {
           disabled={busy || !game || game.isComplete || Boolean(spin)}
         >
           Spin
+        </button>
+        <button
+          style={buttonStyle}
+          onClick={doTeamSkip}
+          disabled={busy || !game || game.isComplete || !spin || game.teamSkipRemaining <= 0}
+        >
+          Team Skip ({game?.teamSkipRemaining ?? 1})
+        </button>
+        <button
+          style={buttonStyle}
+          onClick={doEraSkip}
+          disabled={busy || !game || game.isComplete || !spin || game.eraSkipRemaining <= 0}
+        >
+          Era Skip ({game?.eraSkipRemaining ?? 1})
         </button>
       </div>
 
@@ -98,8 +148,9 @@ export default function DevGamePage() {
       {game && (
         <>
           <p>
-            Session <code>{game.sessionId}</code> — status <strong>{game.status}</strong> — round{" "}
-            {Math.min(game.nextRoundNumber, 6)} of 6
+            Session <code>{game.sessionId}</code> — mode <strong>{game.mode}</strong> — status{" "}
+            <strong>{game.status}</strong> — round {game.roundNumber} of 6 — Team Skip{" "}
+            {game.teamSkipRemaining} — Era Skip {game.eraSkipRemaining}
           </p>
 
           <h2>Lineup</h2>
@@ -145,7 +196,7 @@ export default function DevGamePage() {
           </table>
 
           <h2>Current spin</h2>
-          {!spin && <p>{game.isComplete ? "Game complete." : "No active spin."}</p>}
+          {!spin && <p>{game.isComplete ? "Game COMPLETE." : "No active spin — press Spin."}</p>}
 
           {spin && (
             <>

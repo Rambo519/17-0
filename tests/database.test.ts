@@ -62,7 +62,7 @@ describe("postgres-backed engine", () => {
 
   it("plays a complete six-round game end to end", async () => {
     const rng = seededRng(7);
-    const initial = await startGame(repository);
+    const initial = await startGame(repository, { mode: "CLASSIC" });
     const sessionId = initial.sessionId;
 
     expect(initial.openSlots).toEqual([...LINEUP_SLOTS]);
@@ -103,7 +103,7 @@ describe("postgres-backed engine", () => {
   }, 60_000);
 
   it("enforces slot and eligibility rules against the database", async () => {
-    const state = await startGame(repository);
+    const state = await startGame(repository, { mode: "CLASSIC" });
     const spin = await spinGame(repository, state.sessionId, () => 0);
 
     const candidate = spin.candidates[0]!;
