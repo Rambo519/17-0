@@ -20,7 +20,8 @@
     "data:build-cards": "tsx src/data/cli/buildCards.ts",
     "data:audit": "tsx src/data/cli/audit.ts",
     "data:sanity": "tsx src/data/cli/sanity.ts",
-    "data:refresh": "tsx src/data/cli/refresh.ts"
+    "data:refresh": "tsx src/data/cli/refresh.ts",
+    "scoring:audit": "tsx src/data/cli/scoringAudit.ts"
   },
   "dependencies": {
     "dotenv": "^17.4.2",

@@ -2,12 +2,20 @@ import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 
 import { isGameRuleError } from "@/lib/game/errors";
+import { ScoringError } from "@/lib/scoring/evaluateGame";
 
 export interface ApiErrorBody {
   error: { code: string; message: string; details?: unknown };
 }
 
 export function toErrorResponse(error: unknown): NextResponse<ApiErrorBody> {
+  if (error instanceof ScoringError) {
+    return NextResponse.json(
+      { error: { code: "SCORING_ERROR", message: error.message } },
+      { status: 400 },
+    );
+  }
+
   if (isGameRuleError(error)) {
     return NextResponse.json(
       { error: { code: error.code, message: error.message } },
