@@ -4,6 +4,7 @@ import type { NormalizedPosition } from "@/lib/football/positions";
 import { EMPTY_PRODUCTION } from "@/lib/game/production";
 import type { DraftableCardFilter, GameRepository } from "@/lib/game/ports";
 import type {
+  CardProduction,
   DraftableCard,
   DraftPickRecord,
   GameSessionRecord,
@@ -107,6 +108,15 @@ export function createInMemoryGameRepository(cards: DraftableCard[]): InMemoryGa
         if (filter.eraId !== undefined && entry.eraId !== filter.eraId) return false;
         return true;
       });
+    },
+
+    async getProductionForCards(cardIds: readonly number[]): Promise<Map<number, CardProduction>> {
+      const result = new Map<number, CardProduction>();
+      for (const id of cardIds) {
+        const entry = cardById.get(id);
+        if (entry) result.set(id, entry.production);
+      }
+      return result;
     },
 
     async setCurrentSpin(sessionId, target): Promise<void> {

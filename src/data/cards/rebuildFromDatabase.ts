@@ -3,12 +3,14 @@
  * player-team-era cards. Used by `data:build-cards` so override edits do not
  * require a full destructive re-import.
  */
-import { and, eq } from "drizzle-orm";
+import { notInArray } from "drizzle-orm";
 
 import type { Database } from "@/db/client";
 import {
   eras,
   franchises,
+  gamePicks,
+  gameSessions,
   players,
   playerSeasonPositions,
   playerSeasons,
@@ -23,7 +25,7 @@ import {
   loadPositionOverrides,
   type PositionOverride,
 } from "@/data/positions/overrides";
-import { eraDefinitionForSeason } from "@/lib/football/eras";
+import { eraDefinitionForSeason, PLAYABLE_ERA_DEFINITIONS } from "@/lib/football/eras";
 import type { NormalizedPosition } from "@/lib/football/positions";
 
 export interface ApplyOverridesResult {
@@ -31,6 +33,19 @@ export interface ApplyOverridesResult {
   positionsInserted: number;
   cardsWritten: number;
   overridesLoaded: number;
+}
+
+/** Drop non-playable eras (e.g. legacy 1960s) from the eras table. */
+export async function syncPlayableErasTable(db: Database): Promise<void> {
+  const labels = PLAYABLE_ERA_DEFINITIONS.map((era) => era.label);
+  await db.delete(eras).where(notInArray(eras.label, labels));
+
+  const existing = await db.select({ label: eras.label }).from(eras);
+  const have = new Set(existing.map((row) => row.label));
+  const missing = PLAYABLE_ERA_DEFINITIONS.filter((era) => !have.has(era.label));
+  if (missing.length > 0) {
+    await db.insert(eras).values(missing.map((era) => ({ ...era })));
+  }
 }
 
 export async function applyOverridesAndRebuildCards(
@@ -133,7 +148,11 @@ export async function applyOverridesAndRebuildCards(
   }
 
   const cards = derivePlayerTeamEraCards([...stintMap.values()]);
+  // Card ids are referenced by game_picks; clear sessions before replacing cards.
+  await db.delete(gamePicks);
+  await db.delete(gameSessions);
   const cardsWritten = await replacePlayerTeamEraCards(db, cards);
+  await syncPlayableErasTable(db);
 
   return {
     seasonsTouched,
@@ -148,6 +167,3 @@ export async function rebuildCardsFromDatabase(db: Database): Promise<number> {
   const result = await applyOverridesAndRebuildCards(db);
   return result.cardsWritten;
 }
-
-void and;
-void eq;

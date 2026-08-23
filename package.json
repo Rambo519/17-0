@@ -20,6 +20,8 @@
     "data:build-cards": "tsx src/data/cli/buildCards.ts",
     "data:audit": "tsx src/data/cli/audit.ts",
     "data:sanity": "tsx src/data/cli/sanity.ts",
+    "data:download-historical": "tsx src/data/cli/downloadHistorical.ts",
+    "data:enrich-historical": "tsx src/data/cli/enrichHistorical.ts",
     "data:refresh": "tsx src/data/cli/refresh.ts",
     "scoring:audit": "tsx src/data/cli/scoringAudit.ts"
   },

@@ -17,7 +17,7 @@ export function ModeSelector({ mode, onModeChange, onStart, busy }: ModeSelector
         Build the Perfect Offense
       </h1>
       <p className={styles.sub}>
-        Draft six historical players through franchise and era spins. One Team Skip. One Era Skip.
+        Draft six historical players (1970s–2020s) through franchise and era spins. One Team Skip. One Era Skip.
       </p>
 
       <div className={styles.modes} role="radiogroup" aria-label="Game mode">

@@ -41,6 +41,7 @@ describe("eras", () => {
     expect(decadeStartYear(1985)).toBe(1980);
     expect(decadeLabel(1979)).toBe("1970s");
     expect(eraDefinitionForSeason(1994)?.label).toBe("1990s");
+    expect(eraDefinitionForSeason(1965)).toBeNull();
     expect(eraDefinitionForSeason(1959)).toBeNull();
   });
 });

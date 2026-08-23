@@ -97,8 +97,26 @@ interface PendingSeason {
   positions: NormalizedPosition[];
   rosterStatus: string | null;
   games: number | null;
+  passingYards: number | null;
+  passingTouchdowns: number | null;
+  rushingYards: number | null;
+  rushingTouchdowns: number | null;
+  receptions: number | null;
+  receivingYards: number | null;
+  receivingTouchdowns: number | null;
   displayName: string;
   overrideNotes: string[];
+}
+
+interface SeasonProduction {
+  games: number;
+  passingYards: number;
+  passingTouchdowns: number;
+  rushingYards: number;
+  rushingTouchdowns: number;
+  receptions: number;
+  receivingYards: number;
+  receivingTouchdowns: number;
 }
 
 function bump(map: Map<string, number>, key: string): void {
@@ -132,10 +150,22 @@ async function insertChunks<T>(
   }
 }
 
-async function loadGamesByPlayerTeamSeason(
+function parseStatNumber(value: string | undefined): number {
+  if (value == null || value.trim() === "") return 0;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
+}
+
+/**
+ * Collapse weekly nflverse player_stats rows into per player/team/season totals.
+ * Presence of any week means production is known (zeros remain zeros).
+ * Absence of the key means the season has no player_stats coverage → leave null.
+ */
+async function loadProductionByPlayerTeamSeason(
   cutoffSeason: number,
-): Promise<Map<string, number>> {
+): Promise<Map<string, SeasonProduction>> {
   const weekKeys = new Set<string>();
+  const totals = new Map<string, SeasonProduction>();
 
   for (
     let season = NFLVERSE_PLAYER_STATS_START_SEASON;
@@ -149,7 +179,32 @@ async function loadGamesByPlayerTeamSeason(
         const team = row.recent_team?.trim().toUpperCase();
         const week = row.week?.trim();
         if (!gsisId || !team || !week) continue;
-        weekKeys.add(`${gsisId}|${team}|${season}|${week}|${row.season_type ?? ""}`);
+
+        const weekKey = `${gsisId}|${team}|${season}|${week}|${row.season_type ?? ""}`;
+        if (weekKeys.has(weekKey)) continue;
+        weekKeys.add(weekKey);
+
+        const seasonKey = `${gsisId}|${team}|${season}`;
+        const current = totals.get(seasonKey) ?? {
+          games: 0,
+          passingYards: 0,
+          passingTouchdowns: 0,
+          rushingYards: 0,
+          rushingTouchdowns: 0,
+          receptions: 0,
+          receivingYards: 0,
+          receivingTouchdowns: 0,
+        };
+
+        current.games += 1;
+        current.passingYards += parseStatNumber(row.passing_yards);
+        current.passingTouchdowns += parseStatNumber(row.passing_tds);
+        current.rushingYards += parseStatNumber(row.rushing_yards);
+        current.rushingTouchdowns += parseStatNumber(row.rushing_tds);
+        current.receptions += parseStatNumber(row.receptions);
+        current.receivingYards += parseStatNumber(row.receiving_yards);
+        current.receivingTouchdowns += parseStatNumber(row.receiving_tds);
+        totals.set(seasonKey, current);
       }
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === "ENOENT") continue;
@@ -157,30 +212,23 @@ async function loadGamesByPlayerTeamSeason(
     }
   }
 
-  const collapsed = new Map<string, number>();
-  for (const weekKey of weekKeys) {
-    const [gsisId, team, season] = weekKey.split("|");
-    if (!gsisId || !team || !season) continue;
-    const key = `${gsisId}|${team}|${season}`;
-    collapsed.set(key, (collapsed.get(key) ?? 0) + 1);
-  }
-  return collapsed;
+  return totals;
 }
 
-function lookupGames(
-  gamesByKey: Map<string, number>,
+function lookupProduction(
+  productionByKey: Map<string, SeasonProduction>,
   gsisId: string | null,
   teamAbbr: string,
   season: number,
-): number | null {
+): SeasonProduction | null {
   if (!gsisId) return null;
-  const direct = gamesByKey.get(`${gsisId}|${teamAbbr.toUpperCase()}|${season}`);
-  if (direct != null) return direct;
+  const direct = productionByKey.get(`${gsisId}|${teamAbbr.toUpperCase()}|${season}`);
+  if (direct) return direct;
 
   // Stats files use modern abbreviations; try common lineage codes.
   for (const abbr of ["LA", "LAR", "LAC", "LV", "LVR", "OAK", "SD", "STL", "WAS", "WSH"]) {
-    const value = gamesByKey.get(`${gsisId}|${abbr}|${season}`);
-    if (value != null) return value;
+    const value = productionByKey.get(`${gsisId}|${abbr}|${season}`);
+    if (value) return value;
   }
   return null;
 }
@@ -253,8 +301,8 @@ export async function importNflverseHistoricalData(
   });
   await insertChunks(franchiseSeasonValues, (chunk) => db.insert(franchiseSeasons).values(chunk));
 
-  process.stdout.write("Loading player_stats game counts...\n");
-  const gamesByKey = await loadGamesByPlayerTeamSeason(cutoffSeason);
+  process.stdout.write("Loading player_stats production totals...\n");
+  const productionByKey = await loadProductionByPlayerTeamSeason(cutoffSeason);
 
   const playersByKey = new Map<string, PendingPlayer>();
   const gsisToKey = new Map<string, string>();
@@ -370,14 +418,23 @@ export async function importNflverseHistoricalData(
       });
 
       const seasonKey = `${playerKey}|${alias.slug}|${season}`;
-      const games = lookupGames(gamesByKey, gsisId, team, season);
+      const production = lookupProduction(productionByKey, gsisId, team, season);
       const existing = pendingSeasons.get(seasonKey);
       if (existing) {
         duplicatePlayerTeamSeason += 1;
         for (const pos of positionList) {
           if (!existing.positions.includes(pos)) existing.positions.push(pos);
         }
-        if (games != null) existing.games = Math.max(existing.games ?? 0, games);
+        if (production) {
+          existing.games = Math.max(existing.games ?? 0, production.games);
+          existing.passingYards ??= production.passingYards;
+          existing.passingTouchdowns ??= production.passingTouchdowns;
+          existing.rushingYards ??= production.rushingYards;
+          existing.rushingTouchdowns ??= production.rushingTouchdowns;
+          existing.receptions ??= production.receptions;
+          existing.receivingYards ??= production.receivingYards;
+          existing.receivingTouchdowns ??= production.receivingTouchdowns;
+        }
         continue;
       }
 
@@ -389,7 +446,14 @@ export async function importNflverseHistoricalData(
         primary,
         positions: [...positionList],
         rosterStatus: row.status?.trim() || null,
-        games,
+        games: production?.games ?? null,
+        passingYards: production?.passingYards ?? null,
+        passingTouchdowns: production?.passingTouchdowns ?? null,
+        rushingYards: production?.rushingYards ?? null,
+        rushingTouchdowns: production?.rushingTouchdowns ?? null,
+        receptions: production?.receptions ?? null,
+        receivingYards: production?.receivingYards ?? null,
+        receivingTouchdowns: production?.receivingTouchdowns ?? null,
         displayName,
         overrideNotes: overrideResult.applied.map((item) => item.reason),
       });
@@ -424,6 +488,13 @@ export async function importNflverseHistoricalData(
     rawPosition: string;
     primaryNormalizedPosition: NormalizedPosition;
     games: number | null;
+    passingYards: number | null;
+    passingTouchdowns: number | null;
+    rushingYards: number | null;
+    rushingTouchdowns: number | null;
+    receptions: number | null;
+    receivingYards: number | null;
+    receivingTouchdowns: number | null;
     rosterStatus: string | null;
     source: string;
     positions: NormalizedPosition[];
@@ -442,6 +513,13 @@ export async function importNflverseHistoricalData(
       rawPosition: pending.rawPosition,
       primaryNormalizedPosition: pending.primary,
       games: pending.games,
+      passingYards: pending.passingYards,
+      passingTouchdowns: pending.passingTouchdowns,
+      rushingYards: pending.rushingYards,
+      rushingTouchdowns: pending.rushingTouchdowns,
+      receptions: pending.receptions,
+      receivingYards: pending.receivingYards,
+      receivingTouchdowns: pending.receivingTouchdowns,
       rosterStatus: pending.rosterStatus,
       source: SOURCE,
       positions: pending.positions,
@@ -461,6 +539,13 @@ export async function importNflverseHistoricalData(
           rawPosition: row.rawPosition,
           primaryNormalizedPosition: row.primaryNormalizedPosition,
           games: row.games,
+          passingYards: row.passingYards,
+          passingTouchdowns: row.passingTouchdowns,
+          rushingYards: row.rushingYards,
+          rushingTouchdowns: row.rushingTouchdowns,
+          receptions: row.receptions,
+          receivingYards: row.receivingYards,
+          receivingTouchdowns: row.receivingTouchdowns,
           rosterStatus: row.rosterStatus,
           source: row.source,
         })),

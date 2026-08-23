@@ -1,4 +1,4 @@
-import { and, asc, eq, exists, inArray, notInArray, sql, type AnyColumn } from "drizzle-orm";
+import { and, asc, eq, exists, inArray, notInArray, sql } from "drizzle-orm";
 
 import type { Database } from "@/db/client";
 import {
@@ -12,7 +12,8 @@ import {
   playerTeamEraPositions,
 } from "@/db/schema";
 import { isNormalizedPosition, type NormalizedPosition } from "@/lib/football/positions";
-import { asNullableNumber } from "@/lib/game/production";
+import { PLAYABLE_ERA_LABELS } from "@/lib/football/eras";
+import { asNullableNumber, EMPTY_PRODUCTION } from "@/lib/game/production";
 import type { DraftableCardFilter, GameRepository } from "@/lib/game/ports";
 import type {
   CardProduction,
@@ -48,30 +49,6 @@ const cardGroupBy = [
 /** Positions come back as `text[]`; drop anything the game doesn't understand. */
 const positionsAggregate = sql<string[]>`array_agg(distinct ${playerTeamEraPositions.position}::text)`;
 
-function seasonSum(column: AnyColumn) {
-  return sql`
-    (
-      select sum(${column})
-      from ${playerSeasons}
-      where ${playerSeasons.playerId} = ${playerTeamEraCards.playerId}
-        and ${playerSeasons.franchiseId} = ${playerTeamEraCards.franchiseId}
-        and ${playerSeasons.season} between ${playerTeamEraCards.firstSeason}
-          and ${playerTeamEraCards.lastSeason}
-    )
-  `;
-}
-
-const productionColumns = {
-  games: seasonSum(playerSeasons.games),
-  passingYards: seasonSum(playerSeasons.passingYards),
-  passingTouchdowns: seasonSum(playerSeasons.passingTouchdowns),
-  rushingYards: seasonSum(playerSeasons.rushingYards),
-  rushingTouchdowns: seasonSum(playerSeasons.rushingTouchdowns),
-  receptions: seasonSum(playerSeasons.receptions),
-  receivingYards: seasonSum(playerSeasons.receivingYards),
-  receivingTouchdowns: seasonSum(playerSeasons.receivingTouchdowns),
-} as const;
-
 interface CardQueryRow {
   cardId: number;
   playerId: number;
@@ -86,27 +63,6 @@ interface CardQueryRow {
   representativeSeason: number | null;
   draftable: boolean;
   positions: string[] | null;
-  games: unknown;
-  passingYards: unknown;
-  passingTouchdowns: unknown;
-  rushingYards: unknown;
-  rushingTouchdowns: unknown;
-  receptions: unknown;
-  receivingYards: unknown;
-  receivingTouchdowns: unknown;
-}
-
-function toProduction(row: CardQueryRow): CardProduction {
-  return {
-    games: asNullableNumber(row.games),
-    passingYards: asNullableNumber(row.passingYards),
-    passingTouchdowns: asNullableNumber(row.passingTouchdowns),
-    rushingYards: asNullableNumber(row.rushingYards),
-    rushingTouchdowns: asNullableNumber(row.rushingTouchdowns),
-    receptions: asNullableNumber(row.receptions),
-    receivingYards: asNullableNumber(row.receivingYards),
-    receivingTouchdowns: asNullableNumber(row.receivingTouchdowns),
-  };
 }
 
 function toDraftableCard(row: CardQueryRow): DraftableCard {
@@ -128,7 +84,8 @@ function toDraftableCard(row: CardQueryRow): DraftableCard {
     representativeSeason: row.representativeSeason,
     draftable: row.draftable,
     positions,
-    production: toProduction(row),
+    // Production is loaded separately for the spun candidate set only.
+    production: EMPTY_PRODUCTION,
   };
 }
 
@@ -180,7 +137,7 @@ export function createDrizzleGameRepository(db: Database): GameRepository {
 
     async findCard(cardId: number): Promise<DraftableCard | null> {
       const rows = await db
-        .select({ ...cardColumns, positions: positionsAggregate, ...productionColumns })
+        .select({ ...cardColumns, positions: positionsAggregate })
         .from(playerTeamEraCards)
         .innerJoin(players, eq(players.id, playerTeamEraCards.playerId))
         .innerJoin(franchises, eq(franchises.id, playerTeamEraCards.franchiseId))
@@ -193,7 +150,7 @@ export function createDrizzleGameRepository(db: Database): GameRepository {
         .groupBy(...cardGroupBy);
 
       const row = rows[0];
-      return row ? toDraftableCard(row as CardQueryRow) : null;
+      return row ? toDraftableCard(row) : null;
     },
 
     async listDraftableCards(filter: DraftableCardFilter): Promise<DraftableCard[]> {
@@ -201,6 +158,7 @@ export function createDrizzleGameRepository(db: Database): GameRepository {
 
       const conditions = [
         eq(playerTeamEraCards.draftable, true),
+        inArray(eras.label, [...PLAYABLE_ERA_LABELS]),
         // EXISTS rather than a join filter, so the aggregate still returns the
         // card's full position list.
         exists(
@@ -227,7 +185,7 @@ export function createDrizzleGameRepository(db: Database): GameRepository {
       }
 
       const rows = await db
-        .select({ ...cardColumns, positions: positionsAggregate, ...productionColumns })
+        .select({ ...cardColumns, positions: positionsAggregate })
         .from(playerTeamEraCards)
         .innerJoin(players, eq(players.id, playerTeamEraCards.playerId))
         .innerJoin(franchises, eq(franchises.id, playerTeamEraCards.franchiseId))
@@ -239,7 +197,56 @@ export function createDrizzleGameRepository(db: Database): GameRepository {
         .where(and(...conditions))
         .groupBy(...cardGroupBy);
 
-      return rows.map((row) => toDraftableCard(row as CardQueryRow));
+      return rows.map(toDraftableCard);
+    },
+
+    async getProductionForCards(cardIds: readonly number[]): Promise<Map<number, CardProduction>> {
+      const result = new Map<number, CardProduction>();
+      if (cardIds.length === 0) return result;
+
+      const uniqueIds = [...new Set(cardIds)];
+      const rows = await db
+        .select({
+          cardId: playerTeamEraCards.id,
+          games: sql`sum(${playerSeasons.games})`,
+          passingYards: sql`sum(${playerSeasons.passingYards})`,
+          passingTouchdowns: sql`sum(${playerSeasons.passingTouchdowns})`,
+          rushingYards: sql`sum(${playerSeasons.rushingYards})`,
+          rushingTouchdowns: sql`sum(${playerSeasons.rushingTouchdowns})`,
+          receptions: sql`sum(${playerSeasons.receptions})`,
+          receivingYards: sql`sum(${playerSeasons.receivingYards})`,
+          receivingTouchdowns: sql`sum(${playerSeasons.receivingTouchdowns})`,
+        })
+        .from(playerTeamEraCards)
+        .leftJoin(
+          playerSeasons,
+          and(
+            eq(playerSeasons.playerId, playerTeamEraCards.playerId),
+            eq(playerSeasons.franchiseId, playerTeamEraCards.franchiseId),
+            sql`${playerSeasons.season} between ${playerTeamEraCards.firstSeason} and ${playerTeamEraCards.lastSeason}`,
+          ),
+        )
+        .where(inArray(playerTeamEraCards.id, uniqueIds))
+        .groupBy(playerTeamEraCards.id);
+
+      for (const id of uniqueIds) {
+        result.set(id, EMPTY_PRODUCTION);
+      }
+
+      for (const row of rows) {
+        result.set(row.cardId, {
+          games: asNullableNumber(row.games),
+          passingYards: asNullableNumber(row.passingYards),
+          passingTouchdowns: asNullableNumber(row.passingTouchdowns),
+          rushingYards: asNullableNumber(row.rushingYards),
+          rushingTouchdowns: asNullableNumber(row.rushingTouchdowns),
+          receptions: asNullableNumber(row.receptions),
+          receivingYards: asNullableNumber(row.receivingYards),
+          receivingTouchdowns: asNullableNumber(row.receivingTouchdowns),
+        });
+      }
+
+      return result;
     },
 
     async setCurrentSpin(

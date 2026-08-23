@@ -1,6 +1,7 @@
 import type { NormalizedPosition } from "@/lib/football/positions";
 
 import type {
+  CardProduction,
   DraftableCard,
   DraftPickRecord,
   GameMode,
@@ -34,6 +35,11 @@ export interface GameRepository {
   listPicks(sessionId: string): Promise<DraftPickRecord[]>;
   findCard(cardId: number): Promise<DraftableCard | null>;
   listDraftableCards(filter: DraftableCardFilter): Promise<DraftableCard[]>;
+  /**
+   * Era-window production totals for the given cards. Missing source data stays
+   * null — never coerced to zero here.
+   */
+  getProductionForCards(cardIds: readonly number[]): Promise<Map<number, CardProduction>>;
   setCurrentSpin(sessionId: string, target: { franchiseId: number; eraId: number } | null): Promise<void>;
   /**
    * Atomically replaces the outstanding spin and consumes one Team or Era skip.

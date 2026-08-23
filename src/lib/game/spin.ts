@@ -34,6 +34,43 @@ function toCandidate(card: DraftableCard, state: GameState): SpinCandidate {
   return { card, eligibleSlots: eligibleSlotsForCard(card, state.openSlots) };
 }
 
+/** Attach Classic production only for the spun candidate set (not the full pool). */
+export async function withCandidateProduction(
+  repository: GameRepository,
+  candidates: SpinCandidate[],
+): Promise<SpinCandidate[]> {
+  const production = await repository.getProductionForCards(
+    candidates.map((candidate) => candidate.card.cardId),
+  );
+
+  return candidates.map((candidate) => ({
+    ...candidate,
+    card: {
+      ...candidate.card,
+      production: production.get(candidate.card.cardId) ?? candidate.card.production,
+    },
+  }));
+}
+
+async function toEnrichedSpinResult(
+  repository: GameRepository,
+  sessionId: string,
+  combination: SpinCombination,
+  openSlots: LineupSlot[],
+): Promise<SpinResult> {
+  return {
+    sessionId,
+    franchise: {
+      id: combination.franchiseId,
+      name: combination.franchiseName,
+      abbreviation: combination.franchiseAbbreviation,
+    },
+    era: { id: combination.eraId, label: combination.eraLabel },
+    openSlots,
+    candidates: await withCandidateProduction(repository, combination.candidates),
+  };
+}
+
 /**
  * Buckets legal candidates by franchise + era. A combination only survives if
  * it contains at least one card that can fill an open slot, which is what
@@ -111,17 +148,7 @@ export async function spinGame(
     eraId: combination.eraId,
   });
 
-  return {
-    sessionId,
-    franchise: {
-      id: combination.franchiseId,
-      name: combination.franchiseName,
-      abbreviation: combination.franchiseAbbreviation,
-    },
-    era: { id: combination.eraId, label: combination.eraLabel },
-    openSlots: state.openSlots,
-    candidates: combination.candidates,
-  };
+  return toEnrichedSpinResult(repository, sessionId, combination, state.openSlots);
 }
 
 /**
@@ -141,7 +168,10 @@ export async function loadCurrentSpin(
     eraId: state.currentSpin.eraId,
   });
 
-  const candidates = selectableCards(cards, state).map((card) => toCandidate(card, state));
+  const candidates = await withCandidateProduction(
+    repository,
+    selectableCards(cards, state).map((card) => toCandidate(card, state)),
+  );
   const first = candidates[0];
   if (!first) return null;
 

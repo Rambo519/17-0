@@ -33,7 +33,7 @@ describe("postgres-backed engine", () => {
   }, 60_000);
 
   it("seeds eras, franchises, players and cards", () => {
-    expect(summary.eras).toBe(7);
+    expect(summary.eras).toBe(6);
     expect(summary.franchises).toBe(4);
     expect(summary.players).toBeGreaterThanOrEqual(20);
     expect(summary.players).toBeLessThanOrEqual(40);

@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { eq, sql } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 
 import type { Database } from "@/db/client";
 import {
@@ -15,6 +15,7 @@ import {
 } from "@/db/schema";
 import type { NormalizedPosition } from "@/lib/football/positions";
 import { NORMALIZED_POSITIONS } from "@/lib/football/positions";
+import { PLAYABLE_ERA_LABELS } from "@/lib/football/eras";
 
 export interface FranchiseEraCoverageRow {
   franchise: string;
@@ -30,9 +31,21 @@ export interface FranchiseEraCoverageRow {
   fullFormationViable: boolean;
 }
 
+export interface EraProductionCoverageRow {
+  era: string;
+  draftableCards: number;
+  cardsWithPassingProduction: number;
+  cardsWithRushingProduction: number;
+  cardsWithReceivingProduction: number;
+  cardsWithAnyProduction: number;
+  cardsWithNoProduction: number;
+  productionCoveragePercent: number;
+}
+
 export interface CoverageAuditReport {
   generatedAt: string;
   franchiseEraRows: FranchiseEraCoverageRow[];
+  productionByEra: EraProductionCoverageRow[];
   summary: {
     franchiseEraCombinations: number;
     fullFormationViable: number;
@@ -74,7 +87,10 @@ function hasPosition(positions: readonly NormalizedPosition[], target: Normalize
 
 export async function runCoverageAudit(db: Database): Promise<CoverageAuditReport> {
   const franchiseRows = await db.select().from(franchises);
-  const eraRows = await db.select().from(eras);
+  const eraRows = await db
+    .select()
+    .from(eras)
+    .where(inArray(eras.label, [...PLAYABLE_ERA_LABELS]));
   const franchiseSeasonRows = await db.select().from(franchiseSeasons);
 
   const seasonsByFranchise = new Map<number, Set<number>>();
@@ -206,9 +222,12 @@ export async function runCoverageAudit(db: Database): Promise<CoverageAuditRepor
     .from(playerTeamEraCards)
     .where(eq(playerTeamEraCards.draftable, true));
 
+  const productionByEra = await buildProductionCoverageByEra(db);
+
   return {
     generatedAt: new Date().toISOString(),
     franchiseEraRows,
+    productionByEra,
     summary: {
       franchiseEraCombinations: franchiseEraRows.length,
       fullFormationViable: franchiseEraRows.filter((row) => row.fullFormationViable).length,
@@ -278,6 +297,22 @@ export async function writeCoverageAuditReports(
   ];
   await writeFile(csvPath, `${lines.join("\n")}\n`, "utf8");
 
+  const productionSummaryPath = path.join(REPORTS_DIR, "production-coverage-by-era.txt");
+  const productionLines = [
+    `Production coverage by era @ ${report.generatedAt}`,
+    "",
+    ...report.productionByEra.map(
+      (row) =>
+        `${row.era}: ${row.productionCoveragePercent}% production coverage` +
+        ` (draftable=${row.draftableCards}` +
+        ` pass=${row.cardsWithPassingProduction}` +
+        ` rush=${row.cardsWithRushingProduction}` +
+        ` rec=${row.cardsWithReceivingProduction}` +
+        ` none=${row.cardsWithNoProduction})`,
+    ),
+  ];
+  await writeFile(productionSummaryPath, `${productionLines.join("\n")}\n`, "utf8");
+
   const summary = [
     `Coverage audit @ ${report.generatedAt}`,
     "",
@@ -287,6 +322,11 @@ export async function writeCoverageAuditReports(
     `Cards: ${report.cards} (draftable ${report.draftableCards})`,
     `Franchise-era combinations: ${report.summary.franchiseEraCombinations}`,
     `Full-formation viable: ${report.summary.fullFormationViable}`,
+    "",
+    "PRODUCTION COVERAGE BY ERA",
+    ...report.productionByEra.map(
+      (row) => `  ${row.era}: ${row.productionCoveragePercent}%`,
+    ),
     "",
     "FULLBACK COVERAGE",
     `  0 FB:  ${report.fullbackCoverage.zeroFb}`,
@@ -310,6 +350,7 @@ export async function writeCoverageAuditReports(
     "",
     `Detailed JSON: ${jsonPath}`,
     `Detailed CSV:  ${csvPath}`,
+    `Production by era: ${productionSummaryPath}`,
   ].join("\n");
 
   await writeFile(summaryPath, `${summary}\n`, "utf8");
@@ -321,4 +362,92 @@ function csvEscape(value: string): string {
     return `"${value.replaceAll('"', '""')}"`;
   }
   return value;
+}
+
+async function buildProductionCoverageByEra(db: Database): Promise<EraProductionCoverageRow[]> {
+  const rows = await db
+    .select({
+      era: eras.label,
+      cardId: playerTeamEraCards.id,
+      passingYards: sql`sum(${playerSeasons.passingYards})`,
+      passingTouchdowns: sql`sum(${playerSeasons.passingTouchdowns})`,
+      rushingYards: sql`sum(${playerSeasons.rushingYards})`,
+      rushingTouchdowns: sql`sum(${playerSeasons.rushingTouchdowns})`,
+      receptions: sql`sum(${playerSeasons.receptions})`,
+      receivingYards: sql`sum(${playerSeasons.receivingYards})`,
+      receivingTouchdowns: sql`sum(${playerSeasons.receivingTouchdowns})`,
+    })
+    .from(playerTeamEraCards)
+    .innerJoin(eras, eq(eras.id, playerTeamEraCards.eraId))
+    .leftJoin(
+      playerSeasons,
+      and(
+        eq(playerSeasons.playerId, playerTeamEraCards.playerId),
+        eq(playerSeasons.franchiseId, playerTeamEraCards.franchiseId),
+        sql`${playerSeasons.season} between ${playerTeamEraCards.firstSeason} and ${playerTeamEraCards.lastSeason}`,
+      ),
+    )
+    .where(eq(playerTeamEraCards.draftable, true))
+    .groupBy(eras.label, playerTeamEraCards.id);
+
+  const byEra = new Map<
+    string,
+    {
+      draftableCards: number;
+      cardsWithPassingProduction: number;
+      cardsWithRushingProduction: number;
+      cardsWithReceivingProduction: number;
+      cardsWithAnyProduction: number;
+    }
+  >();
+
+  for (const row of rows) {
+    const bucket = byEra.get(row.era) ?? {
+      draftableCards: 0,
+      cardsWithPassingProduction: 0,
+      cardsWithRushingProduction: 0,
+      cardsWithReceivingProduction: 0,
+      cardsWithAnyProduction: 0,
+    };
+    bucket.draftableCards += 1;
+
+    const pass = asNumber(row.passingYards) != null || asNumber(row.passingTouchdowns) != null;
+    const rush = asNumber(row.rushingYards) != null || asNumber(row.rushingTouchdowns) != null;
+    const rec =
+      asNumber(row.receptions) != null ||
+      asNumber(row.receivingYards) != null ||
+      asNumber(row.receivingTouchdowns) != null;
+
+    if (pass) bucket.cardsWithPassingProduction += 1;
+    if (rush) bucket.cardsWithRushingProduction += 1;
+    if (rec) bucket.cardsWithReceivingProduction += 1;
+    if (pass || rush || rec) bucket.cardsWithAnyProduction += 1;
+    byEra.set(row.era, bucket);
+  }
+
+  return [...byEra.entries()]
+    .map(([era, bucket]) => {
+      const cardsWithNoProduction = bucket.draftableCards - bucket.cardsWithAnyProduction;
+      const productionCoveragePercent =
+        bucket.draftableCards === 0
+          ? 0
+          : Math.round((1000 * bucket.cardsWithAnyProduction) / bucket.draftableCards) / 10;
+      return {
+        era,
+        draftableCards: bucket.draftableCards,
+        cardsWithPassingProduction: bucket.cardsWithPassingProduction,
+        cardsWithRushingProduction: bucket.cardsWithRushingProduction,
+        cardsWithReceivingProduction: bucket.cardsWithReceivingProduction,
+        cardsWithAnyProduction: bucket.cardsWithAnyProduction,
+        cardsWithNoProduction,
+        productionCoveragePercent,
+      };
+    })
+    .sort((a, b) => a.era.localeCompare(b.era));
+}
+
+function asNumber(value: unknown): number | null {
+  if (value == null) return null;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
 }

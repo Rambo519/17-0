@@ -3,6 +3,8 @@
  * downloaded raw files live under `.cache/nflverse/` (gitignored).
  */
 
+import { NFLVERSE_STATS_AUTHORITATIVE_FROM_SEASON } from "@/data/sources/statsBoundary";
+
 export const NFLVERSE_SOURCE_NAME = "nflverse";
 
 /** Documented public release assets (GitHub Releases). */
@@ -26,8 +28,11 @@ export const NFLVERSE_ROSTER_URL = (season: number): string =>
 export const NFLVERSE_PLAYER_STATS_URL = (season: number): string =>
   `${NFLVERSE_PLAYER_STATS_RELEASE}/player_stats_${season}.csv`;
 
-/** player_stats release coverage begins in 1999. */
-export const NFLVERSE_PLAYER_STATS_START_SEASON = 1999;
+/**
+ * player_stats release coverage / authoritative modern production boundary.
+ * Pre-1999 production is enriched via historical-stats adapters.
+ */
+export const NFLVERSE_PLAYER_STATS_START_SEASON = NFLVERSE_STATS_AUTHORITATIVE_FROM_SEASON;
 
 export interface NflverseManifest {
   sourceName: string;

@@ -1,8 +1,8 @@
 # 16&0
 
-An original historical NFL team-building draft game. You spin for a franchise
-and a decade, pick one of that team's offensive skill players, and assign them
-to an open slot in a six-man I-formation lineup:
+An original historical NFL team-building draft game spanning the **1970s through
+2020s**. You spin for a franchise and a decade, pick one of that team's offensive
+skill players, and assign them to an open slot in a six-man I-formation lineup:
 
 ```text
 WR                         WR
@@ -129,7 +129,10 @@ available for fast engine tests via `npm run db:seed`.
 ## Historical data (Phase 2)
 
 Real roster/player history is imported from **nflverse** public GitHub Release
-CSV assets (no scraping, no live third-party calls at Spin time).
+CSV assets (no scraping, no live third-party calls at Spin time). Roster history
+may include seasons before 1970 for identity continuity; **playable spins cover
+1970s–2020s only**. Pre-1999 season production is enriched from MarcLinder
+NFL.com CSV mirrors (1970–1998); 1999+ uses nflverse `player_stats`.
 
 Import cutoff: **2025** (latest completed NFL season configured for this phase).
 Recorded in `data/manifests/nflverse.json` when you download.

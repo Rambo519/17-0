@@ -4,11 +4,13 @@ import type { GameRepository } from "./ports";
 import {
   buildSpinCombinations,
   chooseSpinCombination,
+  withCandidateProduction,
   type Rng,
   type SpinResult,
 } from "./spin";
 
-function toSpinResult(
+async function toSpinResult(
+  repository: GameRepository,
   sessionId: string,
   combination: {
     franchiseId: number;
@@ -19,7 +21,7 @@ function toSpinResult(
     candidates: SpinResult["candidates"];
   },
   openSlots: SpinResult["openSlots"],
-): SpinResult {
+): Promise<SpinResult> {
   return {
     sessionId,
     franchise: {
@@ -29,7 +31,7 @@ function toSpinResult(
     },
     era: { id: combination.eraId, label: combination.eraLabel },
     openSlots,
-    candidates: combination.candidates,
+    candidates: await withCandidateProduction(repository, combination.candidates),
   };
 }
 
@@ -82,7 +84,7 @@ export async function teamSkipGame(
     eraId: combination.eraId,
   });
 
-  return toSpinResult(sessionId, combination, state.openSlots);
+  return toSpinResult(repository, sessionId, combination, state.openSlots);
 }
 
 /**
@@ -134,5 +136,5 @@ export async function eraSkipGame(
     eraId: combination.eraId,
   });
 
-  return toSpinResult(sessionId, combination, state.openSlots);
+  return toSpinResult(repository, sessionId, combination, state.openSlots);
 }

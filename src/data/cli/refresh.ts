@@ -2,6 +2,8 @@ import { downloadNflverseData } from "@/data/sources/nflverse/download";
 import { NFLVERSE_DEFAULT_CUTOFF_SEASON } from "@/data/sources/nflverse/config";
 import { openDataDatabase } from "@/data/cli/db";
 import { importNflverseHistoricalData } from "@/data/sources/nflverse/import";
+import { downloadHistoricalStats } from "@/data/sources/historicalStats/download";
+import { enrichPlayerSeasonsWithHistoricalStats } from "@/data/sources/historicalStats/enrich";
 import { runCoverageAudit, writeCoverageAuditReports } from "@/data/audit/coverage";
 
 async function main(): Promise<void> {
@@ -20,10 +22,22 @@ async function main(): Promise<void> {
     `Imported players=${summary.players} seasons=${summary.playerSeasons} cards=${summary.cards}`,
   );
 
+  console.log("== data:download-historical + enrich ==");
+  await downloadHistoricalStats();
+  const enrichment = await enrichPlayerSeasonsWithHistoricalStats(db);
+  console.log(
+    `Historical enriched=${enrichment.summary.enrichedSeasons} ambiguous=${enrichment.summary.ambiguous} unresolved=${enrichment.summary.unresolved}`,
+  );
+
   console.log("== data:audit ==");
   const report = await runCoverageAudit(db);
   const paths = await writeCoverageAuditReports(report);
-  console.log(`FB coverage: 0=${report.fullbackCoverage.zeroFb} 1=${report.fullbackCoverage.oneFb} 2+=${report.fullbackCoverage.twoOrMoreFb}`);
+  console.log(
+    `FB coverage: 0=${report.fullbackCoverage.zeroFb} 1=${report.fullbackCoverage.oneFb} 2+=${report.fullbackCoverage.twoOrMoreFb}`,
+  );
+  for (const row of report.productionByEra) {
+    console.log(`${row.era}: ${row.productionCoveragePercent}% production coverage`);
+  }
   console.log(`Summary written to ${paths.summaryPath}`);
   await close?.();
 }

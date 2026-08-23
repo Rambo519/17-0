@@ -4,7 +4,11 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { openDataDatabase } from "@/data/cli/db";
-import { runHistoricalSanityChecks, assertJohnstonHasFb } from "@/data/sanity/historicalExamples";
+import {
+  assertJohnstonHasFb,
+  runHistoricalProductionSanityChecks,
+  runHistoricalSanityChecks,
+} from "@/data/sanity/historicalExamples";
 
 const rosterProbe = path.join(process.cwd(), ".cache", "nflverse", "rosters", "roster_1987.csv");
 
@@ -31,6 +35,10 @@ describe("real-data sanity checks", () => {
       for (const result of results) {
         expect(result.missing, result.label).toEqual([]);
         expect(result.ok, result.label).toBe(true);
+      }
+      const production = await runHistoricalProductionSanityChecks(db);
+      for (const result of production) {
+        expect(result.ok, `${result.label}: ${result.detail}`).toBe(true);
       }
       expect(await assertJohnstonHasFb(db)).toBe(true);
     } finally {

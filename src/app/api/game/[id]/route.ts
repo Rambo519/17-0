@@ -12,7 +12,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
     const { id } = await context.params;
     const sessionId = sessionIdSchema.parse(id);
 
-    const repository = getGameRepository();
+    const repository = await getGameRepository();
     const state = await loadGameState(repository, sessionId);
     const spin = await loadCurrentSpin(repository, state);
 

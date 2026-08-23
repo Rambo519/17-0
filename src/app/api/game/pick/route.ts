@@ -9,7 +9,7 @@ import { readJson, toErrorResponse } from "@/server/http";
 export async function POST(request: Request) {
   try {
     const input = pickRequestSchema.parse(await readJson(request));
-    const result = await draftPlayer(getGameRepository(), input);
+    const result = await draftPlayer(await getGameRepository(), input);
 
     return NextResponse.json({
       pick: result.pick,

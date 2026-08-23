@@ -7,6 +7,6 @@ import { createDrizzleGameRepository } from "./repository/drizzleGameRepository"
  * Composition root for the API layer: the only place that binds the game
  * engine to the real database.
  */
-export function getGameRepository(): GameRepository {
-  return createDrizzleGameRepository(getDb());
+export async function getGameRepository(): Promise<GameRepository> {
+  return createDrizzleGameRepository(await getDb());
 }
