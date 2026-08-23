@@ -19,10 +19,13 @@ export function evaluateLineupPick(
     franchiseId: pick.franchiseId,
     eraId: pick.eraId,
     scoringSeason: selected.season,
-    overall: selected.score.productionScore,
-    productionScore: selected.score.productionScore,
+    rawProductionScore: selected.score.rawProductionScore,
+    reliability: selected.score.reliability,
+    overall: selected.score.adjustedProductionScore,
+    productionScore: selected.score.adjustedProductionScore,
     percentileRank: selected.score.percentileRank,
     dataConfidence: selected.score.dataConfidence,
     metrics: selected.score.metrics,
+    selectedScoringSeason: true,
   };
 }

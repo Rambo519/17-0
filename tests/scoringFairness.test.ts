@@ -24,6 +24,7 @@ function qbSeason(
     passingTouchdowns,
     interceptions,
     rushingYards: null,
+    rushingAttempts: null,
     rushingTouchdowns: null,
     receptions: null,
     receivingYards: null,
@@ -70,7 +71,7 @@ describe("historical scoring fairness", () => {
   it("does not map ordinary percentiles to elite calibrated scores", () => {
     expect(calibratePercentileToScore(50)).toBeLessThan(55);
     expect(calibratePercentileToScore(85)).toBeGreaterThan(70);
-    expect(calibratePercentileToScore(85)).toBeLessThan(82);
+    expect(calibratePercentileToScore(85)).toBeLessThan(84);
   });
 
   it("separates weak and elite synthetic lineups in projected wins", () => {
@@ -87,6 +88,7 @@ describe("historical scoring fairness", () => {
         passingTouchdowns: 14 + i,
         interceptions: 16 - Math.floor(i / 3),
         rushingYards: 900 + i * 40,
+        rushingAttempts: 200 + i * 5,
         rushingTouchdowns: 6 + Math.floor(i / 4),
         receptions: 20 + i,
         receivingYards: 350 + i * 20,
@@ -113,6 +115,7 @@ describe("historical scoring fairness", () => {
         passingTouchdowns: null,
         interceptions: null,
         rushingYards: null,
+        rushingAttempts: null,
         rushingTouchdowns: null,
         receptions: null,
         receivingYards: null,

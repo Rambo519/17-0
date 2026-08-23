@@ -54,21 +54,26 @@ export const LOWER_IS_BETTER_METRICS: ReadonlySet<MetricKey> = new Set(["interce
  */
 export const SCORE_CALIBRATION = {
   minScore: 22,
-  maxScore: 88,
+  maxScore: 94,
   neutralPercentile: 50,
   neutralScore: 50,
-  percentileCurveExponent: 1.5,
 } as const;
 
 /**
  * Maps composite peer percentile (0–100) to a calibrated player score (~0–100).
- * Power curve compresses upper percentiles so elite seasons do not cluster at 100.
+ * Mid-tier stays interpretable; upper percentiles separate more strongly.
  */
 export function calibratePercentileToScore(percentile: number): number {
-  const { minScore, maxScore, percentileCurveExponent } = SCORE_CALIBRATION;
-  const clamped = Math.max(0, Math.min(100, percentile)) / 100;
-  const curved = clamped ** percentileCurveExponent;
-  return minScore + curved * (maxScore - minScore);
+  const { minScore, maxScore } = SCORE_CALIBRATION;
+  const p = Math.max(0, Math.min(100, percentile)) / 100;
+
+  if (p <= 0.5) {
+    const t = p / 0.5;
+    return minScore + t ** 1.15 * (50 - minScore);
+  }
+
+  const t = (p - 0.5) / 0.5;
+  return 50 + t ** 0.78 * (maxScore - 50);
 }
 
 /** Slot weights for offense talent rating (WR1/WR2 evaluated as WR, not slot-inflated). */
@@ -85,12 +90,12 @@ export const LINEUP_SLOT_WEIGHTS: Readonly<Record<LineupSlot, number>> = {
 export const BALANCE_WEIGHT = 0.08;
 
 export const BALANCE_ADJUSTMENT = {
-  weakThreshold: 40,
-  strongThreshold: 65,
-  penaltyFactor: 0.18,
-  maxPenalty: 6,
-  bonusFactor: 0.1,
-  maxBonus: 3,
+  weakThreshold: 42,
+  strongThreshold: 68,
+  penaltyFactor: 0.22,
+  maxPenalty: 7,
+  bonusFactor: 0.14,
+  maxBonus: 4,
 } as const;
 
 /**
@@ -98,8 +103,8 @@ export const BALANCE_ADJUSTMENT = {
  * Tunable constants — not sacred.
  */
 export const WIN_PROJECTION_MODEL = {
-  midpointRating: 68,
-  steepness: 0.065,
+  midpointRating: 62,
+  steepness: 0.081,
   minWinProbability: 0.05,
   maxWinProbability: 0.95,
   seasonLength: 16,

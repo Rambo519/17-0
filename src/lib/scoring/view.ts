@@ -15,6 +15,8 @@ export interface ScoringResultView {
     lineupSlot: string;
     position: string;
     scoringSeason: number | null;
+    rawProductionScore: number;
+    reliability: number;
     overall: number;
     productionScore: number;
     percentileRank: number;
@@ -39,6 +41,8 @@ export function toScoringResultView(result: GameScoringResult): ScoringResultVie
       lineupSlot: player.lineupSlot,
       position: player.normalizedPosition,
       scoringSeason: player.scoringSeason,
+      rawProductionScore: player.rawProductionScore,
+      reliability: player.reliability,
       overall: player.overall,
       productionScore: player.productionScore,
       percentileRank: player.percentileRank,

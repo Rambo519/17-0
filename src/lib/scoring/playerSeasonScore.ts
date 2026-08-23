@@ -6,13 +6,22 @@ import {
 } from "./config";
 import { metricValueFromSeason } from "./metrics";
 import type { PeerBaselineIndex } from "./peerBaselines";
+import {
+  applyReliabilityShrinkage,
+  computeSeasonReliability,
+} from "./reliability";
 import type { DataConfidence, MetricEvaluation, MetricKey } from "./types";
 import type { NormalizedPosition } from "@/lib/football/positions";
 import type { SeasonStatRecord } from "./types";
 
 export interface PlayerSeasonScoreResult {
+  rawProductionScore: number;
+  adjustedProductionScore: number;
   productionScore: number;
   percentileRank: number;
+  reliability: number;
+  volumePercentile: number | null;
+  gamesFactor: number;
   dataConfidence: DataConfidence;
   metrics: MetricEvaluation[];
   usedNeutralFallback: boolean;
@@ -33,9 +42,21 @@ function neutralFallback(position: NormalizedPosition): PlayerSeasonScoreResult 
     weight,
   }));
 
+  const reliability = 0.15;
+  const adjusted = applyReliabilityShrinkage(
+    SCORE_CALIBRATION.neutralScore,
+    reliability,
+    true,
+  );
+
   return {
-    productionScore: SCORE_CALIBRATION.neutralScore,
+    rawProductionScore: SCORE_CALIBRATION.neutralScore,
+    adjustedProductionScore: adjusted,
+    productionScore: adjusted,
     percentileRank: SCORE_CALIBRATION.neutralPercentile,
+    reliability,
+    volumePercentile: null,
+    gamesFactor: 0.45,
     dataConfidence: "LOW",
     metrics,
     usedNeutralFallback: true,
@@ -75,7 +96,7 @@ export function scorePlayerSeason(
   }
 
   const compositePercentile = weightedPercentileSum / availableWeight;
-  const productionScore = calibratePercentileToScore(compositePercentile);
+  const rawProductionScore = calibratePercentileToScore(compositePercentile);
   const coverageRatio = availableWeight / metricEntries.reduce((sum, [, w]) => sum + w, 0);
 
   for (const metric of metrics) {
@@ -85,9 +106,22 @@ export function scorePlayerSeason(
     }
   }
 
+  const reliabilityResult = computeSeasonReliability(stat, scoringPosition, baselines);
+  const adjustedProductionScore = applyReliabilityShrinkage(
+    rawProductionScore,
+    reliabilityResult.reliability,
+    false,
+    stat,
+  );
+
   return {
-    productionScore,
+    rawProductionScore,
+    adjustedProductionScore,
+    productionScore: adjustedProductionScore,
     percentileRank: compositePercentile,
+    reliability: reliabilityResult.reliability,
+    volumePercentile: reliabilityResult.volumePercentile,
+    gamesFactor: reliabilityResult.gamesFactor,
     dataConfidence: confidenceFromCoverage(coverageRatio),
     metrics,
     usedNeutralFallback: false,

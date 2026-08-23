@@ -23,6 +23,7 @@ export interface SeasonStatRecord {
   passingTouchdowns: number | null;
   interceptions: number | null;
   rushingYards: number | null;
+  rushingAttempts: number | null;
   rushingTouchdowns: number | null;
   receptions: number | null;
   receivingYards: number | null;
@@ -44,11 +45,17 @@ export interface PlayerEvaluation {
   franchiseId: number;
   eraId: number;
   scoringSeason: number | null;
+  /** Calibrated score before reliability shrinkage. */
+  rawProductionScore: number;
+  /** 0–1 sample reliability applied after scoring. */
+  reliability: number;
+  /** Score after shrinkage toward neutral; drives overall rating. */
   overall: number;
   productionScore: number;
   percentileRank: number;
   dataConfidence: DataConfidence;
   metrics: MetricEvaluation[];
+  selectedScoringSeason: boolean;
 }
 
 export interface OffenseEvaluation {

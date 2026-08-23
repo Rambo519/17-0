@@ -4,6 +4,7 @@ import {
   calibratePercentileToScore,
   LINEUP_SLOT_WEIGHTS,
   POSITION_METRIC_WEIGHTS,
+  SCORE_CALIBRATION,
   WIN_PROJECTION_MODEL,
 } from "@/lib/scoring/config";
 import { evaluateLineup } from "@/lib/scoring/evaluateLineup";
@@ -31,6 +32,7 @@ function season(
     passingTouchdowns: overrides.passingTouchdowns ?? null,
     interceptions: overrides.interceptions ?? null,
     rushingYards: overrides.rushingYards ?? null,
+    rushingAttempts: overrides.rushingAttempts ?? null,
     rushingTouchdowns: overrides.rushingTouchdowns ?? null,
     receptions: overrides.receptions ?? null,
     receivingYards: overrides.receivingYards ?? null,
@@ -228,7 +230,7 @@ describe("scoring engine", () => {
       receivingTouchdowns: null,
     });
     const scored = scorePlayerSeason(empty, "WR", baselines);
-    expect(scored.productionScore).toBe(50);
+    expect(scored.productionScore).toBeLessThanOrEqual(SCORE_CALIBRATION.neutralScore + 2);
     expect(scored.dataConfidence).toBe("LOW");
   });
 
@@ -273,11 +275,14 @@ describe("scoring engine", () => {
         franchiseId: 1,
         eraId: 1,
         scoringSeason: 1990,
+        rawProductionScore: 80,
+        reliability: 1,
         overall: 80,
         productionScore: 80,
         percentileRank: 85,
         dataConfidence: "HIGH",
         metrics: [],
+        selectedScoringSeason: true,
       },
       {
         playerId: 2,
@@ -287,11 +292,14 @@ describe("scoring engine", () => {
         franchiseId: 1,
         eraId: 1,
         scoringSeason: 1990,
+        rawProductionScore: 30,
+        reliability: 1,
         overall: 30,
         productionScore: 30,
         percentileRank: 25,
         dataConfidence: "LOW",
         metrics: [],
+        selectedScoringSeason: true,
       },
       {
         playerId: 3,
@@ -301,11 +309,14 @@ describe("scoring engine", () => {
         franchiseId: 1,
         eraId: 1,
         scoringSeason: 1990,
+        rawProductionScore: 75,
+        reliability: 1,
         overall: 75,
         productionScore: 75,
         percentileRank: 78,
         dataConfidence: "HIGH",
         metrics: [],
+        selectedScoringSeason: true,
       },
       {
         playerId: 4,
@@ -315,11 +326,14 @@ describe("scoring engine", () => {
         franchiseId: 1,
         eraId: 1,
         scoringSeason: 1990,
+        rawProductionScore: 78,
+        reliability: 1,
         overall: 78,
         productionScore: 78,
         percentileRank: 80,
         dataConfidence: "HIGH",
         metrics: [],
+        selectedScoringSeason: true,
       },
       {
         playerId: 5,
@@ -329,11 +343,14 @@ describe("scoring engine", () => {
         franchiseId: 1,
         eraId: 1,
         scoringSeason: 1990,
+        rawProductionScore: 76,
+        reliability: 1,
         overall: 76,
         productionScore: 76,
         percentileRank: 77,
         dataConfidence: "HIGH",
         metrics: [],
+        selectedScoringSeason: true,
       },
       {
         playerId: 6,
@@ -343,11 +360,14 @@ describe("scoring engine", () => {
         franchiseId: 1,
         eraId: 1,
         scoringSeason: 1990,
+        rawProductionScore: 74,
+        reliability: 1,
         overall: 74,
         productionScore: 74,
         percentileRank: 75,
         dataConfidence: "HIGH",
         metrics: [],
+        selectedScoringSeason: true,
       },
     ]);
 
@@ -499,7 +519,7 @@ describe("scoring engine", () => {
   });
 
   it("calibrates percentiles without forcing 100 ratings", () => {
-    expect(calibratePercentileToScore(100)).toBeLessThanOrEqual(88);
+    expect(calibratePercentileToScore(100)).toBeLessThanOrEqual(94);
     expect(calibratePercentileToScore(50)).toBeGreaterThan(38);
     expect(calibratePercentileToScore(50)).toBeLessThan(55);
   });

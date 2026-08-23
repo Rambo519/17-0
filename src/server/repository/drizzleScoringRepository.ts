@@ -24,6 +24,7 @@ function toSeasonStatRecord(
     passingTouchdowns: number | null;
     interceptions: number | null;
     rushingYards: number | null;
+    rushingAttempts: number | null;
     rushingTouchdowns: number | null;
     receptions: number | null;
     receivingYards: number | null;
@@ -46,6 +47,7 @@ function toSeasonStatRecord(
     passingTouchdowns: row.passingTouchdowns,
     interceptions: row.interceptions,
     rushingYards: row.rushingYards,
+    rushingAttempts: row.rushingAttempts,
     rushingTouchdowns: row.rushingTouchdowns,
     receptions: row.receptions,
     receivingYards: row.receivingYards,
@@ -93,6 +95,7 @@ export function createDrizzleScoringRepository(db: Database): ScoringRepository 
             passingTouchdowns: playerSeasons.passingTouchdowns,
             interceptions: playerSeasons.interceptions,
             rushingYards: playerSeasons.rushingYards,
+            rushingAttempts: playerSeasons.rushingAttempts,
             rushingTouchdowns: playerSeasons.rushingTouchdowns,
             receptions: playerSeasons.receptions,
             receivingYards: playerSeasons.receivingYards,
@@ -122,6 +125,7 @@ export function createDrizzleScoringRepository(db: Database): ScoringRepository 
             playerSeasons.passingTouchdowns,
             playerSeasons.interceptions,
             playerSeasons.rushingYards,
+            playerSeasons.rushingAttempts,
             playerSeasons.rushingTouchdowns,
             playerSeasons.receptions,
             playerSeasons.receivingYards,
@@ -146,6 +150,7 @@ export function createDrizzleScoringRepository(db: Database): ScoringRepository 
           passingTouchdowns: playerSeasons.passingTouchdowns,
           interceptions: playerSeasons.interceptions,
           rushingYards: playerSeasons.rushingYards,
+          rushingAttempts: playerSeasons.rushingAttempts,
           rushingTouchdowns: playerSeasons.rushingTouchdowns,
           receptions: playerSeasons.receptions,
           receivingYards: playerSeasons.receivingYards,
@@ -168,6 +173,7 @@ export function createDrizzleScoringRepository(db: Database): ScoringRepository 
           playerSeasons.passingTouchdowns,
           playerSeasons.interceptions,
           playerSeasons.rushingYards,
+          playerSeasons.rushingAttempts,
           playerSeasons.rushingTouchdowns,
           playerSeasons.receptions,
           playerSeasons.receivingYards,
