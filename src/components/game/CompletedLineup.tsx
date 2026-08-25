@@ -8,14 +8,14 @@ interface CompletedLineupProps {
   lineup: LineupSlotView[];
   onNewGame: () => void;
   onViewResults: () => void;
-  showResultsTeaser: boolean;
+  viewResultsDisabled?: boolean;
 }
 
 export function CompletedLineup({
   lineup,
   onNewGame,
   onViewResults,
-  showResultsTeaser,
+  viewResultsDisabled = false,
 }: CompletedLineupProps) {
   return (
     <section className={styles.root} aria-labelledby="complete-heading">
@@ -24,20 +24,20 @@ export function CompletedLineup({
         <h2 id="complete-heading" className={styles.title}>
           Offense Complete
         </h2>
-        <p className={styles.copy}>Six historical pieces. Results scoring arrives in Phase 5.</p>
+        <p className={styles.copy}>Six historical pieces. See how the season projects.</p>
         <div className={styles.actions}>
-          <button type="button" className={shell.btnPrimary} onClick={onViewResults}>
+          <button
+            type="button"
+            className={shell.btnPrimary}
+            onClick={onViewResults}
+            disabled={viewResultsDisabled}
+          >
             View Results
           </button>
           <button type="button" className={shell.btnGhost} onClick={onNewGame}>
-            New Game
+            Play Again
           </button>
         </div>
-        {showResultsTeaser ? (
-          <p className={styles.teaser} role="status">
-            Results coming in Phase 5.
-          </p>
-        ) : null}
       </div>
       <FormationField lineup={lineup} highlightedSlots={[]} onSelectSlot={() => undefined} />
     </section>

@@ -43,9 +43,3 @@
   gap: 10px;
   justify-content: center;
 }
-
-.teaser {
-  margin: 14px 0 0;
-  color: var(--accent);
-  font-weight: 600;
-}

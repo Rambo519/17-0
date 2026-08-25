@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import shell from "./game.module.css";
 
@@ -32,6 +33,7 @@ function sleep(ms: number) {
 }
 
 export function GameApp() {
+  const router = useRouter();
   const [screen, setScreen] = useState<Screen>("mode");
   const [modeChoice, setModeChoice] = useState<GameMode>("CLASSIC");
   const [game, setGame] = useState<GameStateView | null>(null);
@@ -41,7 +43,6 @@ export function GameApp() {
   const [busy, setBusy] = useState<BusyAction>(null);
   const [revealing, setRevealing] = useState(false);
   const [mobileTab, setMobileTab] = useState<MobileTab>("players");
-  const [showResultsTeaser, setShowResultsTeaser] = useState(false);
 
   const selected = useMemo(
     () => spin?.candidates.find((candidate) => candidate.card.cardId === selectedCardId) ?? null,
@@ -62,7 +63,6 @@ export function GameApp() {
     setBusy(null);
     setRevealing(false);
     setMobileTab("players");
-    setShowResultsTeaser(false);
   }
 
   async function handleStart() {
@@ -74,7 +74,6 @@ export function GameApp() {
       setGame(payload.game);
       setSpin(null);
       setSelectedCardId(null);
-      setShowResultsTeaser(false);
       setScreen(payload.game.isComplete ? "complete" : "playing");
       setMobileTab("players");
     } catch (err) {
@@ -205,8 +204,7 @@ export function GameApp() {
         <CompletedLineup
           lineup={game.lineup}
           onNewGame={resetToMode}
-          onViewResults={() => setShowResultsTeaser(true)}
-          showResultsTeaser={showResultsTeaser}
+          onViewResults={() => router.push(`/game/${game.sessionId}/results`)}
         />
       </main>
     );

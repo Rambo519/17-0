@@ -170,7 +170,7 @@ describe("SkipControls", () => {
 });
 
 describe("CompletedLineup", () => {
-  it("shows the completion state and results teaser", () => {
+  it("shows the completion state and View Results action", () => {
     const onNewGame = vi.fn();
     const onViewResults = vi.fn();
     render(
@@ -178,13 +178,13 @@ describe("CompletedLineup", () => {
         lineup={lineupFixture({ QB: true, RB: true, FB: true, WR1: true, WR2: true, TE: true })}
         onNewGame={onNewGame}
         onViewResults={onViewResults}
-        showResultsTeaser
       />,
     );
 
     expect(screen.getByRole("heading", { name: /offense complete/i })).toBeInTheDocument();
-    expect(screen.getByText(/results coming in phase 5/i)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: /new game/i }));
+    fireEvent.click(screen.getByRole("button", { name: /view results/i }));
+    expect(onViewResults).toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: /play again/i }));
     expect(onNewGame).toHaveBeenCalled();
   });
 });

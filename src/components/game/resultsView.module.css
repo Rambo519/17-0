@@ -1,0 +1,256 @@
+.root {
+  display: grid;
+  gap: 18px;
+  animation: game-fade-up 420ms ease;
+}
+
+.hero,
+.metrics,
+.breakdown,
+.statusCard,
+.actions {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 40%), var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.hero {
+  text-align: center;
+  padding: clamp(20px, 4vw, 32px) 20px 24px;
+}
+
+.heroJackpot {
+  text-align: center;
+  padding: clamp(20px, 4vw, 32px) 20px 24px;
+  border: 1px solid rgba(232, 184, 74, 0.55);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(232, 184, 74, 0.22), transparent 58%),
+    linear-gradient(180deg, rgba(232, 184, 74, 0.12), var(--panel));
+  box-shadow:
+    0 0 0 1px rgba(232, 184, 74, 0.28),
+    0 18px 50px rgba(0, 0, 0, 0.45),
+    0 0 48px rgba(232, 184, 74, 0.18);
+  animation: results-glow 2.8s ease-in-out infinite;
+}
+
+.kicker {
+  margin: 0;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+.tier {
+  margin: 10px 0 0;
+  font-family: var(--font-display);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--highlight);
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+}
+
+.recordLabel {
+  margin: 14px 0 0;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.record {
+  margin: 4px 0 0;
+  font-family: var(--font-display);
+  letter-spacing: 0.08em;
+  font-size: clamp(3.4rem, 12vw, 6.2rem);
+  line-height: 0.9;
+  color: var(--text);
+}
+
+.recordJackpot {
+  color: var(--highlight);
+  text-shadow: 0 0 28px rgba(232, 184, 74, 0.45);
+}
+
+.jackpotMark {
+  margin: 12px 0 0;
+  font-family: var(--font-display);
+  letter-spacing: 0.18em;
+  font-size: clamp(1.8rem, 6vw, 2.8rem);
+  color: var(--highlight);
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  background: var(--panel-border);
+}
+
+.metric {
+  margin: 0;
+  padding: 14px 16px;
+  background: var(--panel);
+  display: grid;
+  gap: 4px;
+}
+
+.metric dt {
+  margin: 0;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-size: 0.68rem;
+}
+
+.metric dd {
+  margin: 0;
+  font-family: var(--font-display);
+  letter-spacing: 0.06em;
+  font-size: clamp(1.4rem, 4vw, 1.9rem);
+}
+
+.statusCard {
+  padding: 16px 18px;
+  text-align: center;
+}
+
+.statusCopy {
+  margin: 0;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--highlight);
+  font-weight: 700;
+}
+
+.errorCopy {
+  margin: 0;
+  color: #ffd5d5;
+}
+
+.retry {
+  margin-top: 14px;
+}
+
+.breakdown {
+  padding: 16px 16px 8px;
+}
+
+.breakdownTitle {
+  margin: 0 0 12px;
+  font-family: var(--font-display);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 1.1rem;
+}
+
+.playerList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.player {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  display: grid;
+  gap: 6px;
+}
+
+.playerTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.playerName {
+  font-weight: 700;
+}
+
+.playerRating {
+  font-family: var(--font-display);
+  letter-spacing: 0.06em;
+  font-size: 1.35rem;
+  color: var(--highlight);
+}
+
+.playerMeta {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.details {
+  margin-top: 4px;
+}
+
+.details summary {
+  cursor: pointer;
+  color: var(--highlight);
+  font-size: 0.88rem;
+}
+
+.metricRows {
+  margin: 8px 0 0;
+  display: grid;
+  gap: 4px;
+}
+
+.metricRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  padding: 16px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+@media (max-width: 700px) {
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .playerTop {
+    flex-direction: column;
+    gap: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroJackpot {
+    animation: none;
+  }
+}
+
+@keyframes results-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(232, 184, 74, 0.28),
+      0 18px 50px rgba(0, 0, 0, 0.45),
+      0 0 36px rgba(232, 184, 74, 0.14);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(232, 184, 74, 0.5),
+      0 18px 50px rgba(0, 0, 0, 0.45),
+      0 0 64px rgba(232, 184, 74, 0.28);
+  }
+}

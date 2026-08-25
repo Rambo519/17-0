@@ -97,6 +97,8 @@ export function userFacingError(code: string | undefined, message: string | unde
       return "This game is already complete.";
     case "NO_VALID_SPIN":
       return "No legal franchise and era combination remains.";
+    case "SCORING_ERROR":
+      return "Could not calculate this season. Try again.";
     default:
       return message?.trim() || "Something went wrong. Try again.";
   }
