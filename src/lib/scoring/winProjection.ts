@@ -6,19 +6,37 @@ function logistic(x: number): number {
   return 1 / (1 + Math.exp(-x));
 }
 
-/**
- * Maps offense rating to per-game win probability via a tunable logistic curve.
- * Probability is a game-model estimate, not real-world certainty.
- */
-export function perGameWinProbabilityFromRating(rating: number): number {
+function baseLogisticWinProbability(rating: number): number {
   const x =
     WIN_PROJECTION_MODEL.steepness *
     (rating - WIN_PROJECTION_MODEL.midpointRating);
-  return clamp(
-    logistic(x),
-    WIN_PROJECTION_MODEL.minWinProbability,
-    WIN_PROJECTION_MODEL.maxWinProbability,
-  );
+  return logistic(x);
+}
+
+/**
+ * Maps offense rating to per-game win probability via a tunable logistic curve
+ * with an elite-only tail extension above `tailExtension.startRating`.
+ */
+export function perGameWinProbabilityFromRating(rating: number): number {
+  const model = WIN_PROJECTION_MODEL;
+  const tail = model.tailExtension;
+
+  if (rating <= tail.startRating) {
+    return clamp(
+      baseLogisticWinProbability(rating),
+      model.minWinProbability,
+      model.maxWinProbability,
+    );
+  }
+
+  const baseAtTailStart = baseLogisticWinProbability(tail.startRating);
+  const span = tail.endRating - tail.startRating;
+  const progress = clamp((rating - tail.startRating) / span, 0, 1);
+  const tailProgress = progress ** tail.exponent;
+  const probability =
+    baseAtTailStart + tailProgress * (model.maxWinProbability - baseAtTailStart);
+
+  return clamp(probability, model.minWinProbability, model.maxWinProbability);
 }
 
 export function projectWinsFromRating(rating: number): WinProjection {
@@ -38,4 +56,32 @@ export function projectWinsFromRating(rating: number): WinProjection {
     perGameWinProbability,
     perfectSeasonProbability: perGameWinProbability ** WIN_PROJECTION_MODEL.seasonLength,
   };
+}
+
+/** Minimum per-game probability that rounds to `targetWins` expected wins (16-game season). */
+export function minimumPerGameProbabilityForProjectedWins(targetWins: number): number {
+  const wins = clamp(Math.round(targetWins), 0, WIN_PROJECTION_MODEL.seasonLength);
+  if (wins === 0) return 0;
+  return (wins - 0.5) / WIN_PROJECTION_MODEL.seasonLength;
+}
+
+/**
+ * Smallest offense rating whose rounded projected wins reach `targetWins`.
+ * Uses binary search over the monotonic win curve.
+ */
+export function ratingThresholdForProjectedWins(targetWins: number): number {
+  const wins = clamp(Math.round(targetWins), 0, WIN_PROJECTION_MODEL.seasonLength);
+  if (wins === 0) return 0;
+
+  let low = 0;
+  let high = 100;
+  while (high - low > 0.01) {
+    const mid = (low + high) / 2;
+    if (projectWinsFromRating(mid).projectedWins >= wins) {
+      high = mid;
+    } else {
+      low = mid;
+    }
+  }
+  return high;
 }

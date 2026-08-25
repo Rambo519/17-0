@@ -100,14 +100,21 @@ export const BALANCE_ADJUSTMENT = {
 
 /**
  * Logistic win model: per-game win probability from offense rating.
- * Tunable constants — not sacred.
+ * Below `tailExtension.startRating`, uses standard logistic curve.
+ * Above that, a power-curve tail extends toward `maxWinProbability` so only
+ * extraordinary offenses can project 16-0 (requires p >= 15.5/16 ≈ 0.96875).
  */
 export const WIN_PROJECTION_MODEL = {
   midpointRating: 62,
   steepness: 0.081,
   minWinProbability: 0.05,
-  maxWinProbability: 0.95,
+  maxWinProbability: 0.99,
   seasonLength: 16,
+  tailExtension: {
+    startRating: 88,
+    endRating: 95,
+    exponent: 0.6,
+  },
 } as const;
 
 export const DATA_CONFIDENCE_THRESHOLDS = {

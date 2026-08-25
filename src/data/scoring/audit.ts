@@ -20,12 +20,16 @@ import {
 import { evaluateLineup } from "@/lib/scoring/evaluateLineup";
 import { buildPeerBaselineIndex } from "@/lib/scoring/peerBaselines";
 import type { GameScoringResult, LineupPickInput } from "@/lib/scoring/types";
+import {
+  ratingThresholdForProjectedWins,
+} from "@/lib/scoring/winProjection";
 import { toScoringResultView } from "@/lib/scoring/view";
 import { createDrizzleScoringRepository } from "@/server/repository/drizzleScoringRepository";
 
 const REPORTS_DIR = path.join(process.cwd(), "data", "reports");
 const DISTRIBUTION_SAMPLE_SIZE = 800;
 const DISTRIBUTION_SEED = 20260823;
+const BEST_LINEUP_CANDIDATES_PER_SLOT = 12;
 
 export interface DiagnosticLineupSpec {
   name: string;
@@ -151,6 +155,22 @@ export interface DistributionAudit {
   };
 }
 
+export interface WinProjectionThresholds {
+  projectedWins15ThresholdRating: number;
+  projectedWins16ThresholdRating: number;
+}
+
+export interface BestLineupAudit {
+  result: ReturnType<typeof toScoringResultView>;
+  players: Array<{
+    lineupSlot: LineupSlot;
+    playerName: string;
+    position: NormalizedPosition;
+    scoringSeason: number | null;
+    overall: number;
+  }>;
+}
+
 export interface ScoringAuditReport {
   generatedAt: string;
   diagnosticLineups: Array<{
@@ -172,6 +192,8 @@ export interface ScoringAuditReport {
     dataConfidence: string | null;
   }>;
   distribution: DistributionAudit;
+  winProjectionThresholds: WinProjectionThresholds;
+  bestLineup: BestLineupAudit | null;
 }
 
 function mulberry32(seed: number): () => number {
@@ -328,6 +350,92 @@ async function loadCardPoolBySlot(db: Database): Promise<Map<LineupSlot, LineupP
   }
 
   return pool;
+}
+
+interface RankedSlotCandidate {
+  pick: LineupPickInput;
+  soloOverall: number;
+}
+
+async function rankCandidatesBySlot(
+  pool: Map<LineupSlot, LineupPickInput[]>,
+  baselines: ReturnType<typeof buildPeerBaselineIndex>,
+): Promise<Map<LineupSlot, RankedSlotCandidate[]>> {
+  const ranked = new Map<LineupSlot, RankedSlotCandidate[]>();
+
+  for (const slot of LINEUP_SLOTS) {
+    const candidates = pool.get(slot) ?? [];
+    const scored: RankedSlotCandidate[] = [];
+
+    for (const pick of candidates) {
+      const evaluation = evaluateLineup([{ ...pick, lineupSlot: slot }], baselines);
+      const player = evaluation.offense.players[0];
+      if (!player) continue;
+      scored.push({ pick: { ...pick, lineupSlot: slot }, soloOverall: player.overall });
+    }
+
+    scored.sort((a, b) => b.soloOverall - a.soloOverall);
+    ranked.set(slot, scored.slice(0, BEST_LINEUP_CANDIDATES_PER_SLOT));
+  }
+
+  return ranked;
+}
+
+export async function findBestLineup(
+  db: Database,
+  baselines: ReturnType<typeof buildPeerBaselineIndex>,
+): Promise<BestLineupAudit | null> {
+  const pool = await loadCardPoolBySlot(db);
+  const rankedBySlot = await rankCandidatesBySlot(pool, baselines);
+
+  let bestResult: GameScoringResult | null = null;
+  let bestPicks: LineupPickInput[] | null = null;
+
+  function search(slotIndex: number, picks: LineupPickInput[], usedPlayerIds: Set<number>): void {
+    if (slotIndex >= LINEUP_SLOTS.length) {
+      const result = evaluateLineup(picks, baselines);
+      if (!bestResult || result.offense.overallRating > bestResult.offense.overallRating) {
+        bestResult = result;
+        bestPicks = [...picks];
+      }
+      return;
+    }
+
+    const slot = LINEUP_SLOTS[slotIndex]!;
+    const candidates = rankedBySlot.get(slot) ?? [];
+
+    for (const candidate of candidates) {
+      if (usedPlayerIds.has(candidate.pick.playerId)) continue;
+      usedPlayerIds.add(candidate.pick.playerId);
+      picks.push(candidate.pick);
+      search(slotIndex + 1, picks, usedPlayerIds);
+      picks.pop();
+      usedPlayerIds.delete(candidate.pick.playerId);
+    }
+  }
+
+  search(0, [], new Set<number>());
+
+  if (!bestResult || !bestPicks) return null;
+
+  const view = toScoringResultView(bestResult);
+  return {
+    result: view,
+    players: view.players.map((player) => ({
+      lineupSlot: player.lineupSlot as LineupSlot,
+      playerName: player.playerName,
+      position: player.position as NormalizedPosition,
+      scoringSeason: player.scoringSeason,
+      overall: player.overall,
+    })),
+  };
+}
+
+export function computeWinProjectionThresholds(): WinProjectionThresholds {
+  return {
+    projectedWins15ThresholdRating: ratingThresholdForProjectedWins(15),
+    projectedWins16ThresholdRating: ratingThresholdForProjectedWins(16),
+  };
 }
 
 export async function runDistributionAudit(
@@ -514,12 +622,16 @@ export async function runScoringAudit(db: Database): Promise<ScoringAuditReport>
   }
 
   const distribution = await runDistributionAudit(db, baselines);
+  const winProjectionThresholds = computeWinProjectionThresholds();
+  const bestLineup = await findBestLineup(db, baselines);
 
   return {
     generatedAt: new Date().toISOString(),
     diagnosticLineups,
     fairnessProbes,
     distribution,
+    winProjectionThresholds,
+    bestLineup,
   };
 }
 
@@ -570,6 +682,27 @@ export async function writeScoringAuditReports(report: ScoringAuditReport): Prom
           ? `${probe.playerName} ${probe.eraLabel} ${probe.position}: raw=${probe.rawProductionScore?.toFixed(1)} rel=${probe.reliability?.toFixed(2)} overall=${probe.overall?.toFixed(1)} pct=${probe.percentileRank?.toFixed(1)} season=${probe.scoringSeason}`
           : `${probe.playerName} ${probe.eraLabel}: NOT FOUND`,
     ),
+    "",
+    "WIN PROJECTION THRESHOLDS",
+    `  offense rating for 15-1 projection: ${report.winProjectionThresholds.projectedWins15ThresholdRating.toFixed(2)}`,
+    `  offense rating for 16-0 projection: ${report.winProjectionThresholds.projectedWins16ThresholdRating.toFixed(2)}`,
+    "",
+    "BEST LEGITIMATE LINEUP",
+    ...(report.bestLineup
+      ? [
+          `  offense rating: ${report.bestLineup.result.offenseRating.toFixed(1)}`,
+          `  expected wins: ${report.bestLineup.result.expectedWins.toFixed(2)}`,
+          `  projected: ${report.bestLineup.result.projectedWins}-${report.bestLineup.result.projectedLosses}`,
+          `  per-game win prob: ${report.bestLineup.result.perGameWinProbability.toFixed(3)}`,
+          `  16-0 prob: ${(report.bestLineup.result.perfectSeasonProbability * 100).toFixed(2)}%`,
+          ...report.bestLineup.players.map(
+            (player) =>
+              `  ${player.lineupSlot} ${player.playerName} (${player.position}):` +
+              ` season=${player.scoringSeason ?? "?"}` +
+              ` rating=${player.overall.toFixed(1)}`,
+          ),
+        ]
+      : ["  NOT FOUND"]),
     "",
     "DISTRIBUTION AUDIT",
     `  sample size: ${report.distribution.sampleSize} (seed ${report.distribution.seed})`,
