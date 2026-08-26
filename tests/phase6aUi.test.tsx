@@ -124,8 +124,8 @@ function scoreFixture(overrides: Partial<ScoringResultView> = {}): ScoringResult
     offenseRating: 99,
     weightedTalentRating: 99,
     balanceAdjustment: 0,
-    expectedWins: 16,
-    projectedWins: 16,
+    expectedWins: 17,
+    projectedWins: 17,
     projectedLosses: 0,
     perGameWinProbability: 0.99,
     perfectSeasonProbability: 0.9,
@@ -351,7 +351,7 @@ describe("ResultsPageClient jackpot cue", () => {
     vi.unstubAllGlobals();
   });
 
-  it("fires jackpot only for a server-projected 16-0 season", async () => {
+  it("fires jackpot only for a server-projected 17-0 season", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(async (input: RequestInfo | URL) => {
@@ -367,11 +367,11 @@ describe("ResultsPageClient jackpot cue", () => {
     );
 
     render(<ResultsPageClient sessionId="session-1" />);
-    expect(await screen.findByText("16–0", {}, { timeout: 4000 })).toBeInTheDocument();
-    await waitFor(() => expect(playFinalRecordSound).toHaveBeenCalledWith(16), { timeout: 4000 });
+    expect(await screen.findByText("17–0", {}, { timeout: 4000 })).toBeInTheDocument();
+    await waitFor(() => expect(playFinalRecordSound).toHaveBeenCalledWith(17), { timeout: 4000 });
   });
 
-  it("does not fire jackpot for a 15-1 projection", async () => {
+  it("does not fire jackpot for a 16-1 projection", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(async (input: RequestInfo | URL) => {
@@ -382,7 +382,7 @@ describe("ResultsPageClient jackpot cue", () => {
         if (url.endsWith("/api/game/session-1/score")) {
           return {
             ok: true,
-            json: async () => scoreFixture({ projectedWins: 15, projectedLosses: 1, expectedWins: 14.8 }),
+            json: async () => scoreFixture({ projectedWins: 16, projectedLosses: 1, expectedWins: 15.8 }),
           };
         }
         return { ok: false, json: async () => ({ error: { code: "INTERNAL_ERROR", message: "no" } }) };
@@ -390,8 +390,8 @@ describe("ResultsPageClient jackpot cue", () => {
     );
 
     render(<ResultsPageClient sessionId="session-1" />);
-    expect(await screen.findByText("15–1", {}, { timeout: 4000 })).toBeInTheDocument();
-    await waitFor(() => expect(playFinalRecordSound).toHaveBeenCalledWith(15), { timeout: 4000 });
-    expect(vi.mocked(playFinalRecordSound).mock.calls.every((call) => call[0] === 15)).toBe(true);
+    expect(await screen.findByText("16–1", {}, { timeout: 4000 })).toBeInTheDocument();
+    await waitFor(() => expect(playFinalRecordSound).toHaveBeenCalledWith(16), { timeout: 4000 });
+    expect(vi.mocked(playFinalRecordSound).mock.calls.every((call) => call[0] === 16)).toBe(true);
   });
 });

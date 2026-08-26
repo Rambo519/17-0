@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { REGULAR_SEASON_GAMES } from "@/lib/football/season";
 import { WIN_PROJECTION_MODEL } from "@/lib/scoring/config";
 import {
   minimumPerGameProbabilityForProjectedWins,
@@ -8,26 +9,26 @@ import {
   ratingThresholdForProjectedWins,
 } from "@/lib/scoring/winProjection";
 
-describe("scoring top-end win projection (Phase 5C)", () => {
-  it("allows 16-0 projection at an extreme offense rating", () => {
+describe("scoring top-end win projection", () => {
+  it("allows 17-0 projection at an extreme offense rating", () => {
     const projection = projectWinsFromRating(93);
     expect(projection.perGameWinProbability).toBeGreaterThanOrEqual(
-      minimumPerGameProbabilityForProjectedWins(16),
+      minimumPerGameProbabilityForProjectedWins(REGULAR_SEASON_GAMES),
     );
-    expect(projection.projectedWins).toBe(16);
+    expect(projection.projectedWins).toBe(17);
     expect(projection.projectedLosses).toBe(0);
   });
 
-  it("requires an extreme rating for 16-0 projection", () => {
-    const threshold = ratingThresholdForProjectedWins(16);
+  it("requires an extreme rating for 17-0 projection", () => {
+    const threshold = ratingThresholdForProjectedWins(REGULAR_SEASON_GAMES);
     expect(threshold).toBeGreaterThan(90);
-    expect(projectWinsFromRating(threshold - 1).projectedWins).toBeLessThan(16);
-    expect(projectWinsFromRating(threshold).projectedWins).toBe(16);
+    expect(projectWinsFromRating(threshold - 1).projectedWins).toBeLessThan(17);
+    expect(projectWinsFromRating(threshold).projectedWins).toBe(17);
   });
 
-  it("keeps elite but non-extreme teams below 16 projected wins", () => {
+  it("keeps elite but non-extreme teams below 17 projected wins", () => {
     for (const rating of [82, 85, 88, 90]) {
-      expect(projectWinsFromRating(rating).projectedWins).toBeLessThan(16);
+      expect(projectWinsFromRating(rating).projectedWins).toBeLessThan(17);
     }
   });
 
@@ -47,7 +48,7 @@ describe("scoring top-end win projection (Phase 5C)", () => {
     }
   });
 
-  it("maintains perfect-season probability as p^16", () => {
+  it("maintains perfect-season probability as p^seasonLength", () => {
     for (const rating of [62, 82, 90, 93, 96]) {
       const projection = projectWinsFromRating(rating);
       const expected =

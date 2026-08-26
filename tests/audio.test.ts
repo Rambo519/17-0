@@ -50,6 +50,7 @@ describe("audio event mapping", () => {
     expect(soundFileForEvent("SHOW_RESULTS")).toBe("/sounds/show-results.mp3");
     expect(soundFileForEvent("JACKPOT")).toBe("/sounds/jackpot.mp3");
     expect(SOUND_FILES.TEAM_REVEAL).toBe(SOUND_FILES.ERA_REVEAL);
+    expect(SOUND_STORAGE_KEY).toBe("seventeen-and-oh.soundEnabled");
   });
 });
 
@@ -143,23 +144,48 @@ describe("sound engine", () => {
     expect(play).toHaveBeenCalledTimes(1);
   });
 
-  it("plays jackpot only for a projected 16-0 season", () => {
+  it("plays jackpot only for a projected 17-0 season", () => {
     unlockGameAudio();
     play.mockClear();
-    playJackpotIfPerfect(15);
-    playJackpotIfPerfect(14);
-    expect(play).not.toHaveBeenCalled();
     playJackpotIfPerfect(16);
+    playJackpotIfPerfect(15);
+    expect(play).not.toHaveBeenCalled();
+    playJackpotIfPerfect(17);
     expect(play).toHaveBeenCalledTimes(1);
   });
 
-  it("plays exactly one landing cue and never both jackpot and show-results", () => {
+  it("plays show-results once for a non-perfect result and jackpot once for 17-0", () => {
+    const played: string[] = [];
+    class TrackingAudio extends FakeAudio {
+      play = () => {
+        played.push(this.src);
+        this.paused = false;
+        return play();
+      };
+    }
+    vi.stubGlobal("Audio", TrackingAudio);
     unlockGameAudio();
+    played.length = 0;
+    play.mockClear();
+
+    playFinalRecordSound(16);
+    expect(play).toHaveBeenCalledTimes(1);
+    expect(played).toEqual(["/sounds/show-results.mp3"]);
+
+    resetSoundEngineForTests();
+    unlockGameAudio();
+    played.length = 0;
     play.mockClear();
     playFinalRecordSound(12);
     expect(play).toHaveBeenCalledTimes(1);
+    expect(played).toEqual(["/sounds/show-results.mp3"]);
+
+    resetSoundEngineForTests();
+    unlockGameAudio();
+    played.length = 0;
     play.mockClear();
-    playFinalRecordSound(16);
+    playFinalRecordSound(17);
     expect(play).toHaveBeenCalledTimes(1);
+    expect(played).toEqual(["/sounds/jackpot.mp3"]);
   });
 });

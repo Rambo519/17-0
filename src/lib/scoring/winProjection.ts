@@ -40,25 +40,22 @@ export function perGameWinProbabilityFromRating(rating: number): number {
 }
 
 export function projectWinsFromRating(rating: number): WinProjection {
+  const seasonLength = WIN_PROJECTION_MODEL.seasonLength;
   const perGameWinProbability = perGameWinProbabilityFromRating(rating);
-  const expectedWins = WIN_PROJECTION_MODEL.seasonLength * perGameWinProbability;
-  const projectedWins = clamp(
-    Math.round(expectedWins),
-    0,
-    WIN_PROJECTION_MODEL.seasonLength,
-  );
-  const projectedLosses = WIN_PROJECTION_MODEL.seasonLength - projectedWins;
+  const expectedWins = seasonLength * perGameWinProbability;
+  const projectedWins = clamp(Math.round(expectedWins), 0, seasonLength);
+  const projectedLosses = seasonLength - projectedWins;
 
   return {
     expectedWins,
     projectedWins,
     projectedLosses,
     perGameWinProbability,
-    perfectSeasonProbability: perGameWinProbability ** WIN_PROJECTION_MODEL.seasonLength,
+    perfectSeasonProbability: perGameWinProbability ** seasonLength,
   };
 }
 
-/** Minimum per-game probability that rounds to `targetWins` expected wins (16-game season). */
+/** Minimum per-game probability that rounds to `targetWins` expected wins. */
 export function minimumPerGameProbabilityForProjectedWins(targetWins: number): number {
   const wins = clamp(Math.round(targetWins), 0, WIN_PROJECTION_MODEL.seasonLength);
   if (wins === 0) return 0;

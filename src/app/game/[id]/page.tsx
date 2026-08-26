@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 
 import { CompletedGamePageClient } from "@/components/game/CompletedGamePageClient";
+import { PRODUCT_NAME } from "@/lib/brand";
 
 export const metadata: Metadata = {
-  title: "Offense Complete · 16&0",
+  title: `Offense Complete · ${PRODUCT_NAME}`,
 };
 
 export default async function CompletedGamePage({

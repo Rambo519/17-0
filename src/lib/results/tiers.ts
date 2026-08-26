@@ -1,5 +1,11 @@
+import { PRODUCT_NAME } from "@/lib/brand";
+import {
+  PERFECT_SEASON_WINS,
+  isPerfectSeasonWins,
+} from "@/lib/football/season";
+
 /**
- * Presentation-only result tiers from the projected 16-game win total.
+ * Presentation-only result tiers from the projected regular-season win total.
  * Does not affect scoring, expected wins, or probability math.
  */
 
@@ -19,8 +25,8 @@ export interface ResultTier {
 export function resultTierFromProjectedWins(projectedWins: number): ResultTier {
   const wins = Math.round(projectedWins);
 
-  if (wins >= 16) {
-    return { id: "perfect", label: "16 & 0" };
+  if (wins >= PERFECT_SEASON_WINS) {
+    return { id: "perfect", label: PRODUCT_NAME };
   }
   if (wins >= 14) {
     return { id: "allTime", label: "ALL-TIME OFFENSE" };
@@ -38,5 +44,5 @@ export function resultTierFromProjectedWins(projectedWins: number): ResultTier {
 }
 
 export function isPerfectProjectedSeason(projectedWins: number): boolean {
-  return Math.round(projectedWins) === 16;
+  return isPerfectSeasonWins(projectedWins);
 }

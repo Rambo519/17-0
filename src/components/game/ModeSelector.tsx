@@ -4,6 +4,7 @@ import type { KeyboardEvent } from "react";
 
 import styles from "./modeSelector.module.css";
 
+import { PRODUCT_NAME } from "@/lib/brand";
 import type { GameMode } from "@/lib/game/types";
 import { SoundToggle } from "./SoundToggle";
 
@@ -32,7 +33,7 @@ export function ModeSelector({ mode, onModeChange, onStart, busy }: ModeSelector
         <div className={styles.glow} />
         <div className={styles.sweep} />
         <div className={styles.grain} />
-        <p className={styles.watermark}>16&amp;0</p>
+        <p className={styles.watermark}>{PRODUCT_NAME}</p>
       </div>
 
       <div className={styles.topBar}>
@@ -40,7 +41,7 @@ export function ModeSelector({ mode, onModeChange, onStart, busy }: ModeSelector
       </div>
 
       <div className={styles.content}>
-        <p className={styles.brand}>16&amp;0</p>
+        <p className={styles.brand}>{PRODUCT_NAME}</p>
         <h1 id="mode-heading" className={styles.headline}>
           Build the Perfect Offense
         </h1>

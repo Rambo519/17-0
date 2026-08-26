@@ -1,8 +1,9 @@
-# 16&0
+# 17-0
 
 An original historical NFL team-building draft game spanning the **1970s through
 2020s**. You spin for a franchise and a decade, pick one of that team's offensive
-skill players, and assign them to an open slot in a six-man I-formation lineup:
+skill players, and assign them to an open slot in a six-man I-formation lineup.
+A completed offense projects a **17-game** regular-season record.
 
 ```text
 WR                         WR
@@ -166,6 +167,9 @@ Franchise abbreviation → lineage mapping is centralized in
 
 ## Windows note
 
-This project's path contains `&`, which `cmd.exe` mangles when expanding the
-`node_modules/.bin` shims. `.npmrc` sets `script-shell=powershell.exe` so
-`npm run ...` works here.
+`.npmrc` sets `script-shell=powershell.exe` so `npm run ...` works with this
+repo's tooling on Windows.
+
+Runtime sounds live in `public/sounds/` (`spin-tick.mp3`, `reveal-hit.mp3`,
+`draft-lock.mp3`, `show-results.mp3`, `jackpot.mp3`). Canonical copies:
+https://github.com/Rambo519/17-0

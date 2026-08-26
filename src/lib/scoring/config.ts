@@ -1,4 +1,5 @@
 import type { LineupSlot, NormalizedPosition } from "@/lib/football/positions";
+import { REGULAR_SEASON_GAMES } from "@/lib/football/season";
 
 import type { MetricKey } from "./types";
 
@@ -102,14 +103,15 @@ export const BALANCE_ADJUSTMENT = {
  * Logistic win model: per-game win probability from offense rating.
  * Below `tailExtension.startRating`, uses standard logistic curve.
  * Above that, a power-curve tail extends toward `maxWinProbability` so only
- * extraordinary offenses can project 16-0 (requires p >= 15.5/16 ≈ 0.96875).
+ * extraordinary offenses can project a perfect season
+ * (requires p >= (seasonLength - 0.5) / seasonLength).
  */
 export const WIN_PROJECTION_MODEL = {
   midpointRating: 62,
   steepness: 0.081,
   minWinProbability: 0.05,
   maxWinProbability: 0.99,
-  seasonLength: 16,
+  seasonLength: REGULAR_SEASON_GAMES,
   tailExtension: {
     startRating: 88,
     endRating: 95,

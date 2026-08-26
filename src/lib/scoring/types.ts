@@ -67,7 +67,7 @@ export interface OffenseEvaluation {
 }
 
 export interface WinProjection {
-  /** Decimal expected wins across a 16-game season (debugging / calibration). */
+  /** Decimal expected wins across the regular season (debugging / calibration). */
   expectedWins: number;
   projectedWins: number;
   projectedLosses: number;
@@ -76,7 +76,7 @@ export interface WinProjection {
    * A game-model estimate, not a claim of real-world certainty.
    */
   perGameWinProbability: number;
-  /** Independent-game baseline: perGameWinProbability^16 */
+  /** Independent-game baseline: perGameWinProbability^REGULAR_SEASON_GAMES */
   perfectSeasonProbability: number;
 }
 

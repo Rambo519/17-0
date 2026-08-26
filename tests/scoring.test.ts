@@ -493,8 +493,8 @@ describe("scoring engine", () => {
     const high = projectWinsFromRating(88);
 
     expect(low.projectedWins).toBeGreaterThanOrEqual(0);
-    expect(low.projectedWins).toBeLessThanOrEqual(16);
-    expect(low.projectedLosses).toBe(16 - low.projectedWins);
+    expect(low.projectedWins).toBeLessThanOrEqual(WIN_PROJECTION_MODEL.seasonLength);
+    expect(low.projectedLosses).toBe(WIN_PROJECTION_MODEL.seasonLength - low.projectedWins);
 
     expect(mid.perGameWinProbability).toBeGreaterThan(low.perGameWinProbability);
     expect(high.perGameWinProbability).toBeGreaterThan(mid.perGameWinProbability);
@@ -511,7 +511,7 @@ describe("scoring engine", () => {
     expect(high).toBeLessThanOrEqual(WIN_PROJECTION_MODEL.maxWinProbability);
   });
 
-  it("calculates perfect-season probability as p^16", () => {
+  it("calculates perfect-season probability as p^seasonLength", () => {
     const projection = projectWinsFromRating(80);
     const expected =
       projection.perGameWinProbability ** WIN_PROJECTION_MODEL.seasonLength;

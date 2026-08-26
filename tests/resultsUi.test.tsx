@@ -73,7 +73,7 @@ function scoreFixture(overrides: Partial<ScoringResultView> = {}): ScoringResult
     balanceAdjustment: 1.2,
     expectedWins: 14.3,
     projectedWins: 14,
-    projectedLosses: 2,
+    projectedLosses: 3,
     perGameWinProbability: 0.892,
     perfectSeasonProbability: 0.158,
     dataConfidence: "HIGH",
@@ -119,7 +119,7 @@ describe("ResultsView", () => {
     );
 
     expect(screen.getByRole("heading", { name: /projected record/i })).toBeInTheDocument();
-    expect(screen.getByText("14–2")).toBeInTheDocument();
+    expect(screen.getByText("14–3")).toBeInTheDocument();
     expect(screen.getByText("87.4")).toBeInTheDocument();
     expect(screen.getByText("14.3")).toBeInTheDocument();
     expect(screen.getByText("89.2%")).toBeInTheDocument();
@@ -156,18 +156,18 @@ describe("ResultsView", () => {
       />,
     );
     expect(screen.queryByText(/season production/i)).not.toBeInTheDocument();
-    expect(screen.getByText("14–2")).toBeInTheDocument();
+    expect(screen.getByText("14–3")).toBeInTheDocument();
     expect(screen.getAllByText(/Player QB/).length).toBeGreaterThan(0);
   });
 
-  it("uses a jackpot presentation for a 16–0 projection", () => {
+  it("uses a jackpot presentation for a 17–0 projection", () => {
     render(
       <ResultsView
         game={completedGame()}
         score={scoreFixture({
-          projectedWins: 16,
+          projectedWins: 17,
           projectedLosses: 0,
-          expectedWins: 15.7,
+          expectedWins: 16.7,
           perGameWinProbability: 0.98,
           perfectSeasonProbability: 0.72,
         })}
@@ -179,8 +179,34 @@ describe("ResultsView", () => {
       />,
     );
 
-    expect(screen.getByText("16–0")).toBeInTheDocument();
-    expect(screen.getAllByText("16 & 0").length).toBeGreaterThan(1);
+    expect(screen.getByText("17–0")).toBeInTheDocument();
+    expect(screen.getAllByText("17-0").length).toBeGreaterThan(1);
+    expect(screen.getByText("17–0 Chance")).toBeInTheDocument();
+    expect(screen.queryByText("16–0 Chance")).not.toBeInTheDocument();
+  });
+
+  it("does not use jackpot presentation for a 16–1 projection", () => {
+    render(
+      <ResultsView
+        game={completedGame()}
+        score={scoreFixture({
+          projectedWins: 16,
+          projectedLosses: 1,
+          expectedWins: 15.8,
+          perGameWinProbability: 0.93,
+          perfectSeasonProbability: 0.3,
+        })}
+        scoreStatus="ready"
+        errorMessage={null}
+        onRetry={() => undefined}
+        onPlayAgain={() => undefined}
+        onBackToLineup={() => undefined}
+      />,
+    );
+
+    expect(screen.getByText("16–1")).toBeInTheDocument();
+    expect(screen.queryByText("17-0")).not.toBeInTheDocument();
+    expect(screen.getByText("ALL-TIME OFFENSE")).toBeInTheDocument();
   });
 
   it("keeps the lineup visible while scoring loads", () => {
@@ -245,20 +271,20 @@ describe("ResultsView record count", () => {
       />,
     );
 
-    expect(screen.getByText("0–16")).toBeInTheDocument();
+    expect(screen.getByText("0–17")).toBeInTheDocument();
     expect(screen.getByText(/calculating season/i)).toBeInTheDocument();
     await vi.advanceTimersByTimeAsync(1600);
-    expect(screen.getByText("14–2")).toBeInTheDocument();
+    expect(screen.getByText("14–3")).toBeInTheDocument();
   });
 
-  it("holds 15-1 then lands on 16-0 for a perfect projection", async () => {
+  it("holds 16-1 then lands on 17-0 for a perfect projection", async () => {
     render(
       <ResultsView
         game={completedGame()}
         score={scoreFixture({
-          projectedWins: 16,
+          projectedWins: 17,
           projectedLosses: 0,
-          expectedWins: 15.7,
+          expectedWins: 16.7,
           perGameWinProbability: 0.98,
           perfectSeasonProbability: 0.72,
         })}
@@ -271,11 +297,11 @@ describe("ResultsView record count", () => {
     );
 
     await vi.advanceTimersByTimeAsync(1250);
-    expect(screen.getByText("15–1")).toBeInTheDocument();
-    expect(screen.queryByText("16–0")).not.toBeInTheDocument();
+    expect(screen.getByText("16–1")).toBeInTheDocument();
+    expect(screen.queryByText("17–0")).not.toBeInTheDocument();
     await vi.advanceTimersByTimeAsync(400);
-    expect(screen.getByText("16–0")).toBeInTheDocument();
-    expect(screen.getAllByText("16 & 0").length).toBeGreaterThan(0);
+    expect(screen.getByText("17–0")).toBeInTheDocument();
+    expect(screen.getAllByText("17-0").length).toBeGreaterThan(0);
   });
 });
 
@@ -311,7 +337,7 @@ describe("ResultsPageClient", () => {
   it("loads the completed session and score API on the dedicated results route", async () => {
     render(<ResultsPageClient sessionId="session-1" />);
 
-    expect(await screen.findByText("14–2")).toBeInTheDocument();
+    expect(await screen.findByText("14–3")).toBeInTheDocument();
     expect(screen.getByText("87.4")).toBeInTheDocument();
 
     const fetchMock = vi.mocked(fetch);
@@ -340,19 +366,19 @@ describe("ResultsPageClient", () => {
     expect(await screen.findByRole("button", { name: /try again/i })).toBeInTheDocument();
     expect(screen.getByText("Player QB")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /try again/i }));
-    expect(await screen.findByText("14–2")).toBeInTheDocument();
+    expect(await screen.findByText("14–3")).toBeInTheDocument();
   });
 
   it("sends Play Again back to the home game flow", async () => {
     render(<ResultsPageClient sessionId="session-1" />);
-    expect(await screen.findByText("14–2")).toBeInTheDocument();
+    expect(await screen.findByText("14–3")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /play again/i }));
     expect(push).toHaveBeenCalledWith("/");
   });
 
   it("returns to the completed lineup route from Back to Lineup", async () => {
     render(<ResultsPageClient sessionId="session-1" />);
-    expect(await screen.findByText("14–2")).toBeInTheDocument();
+    expect(await screen.findByText("14–3")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /back to lineup/i }));
     expect(push).toHaveBeenCalledWith("/game/session-1");
   });

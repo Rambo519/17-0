@@ -56,7 +56,7 @@ describe("PGlite database-path isolation", () => {
     const dataDir = await createIsolatedPgliteDataDir();
     expect(isDurableLocalPgliteDir(dataDir)).toBe(false);
     expect(path.resolve(dataDir)).not.toBe(path.resolve(LOCAL_PGLITE_DIR));
-    expect(dataDir).toContain(`sixteen-pglite-${process.pid}-`);
+    expect(dataDir).toContain(`seventeen-pglite-${process.pid}-`);
   });
 
   it("does not let unit/integration tests import the durable PGlite opener", async () => {

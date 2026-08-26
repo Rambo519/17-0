@@ -6,7 +6,9 @@ import styles from "./resultsView.module.css";
 import shell from "./game.module.css";
 
 import { playFinalRecordSound } from "@/lib/audio/cues";
+import { PRODUCT_NAME } from "@/lib/brand";
 import { LINEUP_SLOTS } from "@/lib/football/positions";
+import { REGULAR_SEASON_GAMES, projectedLossesFromWins } from "@/lib/football/season";
 import type { GameMode } from "@/lib/game/types";
 import type { GameStateView, LineupSlotView } from "@/lib/game/view";
 import {
@@ -43,13 +45,19 @@ function scoredPlayerForSlot(score: ScoringResultView, slot: LineupSlotView["slo
 }
 
 function emptyRevealFrame() {
-  return { wins: 0, losses: 16, landed: false, counting: false, jackpot: false };
+  return {
+    wins: 0,
+    losses: REGULAR_SEASON_GAMES,
+    landed: false,
+    counting: false,
+    jackpot: false,
+  };
 }
 
 function landedFrame(target: number) {
   return {
     wins: target,
-    losses: 16 - target,
+    losses: projectedLossesFromWins(target),
     landed: true,
     counting: false,
     jackpot: isPerfectProjectedSeason(target),
@@ -180,7 +188,7 @@ export function ResultsView({
 }: ResultsViewProps) {
   const reveal = useProjectedRecordReveal(score, scoreStatus);
   const targetPerfect = score ? isPerfectProjectedSeason(score.projectedWins) : false;
-  const perfect = targetPerfect && reveal.wins === 16 && reveal.landed;
+  const perfect = targetPerfect && reveal.wins === REGULAR_SEASON_GAMES && reveal.landed;
   const tier = reveal.landed && score ? resultTierFromProjectedWins(score.projectedWins) : null;
 
   return (
@@ -204,7 +212,7 @@ export function ResultsView({
           >
             {formatProjectedRecord(reveal.wins, reveal.losses)}
           </p>
-          {perfect ? <p className={styles.jackpotMark}>16 &amp; 0</p> : null}
+          {perfect ? <p className={styles.jackpotMark}>{PRODUCT_NAME}</p> : null}
         </section>
       ) : (
         <section className={styles.statusCard} aria-live="polite">
@@ -243,7 +251,7 @@ export function ResultsView({
             <dd>{formatProbability(score.perGameWinProbability)}</dd>
           </div>
           <div className={styles.metric}>
-            <dt>16–0 Chance</dt>
+            <dt>{formatProjectedRecord(REGULAR_SEASON_GAMES, 0)} Chance</dt>
             <dd>{formatProbability(score.perfectSeasonProbability)}</dd>
           </div>
           <div className={styles.metric}>

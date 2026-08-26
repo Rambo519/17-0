@@ -1,3 +1,5 @@
+import { REGULAR_SEASON_GAMES, projectedLossesFromWins } from "@/lib/football/season";
+
 export const RECORD_REVEAL = {
   durationMs: 1550,
   landedHoldMs: 850,
@@ -15,7 +17,7 @@ export interface RecordRevealFrame {
 
 function clampWins(value: number): number {
   if (!Number.isFinite(value)) return 0;
-  return Math.max(0, Math.min(16, Math.round(value)));
+  return Math.max(0, Math.min(REGULAR_SEASON_GAMES, Math.round(value)));
 }
 
 function easeOutCubic(t: number): number {
@@ -29,11 +31,18 @@ export function recordRevealEndsAt(_targetWins: number): number {
 /** Presentation-only count from 0 toward a server-projected win total. */
 export function recordRevealAt(elapsedMs: number, targetWins: number): RecordRevealFrame {
   const target = clampWins(targetWins);
-  const lossesFor = (wins: number) => 16 - wins;
-  const perfect = target === 16;
+  const lossesFor = (wins: number) => projectedLossesFromWins(wins);
+  const perfect = target === REGULAR_SEASON_GAMES;
+  const penultimateWins = REGULAR_SEASON_GAMES - 1;
 
   if (elapsedMs <= 0) {
-    return { wins: 0, losses: 16, landed: false, counting: true, jackpot: false };
+    return {
+      wins: 0,
+      losses: REGULAR_SEASON_GAMES,
+      landed: false,
+      counting: true,
+      jackpot: false,
+    };
   }
 
   if (!perfect) {
@@ -55,13 +64,25 @@ export function recordRevealAt(elapsedMs: number, targetWins: number): RecordRev
 
   if (elapsedMs < climbMs) {
     const t = elapsedMs / climbMs;
-    const wins = Math.min(15, Math.round(easeOutCubic(t) * 15));
+    const wins = Math.min(penultimateWins, Math.round(easeOutCubic(t) * penultimateWins));
     return { wins, losses: lossesFor(wins), landed: false, counting: true, jackpot: false };
   }
 
   if (elapsedMs < holdEnd) {
-    return { wins: 15, losses: 1, landed: false, counting: true, jackpot: false };
+    return {
+      wins: penultimateWins,
+      losses: lossesFor(penultimateWins),
+      landed: false,
+      counting: true,
+      jackpot: false,
+    };
   }
 
-  return { wins: 16, losses: 0, landed: true, counting: false, jackpot: true };
+  return {
+    wins: REGULAR_SEASON_GAMES,
+    losses: 0,
+    landed: true,
+    counting: false,
+    jackpot: true,
+  };
 }

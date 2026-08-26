@@ -17,6 +17,7 @@ import {
   type NormalizedPosition,
   positionForSlot,
 } from "@/lib/football/positions";
+import { REGULAR_SEASON_GAMES } from "@/lib/football/season";
 import { evaluateLineup } from "@/lib/scoring/evaluateLineup";
 import { buildPeerBaselineIndex } from "@/lib/scoring/peerBaselines";
 import type { GameScoringResult, LineupPickInput } from "@/lib/scoring/types";
@@ -152,12 +153,14 @@ export interface DistributionAudit {
     wins13to14: number;
     wins15: number;
     wins16: number;
+    wins17: number;
   };
 }
 
 export interface WinProjectionThresholds {
   projectedWins15ThresholdRating: number;
   projectedWins16ThresholdRating: number;
+  projectedWins17ThresholdRating: number;
 }
 
 export interface BestLineupAudit {
@@ -435,6 +438,7 @@ export function computeWinProjectionThresholds(): WinProjectionThresholds {
   return {
     projectedWins15ThresholdRating: ratingThresholdForProjectedWins(15),
     projectedWins16ThresholdRating: ratingThresholdForProjectedWins(16),
+    projectedWins17ThresholdRating: ratingThresholdForProjectedWins(17),
   };
 }
 
@@ -491,6 +495,7 @@ export async function runDistributionAudit(
     wins13to14: 0,
     wins15: 0,
     wins16: 0,
+    wins17: 0,
   };
 
   for (const wins of projectedWins) {
@@ -499,7 +504,8 @@ export async function runDistributionAudit(
     else if (wins <= 12) buckets.wins11to12 += 1;
     else if (wins <= 14) buckets.wins13to14 += 1;
     else if (wins === 15) buckets.wins15 += 1;
-    else buckets.wins16 += 1;
+    else if (wins === 16) buckets.wins16 += 1;
+    else buckets.wins17 += 1;
   }
 
   const total = projectedWins.length || 1;
@@ -532,6 +538,7 @@ export async function runDistributionAudit(
       wins13to14: buckets.wins13to14 / total,
       wins15: buckets.wins15 / total,
       wins16: buckets.wins16 / total,
+      wins17: buckets.wins17 / total,
     },
   };
 }
@@ -560,7 +567,7 @@ export async function runScoringAudit(db: Database): Promise<ScoringAuditReport>
             balanceAdjustment: 0,
             expectedWins: 0,
             projectedWins: 0,
-            projectedLosses: 16,
+            projectedLosses: REGULAR_SEASON_GAMES,
             perGameWinProbability: 0,
             perfectSeasonProbability: 0,
             dataConfidence: "LOW",
@@ -658,7 +665,7 @@ export async function writeScoringAuditReports(report: ScoringAuditReport): Prom
       `  expected wins: ${lineup.result.expectedWins.toFixed(2)}`,
       `  projected: ${lineup.result.projectedWins}-${lineup.result.projectedLosses}`,
       `  per-game win prob: ${lineup.result.perGameWinProbability.toFixed(3)}`,
-      `  16-0 prob: ${(lineup.result.perfectSeasonProbability * 100).toFixed(2)}%`,
+      `  17-0 prob: ${(lineup.result.perfectSeasonProbability * 100).toFixed(2)}%`,
       `  data confidence: ${lineup.result.dataConfidence}`,
       ...(lineup.missingCards.length > 0
         ? [`  missing: ${lineup.missingCards.join("; ")}`]
@@ -684,8 +691,9 @@ export async function writeScoringAuditReports(report: ScoringAuditReport): Prom
     ),
     "",
     "WIN PROJECTION THRESHOLDS",
-    `  offense rating for 15-1 projection: ${report.winProjectionThresholds.projectedWins15ThresholdRating.toFixed(2)}`,
-    `  offense rating for 16-0 projection: ${report.winProjectionThresholds.projectedWins16ThresholdRating.toFixed(2)}`,
+    `  offense rating for 15-2 projection: ${report.winProjectionThresholds.projectedWins15ThresholdRating.toFixed(2)}`,
+    `  offense rating for 16-1 projection: ${report.winProjectionThresholds.projectedWins16ThresholdRating.toFixed(2)}`,
+    `  offense rating for 17-0 projection: ${report.winProjectionThresholds.projectedWins17ThresholdRating.toFixed(2)}`,
     "",
     "BEST LEGITIMATE LINEUP",
     ...(report.bestLineup
@@ -694,7 +702,7 @@ export async function writeScoringAuditReports(report: ScoringAuditReport): Prom
           `  expected wins: ${report.bestLineup.result.expectedWins.toFixed(2)}`,
           `  projected: ${report.bestLineup.result.projectedWins}-${report.bestLineup.result.projectedLosses}`,
           `  per-game win prob: ${report.bestLineup.result.perGameWinProbability.toFixed(3)}`,
-          `  16-0 prob: ${(report.bestLineup.result.perfectSeasonProbability * 100).toFixed(2)}%`,
+          `  17-0 prob: ${(report.bestLineup.result.perfectSeasonProbability * 100).toFixed(2)}%`,
           ...report.bestLineup.players.map(
             (player) =>
               `  ${player.lineupSlot} ${player.playerName} (${player.position}):` +
@@ -715,6 +723,7 @@ export async function writeScoringAuditReports(report: ScoringAuditReport): Prom
     `    13-14: ${(report.distribution.projectedWinBuckets.wins13to14 * 100).toFixed(1)}%`,
     `    15: ${(report.distribution.projectedWinBuckets.wins15 * 100).toFixed(1)}%`,
     `    16: ${(report.distribution.projectedWinBuckets.wins16 * 100).toFixed(1)}%`,
+    `    17: ${(report.distribution.projectedWinBuckets.wins17 * 100).toFixed(1)}%`,
   ];
 
   await writeFile(summaryPath, `${lines.join("\n")}\n`, "utf8");

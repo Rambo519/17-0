@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { REGULAR_SEASON_GAMES } from "@/lib/football/season";
 import { ScoringError, evaluateCompletedGame } from "@/lib/scoring/evaluateGame";
 import { draftPlayer } from "@/lib/game/draftPlayer";
 import { loadGameState } from "@/lib/game/gameState";
@@ -54,7 +55,7 @@ describe("evaluateCompletedGame", () => {
     expect(result.offense.players.length).toBe(6);
     expect(result.projection.projectedWins).toBeGreaterThanOrEqual(0);
     expect(result.projection.projectedLosses).toBe(
-      16 - result.projection.projectedWins,
+      REGULAR_SEASON_GAMES - result.projection.projectedWins,
     );
     expect(result.projection.perfectSeasonProbability).toBeGreaterThan(0);
     expect(result.projection.perfectSeasonProbability).toBeLessThanOrEqual(1);

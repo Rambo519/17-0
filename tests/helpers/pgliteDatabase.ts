@@ -16,7 +16,7 @@ const MIGRATIONS_DIR = path.join(process.cwd(), "drizzle");
  * Tests must not share a data dir with `next dev`.
  */
 export async function createIsolatedPgliteDataDir(): Promise<string> {
-  const dataDir = await mkdtemp(path.join(tmpdir(), `sixteen-pglite-${process.pid}-`));
+  const dataDir = await mkdtemp(path.join(tmpdir(), `seventeen-pglite-${process.pid}-`));
   if (isDurableLocalPgliteDir(dataDir)) {
     throw new Error(
       "Isolated test PGlite directory resolved to the durable .data/pglite path.",

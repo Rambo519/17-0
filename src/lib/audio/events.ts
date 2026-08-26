@@ -10,6 +10,7 @@ export const SOUND_EVENTS = [
 
 export type SoundEvent = (typeof SOUND_EVENTS)[number];
 
+/** Canonical source: https://github.com/Rambo519/17-0 — runtime files live in public/sounds/. */
 export const SOUND_FILES = {
   SPIN_TICK: "/sounds/spin-tick.mp3",
   TEAM_REVEAL: "/sounds/reveal-hit.mp3",
@@ -32,7 +33,7 @@ export const SOUND_DEFAULTS: Readonly<
   JACKPOT: { volume: 0.85, playbackRate: 1, throttleMs: 2500 },
 };
 
-export const SOUND_STORAGE_KEY = "sixteen-and-oh.soundEnabled";
+export const SOUND_STORAGE_KEY = "seventeen-and-oh.soundEnabled";
 
 export function soundFileForEvent(event: SoundEvent): string {
   return SOUND_FILES[event];

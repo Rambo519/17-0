@@ -415,7 +415,7 @@ describe("scoring calibration (Phase 5B)", () => {
     }
   });
 
-  it("maintains perfect-season probability as p^16", () => {
+  it("maintains perfect-season probability as p^seasonLength", () => {
     const projection = projectWinsFromRating(82);
     const expected =
       projection.perGameWinProbability ** WIN_PROJECTION_MODEL.seasonLength;

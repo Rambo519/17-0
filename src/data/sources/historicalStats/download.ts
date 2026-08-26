@@ -44,7 +44,7 @@ async function fileExists(filePath: string): Promise<boolean> {
 async function downloadText(url: string): Promise<string> {
   const response = await fetch(url, {
     headers: {
-      "User-Agent": "sixteen-and-oh-historical-stats/1.0 (local data enrichment)",
+      "User-Agent": "seventeen-and-oh-historical-stats/1.0 (local data enrichment)",
       Accept: "text/csv,*/*",
     },
   });

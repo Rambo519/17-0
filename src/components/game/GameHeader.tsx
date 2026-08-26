@@ -1,5 +1,6 @@
 import styles from "./gameHeader.module.css";
 
+import { PRODUCT_NAME } from "@/lib/brand";
 import type { GameMode } from "@/lib/game/types";
 import { SoundToggle } from "./SoundToggle";
 import { GameProgress } from "./GameProgress";
@@ -15,7 +16,7 @@ export function GameHeader({ mode, roundNumber, filledCount, isComplete }: GameH
   return (
     <header className={styles.root}>
       <div className={styles.left}>
-        <p className={styles.brand}>16&amp;0</p>
+        <p className={styles.brand}>{PRODUCT_NAME}</p>
         <p className={styles.meta}>
           {isComplete ? "Offense complete" : `Round ${roundNumber} of 6`}
           <span className={styles.dot} aria-hidden>
