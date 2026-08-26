@@ -1,12 +1,11 @@
-"use client";
-
 import type { KeyboardEvent } from "react";
 
+import { FieldDecor } from "./FieldDecor";
+import { SoundToggle } from "./SoundToggle";
 import styles from "./modeSelector.module.css";
 
 import { PRODUCT_NAME } from "@/lib/brand";
 import type { GameMode } from "@/lib/game/types";
-import { SoundToggle } from "./SoundToggle";
 
 interface ModeSelectorProps {
   mode: GameMode;
@@ -29,7 +28,7 @@ export function ModeSelector({ mode, onModeChange, onStart, busy }: ModeSelector
   return (
     <section className={styles.root} aria-labelledby="mode-heading">
       <div className={styles.atmosphere} aria-hidden>
-        <div className={styles.field} />
+        <FieldDecor variant="start" />
         <div className={styles.glow} />
         <div className={styles.sweep} />
         <div className={styles.grain} />
@@ -46,9 +45,7 @@ export function ModeSelector({ mode, onModeChange, onStart, busy }: ModeSelector
           Build the Perfect Offense
         </h1>
         <p className={styles.pitch}>
-          Six picks.
-          <br />
-          Six eras of NFL history.
+          Six picks. Six eras.
           <br />
           One shot at perfection.
         </p>
@@ -88,7 +85,7 @@ export function ModeSelector({ mode, onModeChange, onStart, busy }: ModeSelector
         </button>
 
         <details className={styles.how}>
-          <summary>How to play</summary>
+          <summary>How to Play</summary>
           <p>
             Spin a franchise and era, then draft one eligible player. Fill all six I-formation
             spots. One team reroll. One era reroll. Then see if the offense can run the table.

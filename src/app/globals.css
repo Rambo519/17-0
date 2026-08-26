@@ -1,27 +1,28 @@
 :root {
-  --bg: #0b1220;
-  --bg-elevated: #121b2e;
-  --panel: #152238;
-  --panel-border: rgba(180, 210, 255, 0.12);
-  --field: #163a28;
-  --field-line: rgba(230, 245, 230, 0.18);
-  --field-glow: rgba(120, 220, 160, 0.12);
-  --text: #f2f6ff;
-  --text-muted: #93a0b8;
-  --highlight: #e8b84a;
-  --highlight-soft: rgba(232, 184, 74, 0.18);
-  --accent: #3ecf8e;
-  --accent-soft: rgba(62, 207, 142, 0.16);
+  --bg: #08111c;
+  --bg-elevated: #101a2c;
+  --panel: #122033;
+  --panel-border: rgba(170, 210, 255, 0.14);
+  --field: #154a32;
+  --field-deep: #0d2a1e;
+  --field-line: rgba(236, 248, 236, 0.28);
+  --field-glow: rgba(90, 210, 140, 0.16);
+  --text: #f4f7ff;
+  --text-muted: #9eacc4;
+  --highlight: #e8c15a;
+  --highlight-soft: rgba(232, 193, 90, 0.16);
+  --accent: #3ad68d;
+  --accent-soft: rgba(58, 214, 141, 0.16);
   --danger: #ff6b6b;
   --danger-soft: rgba(255, 107, 107, 0.14);
-  --border: rgba(255, 255, 255, 0.1);
-  --slot-empty: rgba(255, 255, 255, 0.06);
-  --slot-highlight: rgba(232, 184, 74, 0.35);
-  --slot-locked: rgba(10, 18, 28, 0.72);
-  --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
-  --radius: 14px;
-  --font-display: var(--font-display), "Arial Narrow", Impact, sans-serif;
-  --font-body: var(--font-body), "Segoe UI", sans-serif;
+  --border: rgba(255, 255, 255, 0.12);
+  --slot-empty: rgba(8, 20, 16, 0.42);
+  --slot-highlight: rgba(232, 193, 90, 0.32);
+  --slot-locked: rgba(6, 16, 24, 0.82);
+  --shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  --radius: 10px;
+  --font-display: var(--font-display-face), "Arial Narrow", Impact, sans-serif;
+  --font-body: var(--font-body-face), "Segoe UI", system-ui, sans-serif;
 }
 
 *,
@@ -41,9 +42,8 @@ body {
 
 body {
   background:
-    radial-gradient(1200px 600px at 10% -10%, rgba(62, 207, 142, 0.08), transparent 55%),
-    radial-gradient(900px 500px at 90% 0%, rgba(232, 184, 74, 0.07), transparent 50%),
-    linear-gradient(180deg, #0a101c 0%, #0b1220 40%, #0d1626 100%);
+    radial-gradient(900px 420px at 50% -8%, rgba(58, 214, 141, 0.1), transparent 58%),
+    #08111c;
 }
 
 button,
@@ -63,17 +63,17 @@ a {
 @keyframes game-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(232, 184, 74, 0.35);
+    box-shadow: 0 0 0 0 rgba(232, 193, 90, 0.28);
   }
   50% {
-    box-shadow: 0 0 0 8px rgba(232, 184, 74, 0);
+    box-shadow: 0 0 0 7px rgba(232, 193, 90, 0);
   }
 }
 
 @keyframes game-fade-up {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -84,7 +84,7 @@ a {
 @keyframes game-reveal {
   from {
     opacity: 0;
-    filter: blur(4px);
+    filter: blur(3px);
     transform: scale(0.98);
   }
   to {

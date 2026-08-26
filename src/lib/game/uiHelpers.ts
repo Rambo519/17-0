@@ -1,4 +1,5 @@
-import type { LineupSlot, NormalizedPosition } from "@/lib/football/positions";
+import { NORMALIZED_POSITIONS, type LineupSlot, type NormalizedPosition } from "@/lib/football/positions";
+import { formatPlayerDisplayName } from "@/lib/game/playerName";
 import type { CardProduction, GameMode } from "@/lib/game/types";
 import type { SpinCandidate } from "@/lib/game/spin";
 import type { GameStateView } from "@/lib/game/view";
@@ -28,43 +29,69 @@ export interface DisplayStat {
   value: string;
 }
 
-/** Position-aware Classic production rows; omits nothing — uses dashes for missing. */
+/** Position-aware Classic production rows for candidate cards; dashes for missing values. */
 export function classicProductionStats(
   positions: readonly NormalizedPosition[],
   production: CardProduction,
 ): DisplayStat[] {
   const primary = positions[0] ?? "WR";
-  const rows: DisplayStat[] = [{ label: "G", value: formatStat(production.games) }];
 
   if (primary === "QB") {
-    rows.push(
+    return [
       { label: "Pass Yds", value: formatStat(production.passingYards) },
       { label: "Pass TD", value: formatStat(production.passingTouchdowns) },
       { label: "Rush Yds", value: formatStat(production.rushingYards) },
-    );
-    return rows;
+    ];
   }
 
   if (primary === "RB" || primary === "FB") {
-    rows.push(
+    return [
       { label: "Rush Yds", value: formatStat(production.rushingYards) },
       { label: "Rush TD", value: formatStat(production.rushingTouchdowns) },
       { label: "Rec", value: formatStat(production.receptions) },
       { label: "Rec Yds", value: formatStat(production.receivingYards) },
-    );
-    return rows;
+    ];
   }
 
-  rows.push(
+  return [
     { label: "Rec", value: formatStat(production.receptions) },
     { label: "Rec Yds", value: formatStat(production.receivingYards) },
     { label: "Rec TD", value: formatStat(production.receivingTouchdowns) },
-  );
-  return rows;
+  ];
 }
 
 export function shouldShowClassicStats(mode: GameMode): boolean {
   return mode === "CLASSIC";
+}
+
+export type CandidatePositionFilter = "ALL" | NormalizedPosition;
+
+export function availableCandidatePositions(
+  candidates: readonly SpinCandidate[],
+): NormalizedPosition[] {
+  const present = new Set<NormalizedPosition>();
+  for (const candidate of candidates) {
+    for (const position of candidate.card.positions) present.add(position);
+  }
+  return NORMALIZED_POSITIONS.filter((position) => present.has(position));
+}
+
+export function filterSpinCandidates(
+  candidates: readonly SpinCandidate[],
+  options: { query?: string; position?: CandidatePositionFilter } = {},
+): SpinCandidate[] {
+  const query = options.query?.trim().toLowerCase() ?? "";
+  const position = options.position ?? "ALL";
+
+  return candidates.filter((candidate) => {
+    if (position !== "ALL" && !candidate.card.positions.includes(position)) {
+      return false;
+    }
+    if (!query) return true;
+    const stored = candidate.card.playerName.toLowerCase();
+    const displayed = formatPlayerDisplayName(candidate.card.playerName).toLowerCase();
+    return stored.includes(query) || displayed.includes(query);
+  });
 }
 
 export function filledPickCount(game: GameStateView): number {

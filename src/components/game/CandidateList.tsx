@@ -4,7 +4,11 @@ import styles from "./candidateList.module.css";
 
 import type { GameMode } from "@/lib/game/types";
 import type { SpinCandidate } from "@/lib/game/spin";
-import { formatPlayerDisplayName } from "@/lib/game/playerName";
+import {
+  availableCandidatePositions,
+  filterSpinCandidates,
+  type CandidatePositionFilter,
+} from "@/lib/game/uiHelpers";
 import { CandidateCard } from "./CandidateCard";
 
 interface CandidateListProps {
@@ -22,21 +26,53 @@ export function CandidateList({
   reveal = false,
   onSelect,
 }: CandidateListProps) {
+  const candidateKey = candidates.map((candidate) => candidate.card.cardId).join(",");
   const [query, setQuery] = useState("");
+  const [position, setPosition] = useState<CandidatePositionFilter>("ALL");
+  const [seenKey, setSeenKey] = useState(candidateKey);
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return candidates;
-    return candidates.filter((candidate) => {
-      const stored = candidate.card.playerName.toLowerCase();
-      const displayed = formatPlayerDisplayName(candidate.card.playerName).toLowerCase();
-      return stored.includes(q) || displayed.includes(q);
-    });
-  }, [candidates, query]);
+  if (seenKey !== candidateKey) {
+    setSeenKey(candidateKey);
+    setQuery("");
+    setPosition("ALL");
+  }
+
+  const availablePositions = useMemo(
+    () => availableCandidatePositions(candidates),
+    [candidates],
+  );
+  const activePosition =
+    position !== "ALL" && !availablePositions.includes(position) ? "ALL" : position;
+
+  const filtered = useMemo(
+    () => filterSpinCandidates(candidates, { query, position: activePosition }),
+    [candidates, query, activePosition],
+  );
 
   return (
     <div className={styles.root}>
       <div className={styles.toolbar}>
+        <div className={styles.filters} role="toolbar" aria-label="Position filter">
+          <button
+            type="button"
+            className={activePosition === "ALL" ? styles.chipActive : styles.chip}
+            aria-pressed={activePosition === "ALL"}
+            onClick={() => setPosition("ALL")}
+          >
+            ALL
+          </button>
+          {availablePositions.map((value) => (
+            <button
+              key={value}
+              type="button"
+              className={activePosition === value ? styles.chipActive : styles.chip}
+              aria-pressed={activePosition === value}
+              onClick={() => setPosition(value)}
+            >
+              {value}
+            </button>
+          ))}
+        </div>
         <label className={styles.searchLabel} htmlFor="candidate-search">
           Find player
         </label>
@@ -68,7 +104,7 @@ export function CandidateList({
           </li>
         ))}
       </ul>
-      {filtered.length === 0 ? <p className={styles.empty}>No players match that name.</p> : null}
+      {filtered.length === 0 ? <p className={styles.empty}>No matching players.</p> : null}
     </div>
   );
 }

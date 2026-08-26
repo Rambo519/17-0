@@ -20,29 +20,37 @@ export function CandidateCard({ candidate, mode, selected, onSelect }: Candidate
   const { card, eligibleSlots } = candidate;
   const showStats = shouldShowClassicStats(mode);
   const stats = showStats ? classicProductionStats(card.positions, card.production) : null;
+  const years = yearsWithFranchiseLabel(card.firstSeason, card.lastSeason);
 
   return (
     <button
       type="button"
-      className={selected ? styles.selected : styles.root}
+      className={`${selected ? styles.selected : styles.root}${stats ? ` ${styles.withStats}` : ""}`}
       onClick={onSelect}
       aria-pressed={selected}
     >
-      <div className={styles.top}>
+      <span className={styles.player}>
         <span className={styles.name}>{formatPlayerDisplayName(card.playerName)}</span>
-        <span className={styles.positions}>{card.positions.join(" · ")}</span>
-      </div>
-      <p className={styles.slots}>Can fill: {eligibleSlots.join(", ")}</p>
-      <p className={styles.years}>{yearsWithFranchiseLabel(card.firstSeason, card.lastSeason)}</p>
+        <span className={styles.meta}>
+          <span className={styles.identity}>
+            {card.positions.join(" · ")}
+            <span aria-hidden> | </span>
+            {years}
+          </span>
+          <span className={styles.slots}> - Can Fill: {eligibleSlots.join(", ")}</span>
+        </span>
+      </span>
       {stats ? (
-        <dl className={styles.stats}>
-          {stats.map((stat) => (
-            <div key={stat.label} className={styles.stat}>
-              <dt>{stat.label}</dt>
-              <dd>{stat.value}</dd>
-            </div>
-          ))}
-        </dl>
+        <span className={styles.statZone}>
+          <dl className={styles.stats}>
+            {stats.map((stat) => (
+              <div key={stat.label} className={styles.stat}>
+                <dt>{stat.label}</dt>
+                <dd>{stat.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </span>
       ) : null}
     </button>
   );

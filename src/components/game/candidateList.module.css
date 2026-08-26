@@ -1,39 +1,67 @@
 .root {
   display: flex;
   flex-direction: column;
-  min-height: 0;
-  flex: 1;
-  gap: 10px;
+  gap: 8px;
 }
 
 .toolbar {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 6px 10px;
+  gap: 6px 8px;
   align-items: center;
   padding: 0 2px;
 }
 
+.filters {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip,
+.chipActive {
+  appearance: none;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.28);
+  color: var(--text-muted);
+  padding: 0.28rem 0.62rem;
+  min-height: 28px;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.chipActive {
+  border-color: rgba(232, 193, 90, 0.65);
+  background: rgba(232, 193, 90, 0.16);
+  color: var(--highlight);
+}
+
 .searchLabel {
   grid-column: 1 / -1;
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
 .search {
   width: 100%;
-  border-radius: 10px;
+  border-radius: 8px;
   border: 1px solid var(--border);
   background: rgba(0, 0, 0, 0.28);
   color: var(--text);
-  padding: 0.55rem 0.75rem;
+  padding: 0.42rem 0.65rem;
+  min-height: 36px;
 }
 
 .count {
   margin: 0;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--text-muted);
   white-space: nowrap;
 }
@@ -42,24 +70,28 @@
   list-style: none;
   margin: 0;
   padding: 0 2px 8px;
-  overflow: auto;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  min-height: 180px;
-  max-height: min(52vh, 560px);
-  flex: 1;
+  gap: 3px;
 }
 
 .empty {
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   padding: 8px 2px;
 }
 
 .stagger {
-  animation: candidate-in 280ms ease both;
+  animation: candidate-in 220ms ease both;
+}
+
+@media (max-width: 640px) {
+  .chip,
+  .chipActive {
+    min-height: 32px;
+    padding: 0.34rem 0.7rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -71,7 +103,7 @@
 @keyframes candidate-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;

@@ -1,20 +1,21 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import { Bebas_Neue, Source_Sans_3 } from "next/font/google";
+import { Oswald, Source_Sans_3 } from "next/font/google";
 
 import { PRODUCT_NAME } from "@/lib/brand";
 
 import "./globals.css";
 
-const display = Bebas_Neue({
-  weight: "400",
+const display = Oswald({
   subsets: ["latin"],
-  variable: "--font-display",
+  weight: ["500", "600", "700"],
+  variable: "--font-display-face",
 });
 
 const body = Source_Sans_3({
   subsets: ["latin"],
-  variable: "--font-body",
+  weight: ["400", "600", "700"],
+  variable: "--font-body-face",
 });
 
 export const metadata: Metadata = {

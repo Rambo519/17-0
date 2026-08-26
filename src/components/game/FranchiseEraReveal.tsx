@@ -27,9 +27,6 @@ export function FranchiseEraReveal({
         <p key={franchiseAbbreviation} className={styles.abbr}>
           {franchiseAbbreviation}
         </p>
-        <h2 key={franchiseName} className={styles.name}>
-          {franchiseName}
-        </h2>
       </div>
       <div className={eraClass}>
         <p className={styles.kicker}>Era</p>

@@ -102,12 +102,17 @@ describe("CandidateCard", () => {
     expect(screen.getByText("Jerry Rice")).toBeInTheDocument();
     expect(screen.getByText("Rec Yds")).toBeInTheDocument();
     expect(screen.getByText("7,000")).toBeInTheDocument();
+    expect(screen.queryByText("G")).not.toBeInTheDocument();
+    expect(screen.queryByText(/SF · 1980s/)).not.toBeInTheDocument();
 
     rerender(
       <CandidateCard candidate={candidate} mode="IQ" selected={false} onSelect={() => undefined} />,
     );
     expect(screen.getByText("Jerry Rice")).toBeInTheDocument();
-    expect(screen.getByText("Can fill: WR1, WR2")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /jerry rice/i })).toHaveTextContent(
+      "WR | 1985–1989 - Can Fill: WR1, WR2",
+    );
+    expect(screen.queryByText("Can fill: WR1, WR2")).not.toBeInTheDocument();
     expect(screen.queryByText("Rec Yds")).not.toBeInTheDocument();
     expect(screen.queryByText("7,000")).not.toBeInTheDocument();
   });
@@ -152,11 +157,52 @@ describe("CandidateList", () => {
       />,
     );
 
-    const buttons = screen.getAllByRole("button");
-    expect(buttons[0]).toHaveTextContent("Jerry Rice");
-    expect(buttons[1]).toHaveTextContent("Aaron Rodgers");
+    const items = screen.getAllByRole("listitem");
+    expect(items[0]).toHaveTextContent("Jerry Rice");
+    expect(items[1]).toHaveTextContent("Aaron Rodgers");
     expect(screen.queryByText("Rec Yds")).not.toBeInTheDocument();
     expect(screen.queryByText("7,000")).not.toBeInTheDocument();
+  });
+
+  it("filters the current eligible set by position without re-sorting or hiding IQ stats that were already hidden", () => {
+    const rice = wrCandidate();
+    const montana = wrCandidate();
+    montana.card.cardId = 21;
+    montana.card.playerId = 21;
+    montana.card.playerName = "Joe Montana";
+    montana.card.positions = ["QB"];
+    montana.eligibleSlots = ["QB"];
+    const brown = wrCandidate();
+    brown.card.cardId = 22;
+    brown.card.playerId = 22;
+    brown.card.playerName = "Tim Brown";
+    const onSelect = vi.fn();
+
+    render(
+      <CandidateList
+        candidates={[rice, montana, brown]}
+        mode="IQ"
+        selectedCardId={null}
+        onSelect={onSelect}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: /^ALL$/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^WR$/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^QB$/i })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^RB$/i })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /^WR$/i }));
+    const items = screen.getAllByRole("listitem");
+    expect(items).toHaveLength(2);
+    expect(items[0]).toHaveTextContent("Jerry Rice");
+    expect(items[1]).toHaveTextContent("Tim Brown");
+    expect(screen.queryByText("Joe Montana")).not.toBeInTheDocument();
+    expect(screen.queryByText("Rec Yds")).not.toBeInTheDocument();
+    expect(items[0]).toHaveTextContent("Can Fill: WR1, WR2");
+
+    fireEvent.click(screen.getByRole("button", { name: /jerry rice/i }));
+    expect(onSelect).toHaveBeenCalledWith(10);
   });
 });
 

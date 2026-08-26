@@ -5,6 +5,7 @@ import type { GameMode } from "@/lib/game/types";
 import type { SpinResult } from "@/lib/game/spin";
 import type { SpinRevealFrame } from "@/lib/game/spinReveal";
 import { CandidateList } from "./CandidateList";
+import { FieldDecor } from "./FieldDecor";
 import { FranchiseEraReveal } from "./FranchiseEraReveal";
 import { SkipControls } from "./SkipControls";
 
@@ -62,49 +63,60 @@ export function SpinPanel({
   const showSpinButton = !isComplete && (!spin || spinning);
   const showCandidates = Boolean(spin && (reveal?.showCandidates ?? true) && !spinning);
   const showSkips = Boolean(spin && display && !isComplete);
+  const readyToSpin = showSpinButton && !display;
+
+  const spinButton = (
+    <button
+      type="button"
+      className={spinning ? `${shell.btnSpin} ${shell.btnSpinBusy}` : shell.btnSpin}
+      onClick={onSpin}
+      disabled={busy || spinning || isComplete}
+      aria-busy={spinning}
+    >
+      {spinning ? "Spinning..." : "Spin"}
+    </button>
+  );
 
   return (
     <section className={`${shell.panel} ${styles.root}`} aria-label="Draft draw">
-      <div className={styles.controls}>
-        {showSpinButton ? (
-          <button
-            type="button"
-            className={spinning ? `${shell.btnSpin} ${shell.btnSpinBusy}` : shell.btnSpin}
-            onClick={onSpin}
-            disabled={busy || spinning || isComplete}
-            aria-busy={spinning}
-          >
-            {spinning ? "Spinning..." : "Spin"}
-          </button>
-        ) : null}
+      {readyToSpin ? (
+        <div className={styles.ready}>
+          <FieldDecor variant="ready" />
+          <div className={styles.readyInner}>
+            <p className={styles.readyKicker}>Draw</p>
+            <h2 className={styles.readyTitle}>Ready to spin</h2>
+            <p className={styles.readyCopy}>Lock a franchise and era, then draft one eligible player.</p>
+            {spinButton}
+          </div>
+        </div>
+      ) : (
+        <div className={styles.controls}>
+          {showSpinButton ? spinButton : null}
 
-        {display ? (
-          <>
-            <FranchiseEraReveal
-              franchiseName={display.franchiseName}
-              franchiseAbbreviation={display.franchiseAbbreviation}
-              eraLabel={display.eraLabel}
-              cycling={display.cycling}
-              teamLocked={display.teamLocked}
-              eraLocked={display.eraLocked}
-            />
-            {showSkips ? (
-              <SkipControls
-                teamSkipRemaining={teamSkipRemaining}
-                eraSkipRemaining={eraSkipRemaining}
-                disabled={!spin || isComplete || spinning}
-                busy={busy || spinning}
-                onTeamSkip={onTeamSkip}
-                onEraSkip={onEraSkip}
+          {display ? (
+            <>
+              <FranchiseEraReveal
+                franchiseName={display.franchiseName}
+                franchiseAbbreviation={display.franchiseAbbreviation}
+                eraLabel={display.eraLabel}
+                cycling={display.cycling}
+                teamLocked={display.teamLocked}
+                eraLocked={display.eraLocked}
               />
-            ) : null}
-          </>
-        ) : null}
-
-        {!display && !isComplete ? (
-          <p className={styles.hint}>Spin a franchise and era, then draft one eligible player.</p>
-        ) : null}
-      </div>
+              {showSkips ? (
+                <SkipControls
+                  teamSkipRemaining={teamSkipRemaining}
+                  eraSkipRemaining={eraSkipRemaining}
+                  disabled={!spin || isComplete || spinning}
+                  busy={busy || spinning}
+                  onTeamSkip={onTeamSkip}
+                  onEraSkip={onEraSkip}
+                />
+              ) : null}
+            </>
+          ) : null}
+        </div>
+      )}
 
       {showCandidates && spin ? (
         <CandidateList

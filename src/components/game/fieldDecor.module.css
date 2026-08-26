@@ -1,0 +1,112 @@
+.start,
+.ready {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.grid,
+.hashes,
+.goalpost,
+.laces {
+  position: absolute;
+}
+
+.grid {
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.4), transparent 16%, transparent 84%, rgba(0, 0, 0, 0.4)),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent calc(10% - 1px),
+      rgba(236, 248, 236, 0.11) calc(10% - 1px),
+      rgba(236, 248, 236, 0.11) 10%
+    ),
+    linear-gradient(180deg, #154a32 0%, #0f3324 52%, #0a1c18 100%);
+}
+
+.start .grid {
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.9));
+}
+
+.ready .grid {
+  mask-image: radial-gradient(ellipse at 50% 42%, black 38%, transparent 84%);
+}
+
+.hashes {
+  inset: 0;
+  background:
+    linear-gradient(90deg, transparent 49.55%, rgba(255, 255, 255, 0.18) 49.55% 50.45%, transparent 50.45%),
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 22px,
+      rgba(255, 255, 255, 0.055) 22px 23px,
+      transparent 23px 46px
+    );
+  opacity: 0.65;
+}
+
+.goalpost {
+  left: 50%;
+  top: 7%;
+  width: 72px;
+  height: 20%;
+  transform: translateX(-50%);
+  opacity: 0.16;
+}
+
+.upright {
+  position: absolute;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.upright:first-of-type {
+  left: 0;
+}
+
+.upright:last-of-type {
+  right: 0;
+}
+
+.crossbar {
+  position: absolute;
+  top: 34%;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.laces {
+  left: 50%;
+  top: 40%;
+  width: 12px;
+  height: 78px;
+  transform: translateX(-50%);
+  opacity: 0.12;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 7px,
+      rgba(255, 255, 255, 0.9) 7px 9px,
+      transparent 9px 16px
+    );
+  border-left: 1px solid rgba(255, 255, 255, 0.32);
+  border-right: 1px solid rgba(255, 255, 255, 0.32);
+}
+
+.ready .goalpost {
+  top: 11%;
+  height: 26%;
+  opacity: 0.2;
+}
+
+.ready .laces {
+  top: 46%;
+  opacity: 0.14;
+}

@@ -1,6 +1,6 @@
 .root {
   display: grid;
-  gap: 18px;
+  gap: 16px;
   animation: game-fade-up 420ms ease;
 }
 
@@ -9,7 +9,7 @@
 .breakdown,
 .statusCard,
 .actions {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 40%), var(--panel);
+  background: var(--panel);
   border: 1px solid var(--panel-border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
@@ -17,68 +17,69 @@
 
 .hero {
   text-align: center;
-  padding: clamp(20px, 4vw, 32px) 20px 24px;
+  padding: clamp(18px, 3.5vw, 28px) 18px 22px;
 }
 
 .heroJackpot {
   text-align: center;
-  padding: clamp(20px, 4vw, 32px) 20px 24px;
-  border: 1px solid rgba(232, 184, 74, 0.55);
+  padding: clamp(18px, 3.5vw, 28px) 18px 22px;
+  border: 1px solid rgba(232, 193, 90, 0.55);
   border-radius: var(--radius);
   background:
-    radial-gradient(circle at 50% 0%, rgba(232, 184, 74, 0.22), transparent 58%),
-    linear-gradient(180deg, rgba(232, 184, 74, 0.12), var(--panel));
+    radial-gradient(circle at 50% 0%, rgba(232, 193, 90, 0.18), transparent 58%),
+    var(--panel);
   box-shadow:
-    0 0 0 1px rgba(232, 184, 74, 0.28),
-    0 18px 50px rgba(0, 0, 0, 0.45),
-    0 0 48px rgba(232, 184, 74, 0.18);
+    0 0 0 1px rgba(232, 193, 90, 0.22),
+    0 18px 50px rgba(0, 0, 0, 0.45);
   animation: results-glow 2.8s ease-in-out infinite;
 }
 
 .kicker {
   margin: 0;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  font-size: 0.72rem;
-}
-
-.tier {
-  margin: 10px 0 0;
   font-family: var(--font-display);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--highlight);
-  font-size: clamp(1.1rem, 3vw, 1.5rem);
-}
-
-.recordLabel {
-  margin: 14px 0 0;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-muted);
   font-size: 0.78rem;
 }
 
+.tier {
+  margin: 8px 0 0;
+  font-family: var(--font-display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--highlight);
+  font-size: clamp(1.15rem, 3vw, 1.55rem);
+}
+
+.recordLabel {
+  margin: 12px 0 0;
+  font-family: var(--font-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
 .record {
   margin: 4px 0 0;
   font-family: var(--font-display);
-  letter-spacing: 0.08em;
-  font-size: clamp(3.4rem, 12vw, 6.2rem);
-  line-height: 0.9;
+  letter-spacing: 0.04em;
+  font-size: clamp(3.6rem, 12vw, 6.4rem);
+  line-height: 0.88;
   color: var(--text);
 }
 
 .recordJackpot {
   color: var(--highlight);
-  text-shadow: 0 0 28px rgba(232, 184, 74, 0.45);
+  text-shadow: 0 0 24px rgba(232, 193, 90, 0.4);
 }
 
 .jackpotMark {
-  margin: 12px 0 0;
+  margin: 10px 0 0;
   font-family: var(--font-display);
-  letter-spacing: 0.18em;
-  font-size: clamp(1.8rem, 6vw, 2.8rem);
+  letter-spacing: 0.06em;
+  font-size: clamp(1.8rem, 6vw, 2.6rem);
   color: var(--highlight);
 }
 
@@ -92,25 +93,26 @@
 
 .metric {
   margin: 0;
-  padding: 14px 16px;
+  padding: 12px 14px;
   background: var(--panel);
   display: grid;
-  gap: 4px;
+  gap: 2px;
 }
 
 .metric dt {
   margin: 0;
-  letter-spacing: 0.12em;
+  font-family: var(--font-display);
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
 }
 
 .metric dd {
   margin: 0;
   font-family: var(--font-display);
-  letter-spacing: 0.06em;
-  font-size: clamp(1.4rem, 4vw, 1.9rem);
+  letter-spacing: 0.03em;
+  font-size: clamp(1.45rem, 4vw, 2rem);
 }
 
 .statusCard {
@@ -120,10 +122,10 @@
 
 .statusCopy {
   margin: 0;
-  letter-spacing: 0.14em;
+  font-family: var(--font-display);
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--highlight);
-  font-weight: 700;
 }
 
 .errorCopy {
@@ -136,15 +138,15 @@
 }
 
 .breakdown {
-  padding: 16px 16px 8px;
+  padding: 14px 14px 8px;
 }
 
 .breakdownTitle {
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   font-family: var(--font-display);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
 }
 
 .playerList {
@@ -152,15 +154,15 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .player {
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px;
+  border-radius: 8px;
+  padding: 10px;
   display: grid;
-  gap: 6px;
+  gap: 4px;
 }
 
 .playerTop {
@@ -171,30 +173,32 @@
 }
 
 .playerName {
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .playerRating {
   font-family: var(--font-display);
-  letter-spacing: 0.06em;
-  font-size: 1.35rem;
+  letter-spacing: 0.04em;
+  font-size: 1.3rem;
   color: var(--highlight);
 }
 
 .playerMeta {
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.92rem;
+  font-size: 0.84rem;
 }
 
 .details {
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 .details summary {
   cursor: pointer;
   color: var(--highlight);
-  font-size: 0.88rem;
+  font-size: 0.84rem;
 }
 
 .metricRows {
@@ -207,7 +211,7 @@
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   color: var(--text-muted);
 }
 
@@ -216,7 +220,7 @@
   flex-wrap: wrap;
   gap: 10px;
   justify-content: center;
-  padding: 16px;
+  padding: 14px;
   background: transparent;
   border: none;
   box-shadow: none;
@@ -243,14 +247,14 @@
   0%,
   100% {
     box-shadow:
-      0 0 0 1px rgba(232, 184, 74, 0.28),
+      0 0 0 1px rgba(232, 193, 90, 0.22),
       0 18px 50px rgba(0, 0, 0, 0.45),
-      0 0 36px rgba(232, 184, 74, 0.14);
+      0 0 28px rgba(232, 193, 90, 0.12);
   }
   50% {
     box-shadow:
-      0 0 0 1px rgba(232, 184, 74, 0.5),
+      0 0 0 1px rgba(232, 193, 90, 0.45),
       0 18px 50px rgba(0, 0, 0, 0.45),
-      0 0 64px rgba(232, 184, 74, 0.28);
+      0 0 48px rgba(232, 193, 90, 0.22);
   }
 }

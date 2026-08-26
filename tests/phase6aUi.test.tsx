@@ -198,6 +198,8 @@ describe("SpinPanel reveal gating", () => {
     );
 
     expect(screen.queryByText("Joe Montana")).not.toBeInTheDocument();
+    expect(screen.queryByText("Dallas Cowboys")).not.toBeInTheDocument();
+    expect(screen.getByText("DAL")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /spinning/i })).toBeDisabled();
     expect(onSpin).not.toHaveBeenCalled();
 
@@ -233,6 +235,8 @@ describe("SpinPanel reveal gating", () => {
     expect(screen.getByText("Joe Montana")).toBeInTheDocument();
     expect(screen.getByText("SF")).toBeInTheDocument();
     expect(screen.getByText("1980s")).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: /san francisco 49ers/i })).not.toBeInTheDocument();
+    expect(screen.queryByText("1980's")).not.toBeInTheDocument();
   });
 });
 

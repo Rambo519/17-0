@@ -4,7 +4,9 @@ import { EMPTY_PRODUCTION } from "@/lib/game/production";
 import type { SpinCandidate } from "@/lib/game/spin";
 import type { CardProduction } from "@/lib/game/types";
 import {
+  availableCandidatePositions,
   classicProductionStats,
+  filterSpinCandidates,
   highlightedSlotsForCandidate,
   shouldShowClassicStats,
   slotDisplayLabel,
@@ -67,8 +69,55 @@ describe("uiHelpers", () => {
       passingTouchdowns: null,
     };
     const qb = classicProductionStats(["QB"], production);
-    expect(qb.map((row) => row.label)).toEqual(["G", "Pass Yds", "Pass TD", "Rush Yds"]);
+    expect(qb.map((row) => row.label)).toEqual(["Pass Yds", "Pass TD", "Rush Yds"]);
+    expect(qb.find((row) => row.label === "G")).toBeUndefined();
     expect(qb.find((row) => row.label === "Pass TD")?.value).toBe("—");
+  });
+
+  it("lists only positions present among current eligible candidates", () => {
+    const wr = candidate({ eligibleSlots: ["WR1", "WR2"], positions: ["WR"], cardId: 2, playerId: 2 });
+    const rbFb = candidate({ eligibleSlots: ["RB", "FB"], positions: ["RB", "FB"], cardId: 3, playerId: 3 });
+    expect(availableCandidatePositions([wr, rbFb])).toEqual(["RB", "FB", "WR"]);
+  });
+
+  it("filters candidates without re-sorting or changing eligibility", () => {
+    const qb = candidate({
+      eligibleSlots: ["QB"],
+      positions: ["QB"],
+      cardId: 1,
+      playerId: 1,
+      playerName: "Joe Montana",
+    });
+    const wrA = candidate({
+      eligibleSlots: ["WR1", "WR2"],
+      positions: ["WR"],
+      cardId: 2,
+      playerId: 2,
+      playerName: "Jerry Rice",
+    });
+    const rb = candidate({
+      eligibleSlots: ["RB"],
+      positions: ["RB"],
+      cardId: 3,
+      playerId: 3,
+      playerName: "Marcus Allen",
+    });
+    const wrB = candidate({
+      eligibleSlots: ["WR1"],
+      positions: ["WR"],
+      cardId: 4,
+      playerId: 4,
+      playerName: "Tim Brown",
+    });
+    const ordered = [qb, wrA, rb, wrB];
+
+    const filtered = filterSpinCandidates(ordered, { position: "WR" });
+    expect(filtered.map((entry) => entry.card.cardId)).toEqual([2, 4]);
+    expect(filtered[0]).toBe(wrA);
+    expect(wrA.eligibleSlots).toEqual(["WR1", "WR2"]);
+
+    const named = filterSpinCandidates(ordered, { query: "rice" });
+    expect(named.map((entry) => entry.card.cardId)).toEqual([2]);
   });
 
   it("maps skip and draft failures to user-facing copy", () => {

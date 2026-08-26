@@ -9,7 +9,7 @@
 }
 
 .panel {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 40%), var(--panel);
+  background: var(--panel);
   border: 1px solid var(--panel-border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
@@ -20,8 +20,8 @@
   border: 1px solid var(--border);
   background: var(--bg-elevated);
   color: var(--text);
-  border-radius: 999px;
-  padding: 0.7rem 1.2rem;
+  border-radius: 8px;
+  padding: 0.65rem 1.1rem;
   cursor: pointer;
   transition:
     background 160ms ease,
@@ -31,7 +31,7 @@
 }
 
 .btn:hover:not(:disabled) {
-  border-color: rgba(232, 184, 74, 0.45);
+  border-color: rgba(232, 193, 90, 0.45);
   background: #1a2740;
 }
 
@@ -47,14 +47,16 @@
 .btnPrimary {
   appearance: none;
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: 8px;
   padding: 0.7rem 1.2rem;
   cursor: pointer;
-  background: linear-gradient(180deg, #f0c86a, #d4a231);
-  color: #1a1408;
+  background: #e8c15a;
+  color: #141008;
+  font-family: var(--font-display);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  font-size: 1.05rem;
   transition:
     background 160ms ease,
     transform 120ms ease,
@@ -62,7 +64,7 @@
 }
 
 .btnPrimary:hover:not(:disabled) {
-  background: linear-gradient(180deg, #f6d586, #e0b040);
+  background: #f0cc6e;
 }
 
 .btnPrimary:disabled {
@@ -75,22 +77,22 @@
   width: 100%;
   min-height: 3.8rem;
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: 8px;
   padding: 0.8rem 1.2rem;
   cursor: pointer;
-  background: linear-gradient(180deg, #f3d07a, #d4a231);
-  color: #1a1408;
+  background: #e8c15a;
+  color: #141008;
   font-family: var(--font-display);
-  font-size: 1.7rem;
+  font-size: 1.85rem;
   font-weight: 700;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  box-shadow: 0 10px 28px rgba(232, 184, 74, 0.24);
+  box-shadow: 0 10px 28px rgba(232, 193, 90, 0.22);
   animation: game-pulse 2.4s ease-in-out infinite;
 }
 
 .btnSpin:hover:not(:disabled) {
-  background: linear-gradient(180deg, #f6d586, #e0b040);
+  background: #f0cc6e;
   transform: translateY(-1px);
 }
 
@@ -121,20 +123,20 @@
   border: 1px solid var(--border);
   background: transparent;
   color: var(--text);
-  border-radius: 999px;
+  border-radius: 8px;
   padding: 0.7rem 1.2rem;
   cursor: pointer;
 }
 
 .btnGhost:hover:not(:disabled) {
-  border-color: rgba(232, 184, 74, 0.45);
+  border-color: rgba(232, 193, 90, 0.45);
   background: #1a2740;
 }
 
 .errorBanner {
   margin: 0;
   padding: 0.75rem 1rem;
-  border-radius: 10px;
+  border-radius: 8px;
   background: var(--danger-soft);
   border: 1px solid rgba(255, 107, 107, 0.35);
   color: #ffd5d5;
@@ -143,15 +145,13 @@
 
 .board {
   display: grid;
-  grid-template-columns: minmax(280px, 0.95fr) minmax(320px, 1.05fr);
+  grid-template-columns: minmax(300px, 1fr) minmax(300px, 1fr);
   gap: 16px;
   flex: 1;
-  min-height: 0;
 }
 
 .leftColumn,
 .rightColumn {
-  min-height: 0;
   display: flex;
   flex-direction: column;
 }
@@ -165,11 +165,12 @@
 .mobileTabActive {
   appearance: none;
   flex: 1;
-  border-radius: 10px;
+  border-radius: 8px;
+  font-family: var(--font-display);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.78rem;
-  padding: 0.7rem 1.2rem;
+  letter-spacing: 0.06em;
+  font-size: 0.95rem;
+  padding: 0.65rem 1rem;
   cursor: pointer;
   border: 1px solid var(--border);
   background: var(--bg-elevated);
@@ -178,7 +179,7 @@
 
 .mobileTabActive {
   background: var(--highlight-soft);
-  border-color: rgba(232, 184, 74, 0.5);
+  border-color: rgba(232, 193, 90, 0.5);
   color: var(--highlight);
 }
 
