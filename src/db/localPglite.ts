@@ -1,4 +1,4 @@
-import { mkdir, readFile, readdir } from "node:fs/promises";
+import { mkdir, readFile, readdir, unlink } from "node:fs/promises";
 import path from "node:path";
 
 import { PGlite } from "@electric-sql/pglite";
@@ -12,6 +12,61 @@ const MIGRATIONS_TABLE = "__local_migrations";
 
 /** Durable local PGlite directory shared by data CLI and Next.js development. */
 export const LOCAL_PGLITE_DIR = path.join(process.cwd(), ".data", "pglite");
+
+/** True when this Node process is a Vitest worker. CLI and Next.js are not. */
+export function isAutomatedTestProcess(): boolean {
+  return Boolean(process.env.VITEST);
+}
+
+export function isDurableLocalPgliteDir(dataDir: string | undefined | null): boolean {
+  if (dataDir == null || dataDir === "") return false;
+  return path.resolve(dataDir) === path.resolve(LOCAL_PGLITE_DIR);
+}
+
+/**
+ * The durable `.data/pglite` directory is exclusive to the local Next.js app
+ * and to data CLI commands. Automated tests must use an isolated in-memory or
+ * temporary directory instead — two PGlite WASM instances on the same data dir
+ * abort (`Aborted(). Build with -sASSERTIONS for more info.`).
+ */
+export function assertDurablePgliteNotOpenedFromTests(): void {
+  if (!isAutomatedTestProcess()) return;
+  throw new Error(
+    "Automated tests must not open the durable .data/pglite database. Use an isolated in-memory or temporary PGlite directory unique to the test process.",
+  );
+}
+
+function isProcessAlive(pid: number): boolean {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Unclean PGlite shutdowns leave `postmaster.pid`. A live owner keeps the lock;
+ * a missing, malformed, or dead pid is removed so the app can reopen the same
+ * historical files. This does not delete relation data.
+ */
+async function removeStalePglitePid(dataDir: string): Promise<void> {
+  const pidPath = path.join(dataDir, "postmaster.pid");
+  let contents: string;
+  try {
+    contents = await readFile(pidPath, "utf8");
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return;
+    throw error;
+  }
+
+  const pid = Number.parseInt(contents.split(/\r?\n/)[0]?.trim() ?? "", 10);
+  if (Number.isInteger(pid) && pid > 0 && isProcessAlive(pid)) return;
+
+  await unlink(pidPath).catch((error: NodeJS.ErrnoException) => {
+    if (error.code !== "ENOENT") throw error;
+  });
+}
 
 type LocalPgliteHandle = {
   db: Database;
@@ -133,7 +188,9 @@ export async function applyLocalPgliteMigrations(client: PGlite): Promise<void> 
 }
 
 async function openFreshLocalPgliteDatabase(): Promise<LocalPgliteHandle> {
+  assertDurablePgliteNotOpenedFromTests();
   await mkdir(LOCAL_PGLITE_DIR, { recursive: true });
+  await removeStalePglitePid(LOCAL_PGLITE_DIR);
   const client = new PGlite(LOCAL_PGLITE_DIR);
   await applyLocalPgliteMigrations(client);
 
@@ -159,6 +216,8 @@ async function openFreshLocalPgliteDatabase(): Promise<LocalPgliteHandle> {
  * the browser as `TypeError: Failed to fetch` on later spins).
  */
 export async function openLocalPgliteDatabase(): Promise<LocalPgliteHandle> {
+  assertDurablePgliteNotOpenedFromTests();
+
   if (globalForPglite.__localPgliteHandle) {
     return globalForPglite.__localPgliteHandle;
   }

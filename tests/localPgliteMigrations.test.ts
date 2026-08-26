@@ -6,6 +6,8 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { applyLocalPgliteMigrations } from "@/db/localPglite";
 
+import { createIsolatedPgliteDataDir } from "./helpers/pgliteDatabase";
+
 const MIGRATIONS_DIR = path.join(process.cwd(), "drizzle");
 
 async function execSqlFile(client: PGlite, fileName: string): Promise<void> {
@@ -43,7 +45,7 @@ describe("applyLocalPgliteMigrations", () => {
   });
 
   it("applies pending Phase 3 columns to a pre-journal historical database", async () => {
-    client = new PGlite();
+    client = new PGlite(await createIsolatedPgliteDataDir());
     await execSqlFile(client, "0000_swift_quasimodo.sql");
     await execSqlFile(client, "0001_roster_status.sql");
 
@@ -57,7 +59,7 @@ describe("applyLocalPgliteMigrations", () => {
   });
 
   it("is idempotent when migrations are already applied", async () => {
-    client = new PGlite();
+    client = new PGlite(await createIsolatedPgliteDataDir());
     await applyLocalPgliteMigrations(client);
     await applyLocalPgliteMigrations(client);
 
