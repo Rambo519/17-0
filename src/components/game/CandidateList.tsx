@@ -10,6 +10,7 @@ interface CandidateListProps {
   candidates: SpinCandidate[];
   mode: GameMode;
   selectedCardId: number | null;
+  reveal?: boolean;
   onSelect: (cardId: number) => void;
 }
 
@@ -17,6 +18,7 @@ export function CandidateList({
   candidates,
   mode,
   selectedCardId,
+  reveal = false,
   onSelect,
 }: CandidateListProps) {
   const [query, setQuery] = useState("");
@@ -46,8 +48,12 @@ export function CandidateList({
         </p>
       </div>
       <ul className={styles.list}>
-        {filtered.map((candidate) => (
-          <li key={candidate.card.cardId}>
+        {filtered.map((candidate, index) => (
+          <li
+            key={candidate.card.cardId}
+            className={reveal ? styles.stagger : undefined}
+            style={reveal ? { animationDelay: `${Math.min(index, 8) * 55}ms` } : undefined}
+          >
             <CandidateCard
               candidate={candidate}
               mode={mode}

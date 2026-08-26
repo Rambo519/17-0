@@ -20,14 +20,14 @@ export function SkipControls({
   return (
     <div className={styles.root}>
       <SkipButton
-        title="Team Skip"
+        title="Reroll Team"
         detail="Keep the era. Draw a different franchise."
         remaining={teamSkipRemaining}
         disabled={disabled || busy || teamSkipRemaining <= 0}
         onClick={onTeamSkip}
       />
       <SkipButton
-        title="Era Skip"
+        title="Reroll Era"
         detail="Keep the franchise. Draw a different decade."
         remaining={eraSkipRemaining}
         disabled={disabled || busy || eraSkipRemaining <= 0}

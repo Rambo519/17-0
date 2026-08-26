@@ -20,3 +20,13 @@
   font-size: 0.9rem;
   line-height: 1.45;
 }
+
+.pending {
+  margin: 0;
+  text-align: center;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--highlight);
+  font-size: 0.78rem;
+  font-weight: 700;
+}

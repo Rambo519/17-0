@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import shell from "./game.module.css";
 
+import { unlockGameAudio } from "@/lib/audio/soundEngine";
 import { GameClientError, loadGame } from "@/lib/game/clientApi";
 import type { GameStateView } from "@/lib/game/view";
 import { filledPickCount } from "@/lib/game/uiHelpers";
@@ -81,7 +82,10 @@ export function CompletedGamePageClient({ sessionId }: CompletedGamePageClientPr
       <CompletedLineup
         lineup={game.lineup}
         onNewGame={() => router.push("/")}
-        onViewResults={() => router.push(`/game/${sessionId}/results`)}
+        onViewResults={() => {
+          unlockGameAudio();
+          router.push(`/game/${sessionId}/results`);
+        }}
       />
     </main>
   );

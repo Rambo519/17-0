@@ -23,6 +23,19 @@ afterEach(() => {
   cleanup();
 });
 
+function stubReducedMotion(reduce: boolean) {
+  vi.stubGlobal("matchMedia", (query: string) => ({
+    matches: reduce && query.includes("prefers-reduced-motion: reduce"),
+    media: query,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+    onchange: null,
+  }));
+}
+
 function completedGame(mode: GameStateView["mode"] = "CLASSIC"): GameStateView {
   const slots = ["QB", "RB", "FB", "WR1", "WR2", "TE"] as const;
   return {
@@ -84,6 +97,14 @@ function scoreFixture(overrides: Partial<ScoringResultView> = {}): ScoringResult
 }
 
 describe("ResultsView", () => {
+  beforeEach(() => {
+    stubReducedMotion(true);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it("renders the projected record, supporting metrics, and player breakdown", () => {
     render(
       <ResultsView
@@ -200,8 +221,67 @@ describe("ResultsView", () => {
   });
 });
 
+describe("ResultsView record count", () => {
+  beforeEach(() => {
+    stubReducedMotion(false);
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  it("animates the projected record up to the server value", async () => {
+    render(
+      <ResultsView
+        game={completedGame()}
+        score={scoreFixture()}
+        scoreStatus="ready"
+        errorMessage={null}
+        onRetry={() => undefined}
+        onPlayAgain={() => undefined}
+        onBackToLineup={() => undefined}
+      />,
+    );
+
+    expect(screen.getByText("0–16")).toBeInTheDocument();
+    expect(screen.getByText(/calculating season/i)).toBeInTheDocument();
+    await vi.advanceTimersByTimeAsync(1600);
+    expect(screen.getByText("14–2")).toBeInTheDocument();
+  });
+
+  it("holds 15-1 then lands on 16-0 for a perfect projection", async () => {
+    render(
+      <ResultsView
+        game={completedGame()}
+        score={scoreFixture({
+          projectedWins: 16,
+          projectedLosses: 0,
+          expectedWins: 15.7,
+          perGameWinProbability: 0.98,
+          perfectSeasonProbability: 0.72,
+        })}
+        scoreStatus="ready"
+        errorMessage={null}
+        onRetry={() => undefined}
+        onPlayAgain={() => undefined}
+        onBackToLineup={() => undefined}
+      />,
+    );
+
+    await vi.advanceTimersByTimeAsync(1250);
+    expect(screen.getByText("15–1")).toBeInTheDocument();
+    expect(screen.queryByText("16–0")).not.toBeInTheDocument();
+    await vi.advanceTimersByTimeAsync(400);
+    expect(screen.getByText("16–0")).toBeInTheDocument();
+    expect(screen.getAllByText("16 & 0").length).toBeGreaterThan(0);
+  });
+});
+
 describe("ResultsPageClient", () => {
   beforeEach(() => {
+    stubReducedMotion(true);
     push.mockReset();
     vi.stubGlobal(
       "fetch",

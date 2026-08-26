@@ -73,29 +73,47 @@
 .btnSpin {
   appearance: none;
   width: 100%;
-  min-height: 3.4rem;
+  min-height: 3.8rem;
   border: 1px solid transparent;
   border-radius: 999px;
-  padding: 0.7rem 1.2rem;
+  padding: 0.8rem 1.2rem;
   cursor: pointer;
-  background: linear-gradient(180deg, #f0c86a, #d4a231);
+  background: linear-gradient(180deg, #f3d07a, #d4a231);
   color: #1a1408;
   font-family: var(--font-display);
-  font-size: 1.55rem;
+  font-size: 1.7rem;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
+  box-shadow: 0 10px 28px rgba(232, 184, 74, 0.24);
   animation: game-pulse 2.4s ease-in-out infinite;
 }
 
 .btnSpin:hover:not(:disabled) {
   background: linear-gradient(180deg, #f6d586, #e0b040);
+  transform: translateY(-1px);
+}
+
+.btnSpin:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btnSpin:focus-visible {
+  outline: 2px solid var(--highlight);
+  outline-offset: 3px;
 }
 
 .btnSpin:disabled {
   opacity: 0.45;
   cursor: not-allowed;
   animation: none;
+}
+
+.btnSpinBusy:disabled,
+.btnSpin.btnSpinBusy {
+  opacity: 0.9;
+  cursor: progress;
+  animation: game-pulse 1.1s ease-in-out infinite;
 }
 
 .btnGhost {

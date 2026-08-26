@@ -1,6 +1,7 @@
 import styles from "./gameHeader.module.css";
 
 import type { GameMode } from "@/lib/game/types";
+import { SoundToggle } from "./SoundToggle";
 import { GameProgress } from "./GameProgress";
 
 interface GameHeaderProps {
@@ -23,7 +24,10 @@ export function GameHeader({ mode, roundNumber, filledCount, isComplete }: GameH
           <span className={styles.mode}>{mode}</span>
         </p>
       </div>
-      <GameProgress filledCount={filledCount} />
+      <div className={styles.right}>
+        <SoundToggle />
+        <GameProgress filledCount={filledCount} />
+      </div>
     </header>
   );
 }

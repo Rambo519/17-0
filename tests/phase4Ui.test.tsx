@@ -71,12 +71,24 @@ describe("ModeSelector", () => {
       <ModeSelector mode="CLASSIC" onModeChange={onModeChange} onStart={onStart} busy={false} />,
     );
 
-    expect(screen.getByText("16&0")).toBeInTheDocument();
+    expect(screen.getAllByText("16&0").length).toBeGreaterThan(0);
     expect(screen.getByRole("heading", { name: /build the perfect offense/i })).toBeInTheDocument();
+    expect(screen.getByText(/see historical production while you draft/i)).toBeInTheDocument();
+    expect(screen.getByText(/no statistical help\. trust your football knowledge/i)).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: /classic/i })).toHaveAttribute("aria-checked", "true");
     fireEvent.click(screen.getByRole("radio", { name: /iq/i }));
     expect(onModeChange).toHaveBeenCalledWith("IQ");
     fireEvent.click(screen.getByRole("button", { name: /start game/i }));
     expect(onStart).toHaveBeenCalled();
+  });
+
+  it("supports keyboard selection between Classic and IQ", () => {
+    const onModeChange = vi.fn();
+    render(
+      <ModeSelector mode="CLASSIC" onModeChange={onModeChange} onStart={() => undefined} busy={false} />,
+    );
+    fireEvent.keyDown(screen.getByRole("radiogroup"), { key: "ArrowRight" });
+    expect(onModeChange).toHaveBeenCalledWith("IQ");
   });
 });
 
@@ -164,8 +176,9 @@ describe("SkipControls", () => {
 
     expect(screen.getByText("1 remaining")).toBeInTheDocument();
     expect(screen.getByText("Used")).toBeInTheDocument();
-    const era = screen.getByRole("button", { name: /era skip/i });
+    const era = screen.getByRole("button", { name: /reroll era/i });
     expect(era).toBeDisabled();
+    expect(screen.getByRole("button", { name: /reroll team/i })).toBeEnabled();
   });
 });
 

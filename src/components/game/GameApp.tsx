@@ -1,10 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import shell from "./game.module.css";
 
+import { playDraftLockSound, playSpinStartSound } from "@/lib/audio/cues";
+import { playGameSound, unlockGameAudio } from "@/lib/audio/soundEngine";
 import {
   eraSkip,
   GameClientError,
@@ -16,6 +18,13 @@ import {
 import type { LineupSlot } from "@/lib/football/positions";
 import type { GameMode } from "@/lib/game/types";
 import type { SpinResult } from "@/lib/game/spin";
+import {
+  prefersReducedMotion,
+  runSpinReveal,
+  wait,
+  type SpinRevealFrame,
+  type SpinRevealKind,
+} from "@/lib/game/spinReveal";
 import type { GameStateView } from "@/lib/game/view";
 import { filledPickCount, highlightedSlotsForCandidate } from "@/lib/game/uiHelpers";
 import { CompletedLineup } from "./CompletedLineup";
@@ -28,10 +37,6 @@ type Screen = "mode" | "playing" | "complete";
 type MobileTab = "players" | "lineup";
 type BusyAction = "start" | "spin" | "pick" | "team-skip" | "era-skip" | null;
 
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 export function GameApp() {
   const router = useRouter();
   const [screen, setScreen] = useState<Screen>("mode");
@@ -41,8 +46,18 @@ export function GameApp() {
   const [selectedCardId, setSelectedCardId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<BusyAction>(null);
-  const [revealing, setRevealing] = useState(false);
+  const [reveal, setReveal] = useState<SpinRevealFrame | null>(null);
+  const [spinning, setSpinning] = useState(false);
   const [mobileTab, setMobileTab] = useState<MobileTab>("players");
+  const cancelledRef = useRef(false);
+  const spinInFlight = useRef(false);
+
+  useEffect(() => {
+    cancelledRef.current = false;
+    return () => {
+      cancelledRef.current = true;
+    };
+  }, []);
 
   const selected = useMemo(
     () => spin?.candidates.find((candidate) => candidate.card.cardId === selectedCardId) ?? null,
@@ -61,11 +76,13 @@ export function GameApp() {
     setSelectedCardId(null);
     setError(null);
     setBusy(null);
-    setRevealing(false);
+    setReveal(null);
+    setSpinning(false);
     setMobileTab("players");
   }
 
   async function handleStart() {
+    unlockGameAudio();
     setBusy("start");
     setError(null);
     try {
@@ -73,6 +90,7 @@ export function GameApp() {
       if (!payload.game) throw new GameClientError("INTERNAL_ERROR", "Missing game state.");
       setGame(payload.game);
       setSpin(null);
+      setReveal(null);
       setSelectedCardId(null);
       setScreen(payload.game.isComplete ? "complete" : "playing");
       setMobileTab("players");
@@ -85,67 +103,127 @@ export function GameApp() {
     }
   }
 
-  async function applySpinPayload(payload: { game?: GameStateView; spin?: SpinResult | null }) {
-    if (payload.game) setGame(payload.game);
-    if ("spin" in payload) {
-      setSpin(payload.spin ?? null);
-      setSelectedCardId(null);
-      if (payload.spin) {
-        setRevealing(true);
-        await sleep(650);
-        setRevealing(false);
-      }
+  async function animateSpin(
+    kind: SpinRevealKind,
+    pending: Promise<SpinResult>,
+    held?: { abbreviation: string; franchiseName: string; eraLabel: string },
+  ): Promise<SpinResult> {
+    setSpinning(true);
+    setSelectedCardId(null);
+    let teamLockPlayed = false;
+    let eraLockPlayed = false;
+    try {
+      const result = await runSpinReveal(
+        kind,
+        pending,
+        {
+          wait,
+          now: () => performance.now(),
+          rng: Math.random,
+          onFrame: setReveal,
+          onTeamLock: () => {
+            if (teamLockPlayed) return;
+            teamLockPlayed = true;
+            playGameSound(kind === "full" ? "TEAM_REVEAL" : "SKIP");
+          },
+          onEraLock: () => {
+            if (eraLockPlayed) return;
+            eraLockPlayed = true;
+            playGameSound(kind === "full" ? "ERA_REVEAL" : "SKIP");
+          },
+          isCancelled: () => cancelledRef.current,
+        },
+        { reducedMotion: prefersReducedMotion(), held },
+      );
+      setSpin(result);
+      return result;
+    } finally {
+      setSpinning(false);
     }
-    if (payload.game?.isComplete) setScreen("complete");
   }
 
   async function handleSpin() {
-    if (!game) return;
+    if (!game || spinInFlight.current || busy !== null) return;
+    unlockGameAudio();
+    spinInFlight.current = true;
     setBusy("spin");
     setError(null);
+    setMobileTab("players");
+    playSpinStartSound();
     try {
-      const payload = await spinGame(game.sessionId);
-      await applySpinPayload(payload);
-      setMobileTab("players");
+      const pending = spinGame(game.sessionId).then((payload) => {
+        if (payload.game) setGame(payload.game);
+        if (!payload.spin) throw new GameClientError("INTERNAL_ERROR", "Spin returned no result.");
+        return payload.spin;
+      });
+      await animateSpin("full", pending);
     } catch (err) {
+      setReveal(null);
       const message = err instanceof GameClientError ? err.userMessage : "Spin failed.";
       setError(message);
       console.error(err);
     } finally {
+      spinInFlight.current = false;
       setBusy(null);
     }
   }
 
   async function handleTeamSkip() {
-    if (!game) return;
+    if (!game || !spin || spinInFlight.current || busy !== null) return;
+    unlockGameAudio();
+    spinInFlight.current = true;
     setBusy("team-skip");
     setError(null);
     try {
-      const payload = await teamSkip(game.sessionId);
-      await applySpinPayload(payload);
+      const held = {
+        abbreviation: spin.franchise.abbreviation,
+        franchiseName: spin.franchise.name,
+        eraLabel: spin.era.label,
+      };
+      const pending = teamSkip(game.sessionId).then((payload) => {
+        if (payload.game) setGame(payload.game);
+        if (!payload.spin) throw new GameClientError("INTERNAL_ERROR", "Team skip returned no result.");
+        return payload.spin;
+      });
+      await animateSpin("team", pending, held);
     } catch (err) {
+      setReveal(null);
       const message =
         err instanceof GameClientError ? err.userMessage : "Team Skip could not be used.";
       setError(message);
       console.error(err);
     } finally {
+      spinInFlight.current = false;
       setBusy(null);
     }
   }
 
   async function handleEraSkip() {
-    if (!game) return;
+    if (!game || !spin || spinInFlight.current || busy !== null) return;
+    unlockGameAudio();
+    spinInFlight.current = true;
     setBusy("era-skip");
     setError(null);
     try {
-      const payload = await eraSkip(game.sessionId);
-      await applySpinPayload(payload);
+      const held = {
+        abbreviation: spin.franchise.abbreviation,
+        franchiseName: spin.franchise.name,
+        eraLabel: spin.era.label,
+      };
+      const pending = eraSkip(game.sessionId).then((payload) => {
+        if (payload.game) setGame(payload.game);
+        if (!payload.spin) throw new GameClientError("INTERNAL_ERROR", "Era skip returned no result.");
+        return payload.spin;
+      });
+      await animateSpin("era", pending, held);
     } catch (err) {
+      setReveal(null);
       const message =
         err instanceof GameClientError ? err.userMessage : "Era Skip could not be used.";
       setError(message);
       console.error(err);
     } finally {
+      spinInFlight.current = false;
       setBusy(null);
     }
   }
@@ -159,7 +237,9 @@ export function GameApp() {
     try {
       const payload = await pickPlayer(game.sessionId, selectedCardId, slot);
       if (payload.game) setGame(payload.game);
+      playDraftLockSound();
       setSpin(null);
+      setReveal(null);
       setSelectedCardId(null);
       if (payload.game?.isComplete) {
         setScreen("complete");
@@ -204,7 +284,10 @@ export function GameApp() {
         <CompletedLineup
           lineup={game.lineup}
           onNewGame={resetToMode}
-          onViewResults={() => router.push(`/game/${game.sessionId}/results`)}
+          onViewResults={() => {
+            unlockGameAudio();
+            router.push(`/game/${game.sessionId}/results`);
+          }}
         />
       </main>
     );
@@ -252,11 +335,12 @@ export function GameApp() {
           <SpinPanel
             mode={game.mode}
             spin={spin}
+            reveal={reveal}
             selectedCardId={selectedCardId}
             teamSkipRemaining={game.teamSkipRemaining}
             eraSkipRemaining={game.eraSkipRemaining}
             busy={busy !== null}
-            revealing={revealing}
+            spinning={spinning}
             isComplete={false}
             onSpin={handleSpin}
             onTeamSkip={handleTeamSkip}

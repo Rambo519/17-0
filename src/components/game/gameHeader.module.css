@@ -42,3 +42,10 @@
   text-transform: uppercase;
   font-size: 0.78rem;
 }
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}

@@ -1,6 +1,11 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+
 import styles from "./resultsView.module.css";
 import shell from "./game.module.css";
 
+import { playFinalRecordSound } from "@/lib/audio/cues";
 import { LINEUP_SLOTS } from "@/lib/football/positions";
 import type { GameMode } from "@/lib/game/types";
 import type { GameStateView, LineupSlotView } from "@/lib/game/view";
@@ -16,6 +21,8 @@ import {
   formatScoringSeason,
   metricLabel,
 } from "@/lib/results/format";
+import { prefersReducedMotion } from "@/lib/game/spinReveal";
+import { recordRevealAt, recordRevealEndsAt } from "@/lib/results/recordReveal";
 import { isPerfectProjectedSeason, resultTierFromProjectedWins } from "@/lib/results/tiers";
 import type { ScoringResultView } from "@/lib/scoring/view";
 import { FormationField } from "./FormationField";
@@ -33,6 +40,68 @@ interface ResultsViewProps {
 
 function scoredPlayerForSlot(score: ScoringResultView, slot: LineupSlotView["slot"]) {
   return score.players.find((player) => player.lineupSlot === slot) ?? null;
+}
+
+function emptyRevealFrame() {
+  return { wins: 0, losses: 16, landed: false, counting: false, jackpot: false };
+}
+
+function landedFrame(target: number) {
+  return {
+    wins: target,
+    losses: 16 - target,
+    landed: true,
+    counting: false,
+    jackpot: isPerfectProjectedSeason(target),
+  };
+}
+
+function initialFrame(target: number | null) {
+  if (target == null) return emptyRevealFrame();
+  return prefersReducedMotion() ? landedFrame(target) : recordRevealAt(0, target);
+}
+
+function useProjectedRecordReveal(score: ScoringResultView | null, scoreStatus: string) {
+  const target = scoreStatus === "ready" && score ? Math.round(score.projectedWins) : null;
+  const [activeTarget, setActiveTarget] = useState(target);
+  const [frame, setFrame] = useState(() => initialFrame(target));
+  const landingPlayed = useRef(false);
+
+  if (activeTarget !== target) {
+    setActiveTarget(target);
+    setFrame(initialFrame(target));
+  }
+
+  useEffect(() => {
+    landingPlayed.current = false;
+    if (target == null) return;
+
+    if (prefersReducedMotion()) {
+      landingPlayed.current = true;
+      playFinalRecordSound(target);
+      return;
+    }
+
+    const started = performance.now();
+    const endAt = recordRevealEndsAt(target);
+    let frameId = 0;
+    const tick = () => {
+      const elapsed = performance.now() - started;
+      const next = recordRevealAt(elapsed, target);
+      setFrame(next);
+      if (next.landed && !landingPlayed.current) {
+        landingPlayed.current = true;
+        playFinalRecordSound(target);
+      }
+      if (elapsed < endAt) {
+        frameId = window.setTimeout(tick, 50);
+      }
+    };
+    frameId = window.setTimeout(tick, 50);
+    return () => window.clearTimeout(frameId);
+  }, [target]);
+
+  return frame;
 }
 
 function PlayerBreakdown({
@@ -109,8 +178,10 @@ export function ResultsView({
   onBackToLineup,
   retryDisabled = false,
 }: ResultsViewProps) {
-  const perfect = score ? isPerfectProjectedSeason(score.projectedWins) : false;
-  const tier = score ? resultTierFromProjectedWins(score.projectedWins) : null;
+  const reveal = useProjectedRecordReveal(score, scoreStatus);
+  const targetPerfect = score ? isPerfectProjectedSeason(score.projectedWins) : false;
+  const perfect = targetPerfect && reveal.wins === 16 && reveal.landed;
+  const tier = reveal.landed && score ? resultTierFromProjectedWins(score.projectedWins) : null;
 
   return (
     <div className={styles.root}>
@@ -119,13 +190,19 @@ export function ResultsView({
           className={perfect ? styles.heroJackpot : styles.hero}
           aria-labelledby="projected-record-heading"
         >
-          <p className={styles.kicker}>{game.mode === "IQ" ? "IQ results" : "Classic results"}</p>
-          <p className={styles.tier}>{tier?.label}</p>
+          <p className={styles.kicker}>
+            {reveal.counting ? "Calculating season" : game.mode === "IQ" ? "IQ results" : "Classic results"}
+          </p>
+          <p className={styles.tier}>{reveal.counting ? "Projecting record" : tier?.label}</p>
           <h1 id="projected-record-heading" className={styles.recordLabel}>
             Projected Record
           </h1>
-          <p className={perfect ? `${styles.record} ${styles.recordJackpot}` : styles.record}>
-            {formatProjectedRecord(score.projectedWins, score.projectedLosses)}
+          <p
+            className={perfect ? `${styles.record} ${styles.recordJackpot}` : styles.record}
+            aria-live={reveal.landed ? "polite" : "off"}
+            aria-atomic="true"
+          >
+            {formatProjectedRecord(reveal.wins, reveal.losses)}
           </p>
           {perfect ? <p className={styles.jackpotMark}>16 &amp; 0</p> : null}
         </section>
