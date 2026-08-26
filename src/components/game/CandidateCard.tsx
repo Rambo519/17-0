@@ -1,7 +1,8 @@
 import styles from "./candidateCard.module.css";
 
-import type { GameMode } from "@/lib/game/types";
 import type { SpinCandidate } from "@/lib/game/spin";
+import { formatPlayerDisplayName } from "@/lib/game/playerName";
+import type { GameMode } from "@/lib/game/types";
 import {
   classicProductionStats,
   shouldShowClassicStats,
@@ -28,7 +29,7 @@ export function CandidateCard({ candidate, mode, selected, onSelect }: Candidate
       aria-pressed={selected}
     >
       <div className={styles.top}>
-        <span className={styles.name}>{card.playerName}</span>
+        <span className={styles.name}>{formatPlayerDisplayName(card.playerName)}</span>
         <span className={styles.positions}>{card.positions.join(" · ")}</span>
       </div>
       <p className={styles.slots}>Can fill: {eligibleSlots.join(", ")}</p>

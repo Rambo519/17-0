@@ -4,6 +4,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { CandidateCard } from "@/components/game/CandidateCard";
+import { CandidateList } from "@/components/game/CandidateList";
 import { CompletedLineup } from "@/components/game/CompletedLineup";
 import { FormationField } from "@/components/game/FormationField";
 import { ModeSelector } from "@/components/game/ModeSelector";
@@ -111,6 +112,16 @@ describe("CandidateCard", () => {
     expect(screen.queryByText("7,000")).not.toBeInTheDocument();
   });
 
+  it("presents comma-stored names as First Last", () => {
+    const candidate = wrCandidate();
+    candidate.card.playerName = "Rice, Jerry";
+    render(
+      <CandidateCard candidate={candidate} mode="IQ" selected={false} onSelect={() => undefined} />,
+    );
+    expect(screen.getByText("Jerry Rice")).toBeInTheDocument();
+    expect(screen.queryByText("Rice, Jerry")).not.toBeInTheDocument();
+  });
+
   it("marks a candidate as selected when pressed", () => {
     const onSelect = vi.fn();
     render(
@@ -120,6 +131,32 @@ describe("CandidateCard", () => {
     expect(button).toHaveAttribute("aria-pressed", "true");
     fireEvent.click(button);
     expect(onSelect).toHaveBeenCalled();
+  });
+});
+
+describe("CandidateList", () => {
+  it("keeps server order and hides production in IQ mode", () => {
+    const rice = wrCandidate();
+    const later = wrCandidate();
+    later.card.cardId = 11;
+    later.card.playerId = 11;
+    later.card.playerName = "Aaron Rodgers";
+    later.card.production = { ...EMPTY_PRODUCTION, receivingYards: 500 };
+
+    render(
+      <CandidateList
+        candidates={[rice, later]}
+        mode="IQ"
+        selectedCardId={null}
+        onSelect={() => undefined}
+      />,
+    );
+
+    const buttons = screen.getAllByRole("button");
+    expect(buttons[0]).toHaveTextContent("Jerry Rice");
+    expect(buttons[1]).toHaveTextContent("Aaron Rodgers");
+    expect(screen.queryByText("Rec Yds")).not.toBeInTheDocument();
+    expect(screen.queryByText("7,000")).not.toBeInTheDocument();
   });
 });
 

@@ -21,17 +21,28 @@ export const SOUND_FILES = {
   JACKPOT: "/sounds/jackpot.mp3",
 } as const satisfies Record<SoundEvent, string>;
 
-export const SOUND_DEFAULTS: Readonly<
-  Record<SoundEvent, { volume: number; playbackRate: number; throttleMs: number }>
-> = {
-  SPIN_TICK: { volume: 0.55, playbackRate: 1, throttleMs: 2500 },
-  TEAM_REVEAL: { volume: 0.78, playbackRate: 1, throttleMs: 0 },
-  ERA_REVEAL: { volume: 0.78, playbackRate: 1.05, throttleMs: 0 },
-  DRAFT_LOCK: { volume: 0.72, playbackRate: 1, throttleMs: 0 },
-  SKIP: { volume: 0.62, playbackRate: 0.96, throttleMs: 0 },
-  SHOW_RESULTS: { volume: 0.8, playbackRate: 1, throttleMs: 2500 },
-  JACKPOT: { volume: 0.85, playbackRate: 1, throttleMs: 2500 },
+export interface SoundCueDefaults {
+  volume: number;
+  /** Cue-level gain multiplier applied to `volume` at playback. */
+  gain: number;
+  playbackRate: number;
+  throttleMs: number;
+}
+
+export const SOUND_DEFAULTS: Readonly<Record<SoundEvent, SoundCueDefaults>> = {
+  SPIN_TICK: { volume: 0.55, gain: 1, playbackRate: 1, throttleMs: 2500 },
+  TEAM_REVEAL: { volume: 0.78, gain: 1, playbackRate: 1, throttleMs: 0 },
+  ERA_REVEAL: { volume: 0.78, gain: 1, playbackRate: 1.05, throttleMs: 0 },
+  DRAFT_LOCK: { volume: 0.72, gain: 0.75, playbackRate: 1, throttleMs: 0 },
+  SKIP: { volume: 0.62, gain: 1, playbackRate: 0.96, throttleMs: 0 },
+  SHOW_RESULTS: { volume: 0.8, gain: 1, playbackRate: 1, throttleMs: 2500 },
+  JACKPOT: { volume: 0.85, gain: 1, playbackRate: 1, throttleMs: 2500 },
 };
+
+export function cuePlaybackVolume(event: SoundEvent): number {
+  const defaults = SOUND_DEFAULTS[event];
+  return Math.min(1, Math.max(0, defaults.volume * defaults.gain));
+}
 
 export const SOUND_STORAGE_KEY = "seventeen-and-oh.soundEnabled";
 

@@ -1,3 +1,4 @@
+import { formatPlayerDisplayName } from "@/lib/game/playerName";
 import { LINEUP_SLOTS, positionForSlot, type LineupSlot, type NormalizedPosition } from "@/lib/football/positions";
 
 import type { GameState } from "./gameState";
@@ -57,7 +58,7 @@ export function toGameStateView(state: GameState): GameStateView {
         player: pick
           ? {
               playerId: pick.playerId,
-              playerName: pick.playerName,
+              playerName: formatPlayerDisplayName(pick.playerName),
               franchiseName: pick.franchiseName,
               franchiseAbbreviation: pick.franchiseAbbreviation,
               eraLabel: pick.eraLabel,

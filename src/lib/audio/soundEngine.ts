@@ -3,6 +3,7 @@ import {
   SOUND_FILES,
   SOUND_STORAGE_KEY,
   type SoundEvent,
+  cuePlaybackVolume,
   soundFileForEvent,
 } from "./events";
 
@@ -161,8 +162,9 @@ export function markAudioSourceMissing(src: string): void {
   nodes.delete(src);
 }
 
-function startPlayback(node: HTMLAudioElement, defaults: { volume: number; playbackRate: number }): void {
-  node.volume = defaults.volume;
+function startPlayback(node: HTMLAudioElement, event: SoundEvent): void {
+  const defaults = SOUND_DEFAULTS[event];
+  node.volume = cuePlaybackVolume(event);
   node.playbackRate = defaults.playbackRate;
   try {
     if (!node.paused) {
@@ -200,15 +202,15 @@ export function playGameSound(event: SoundEvent): void {
   lastPlayedAt.set(event, now);
 
   if (event === "SPIN_TICK") {
-    startPlayback(node, defaults);
+    startPlayback(node, event);
     return;
   }
 
   try {
     const shot = new Audio(src);
-    startPlayback(shot, defaults);
+    startPlayback(shot, event);
   } catch {
-    startPlayback(node, defaults);
+    startPlayback(node, event);
   }
 }
 

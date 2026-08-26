@@ -3,7 +3,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { playDraftLockSound, playFinalRecordSound, playJackpotIfPerfect } from "@/lib/audio/cues";
-import { SOUND_FILES, SOUND_STORAGE_KEY, soundFileForEvent } from "@/lib/audio/events";
+import {
+  SOUND_DEFAULTS,
+  SOUND_FILES,
+  SOUND_STORAGE_KEY,
+  cuePlaybackVolume,
+  soundFileForEvent,
+} from "@/lib/audio/events";
 import {
   isSoundEnabled,
   markAudioSourceMissing,
@@ -51,6 +57,21 @@ describe("audio event mapping", () => {
     expect(soundFileForEvent("JACKPOT")).toBe("/sounds/jackpot.mp3");
     expect(SOUND_FILES.TEAM_REVEAL).toBe(SOUND_FILES.ERA_REVEAL);
     expect(SOUND_STORAGE_KEY).toBe("seventeen-and-oh.soundEnabled");
+  });
+
+  it("reduces only draft-lock playback volume by cue gain", () => {
+    expect(SOUND_DEFAULTS.DRAFT_LOCK.gain).toBe(0.75);
+    expect(cuePlaybackVolume("DRAFT_LOCK")).toBeCloseTo(0.72 * 0.75, 8);
+    expect(cuePlaybackVolume("SPIN_TICK")).toBe(SOUND_DEFAULTS.SPIN_TICK.volume);
+    expect(cuePlaybackVolume("TEAM_REVEAL")).toBe(SOUND_DEFAULTS.TEAM_REVEAL.volume);
+    expect(cuePlaybackVolume("ERA_REVEAL")).toBe(SOUND_DEFAULTS.ERA_REVEAL.volume);
+    expect(cuePlaybackVolume("SHOW_RESULTS")).toBe(SOUND_DEFAULTS.SHOW_RESULTS.volume);
+    expect(cuePlaybackVolume("JACKPOT")).toBe(SOUND_DEFAULTS.JACKPOT.volume);
+    expect(SOUND_DEFAULTS.SPIN_TICK.gain).toBe(1);
+    expect(SOUND_DEFAULTS.TEAM_REVEAL.gain).toBe(1);
+    expect(SOUND_DEFAULTS.ERA_REVEAL.gain).toBe(1);
+    expect(SOUND_DEFAULTS.SHOW_RESULTS.gain).toBe(1);
+    expect(SOUND_DEFAULTS.JACKPOT.gain).toBe(1);
   });
 });
 
@@ -135,6 +156,36 @@ describe("sound engine", () => {
     expect(() => playGameSound("TEAM_REVEAL")).not.toThrow();
     await Promise.resolve();
     expect(() => playGameSound("ERA_REVEAL")).not.toThrow();
+  });
+
+  it("applies the reduced draft-lock volume at playback", () => {
+    const played: Array<{ src: string; volume: number }> = [];
+    class TrackingAudio extends FakeAudio {
+      play = () => {
+        played.push({ src: this.src, volume: this.volume });
+        this.paused = false;
+        return play();
+      };
+    }
+    vi.stubGlobal("Audio", TrackingAudio);
+    unlockGameAudio();
+    played.length = 0;
+    play.mockClear();
+    playGameSound("DRAFT_LOCK");
+    expect(played.some((entry) => entry.src === "/sounds/draft-lock.mp3")).toBe(true);
+    expect(
+      played.filter((entry) => entry.src === "/sounds/draft-lock.mp3").every(
+        (entry) => Math.abs(entry.volume - 0.72 * 0.75) < 0.0001,
+      ),
+    ).toBe(true);
+
+    played.length = 0;
+    playGameSound("TEAM_REVEAL");
+    expect(
+      played
+        .filter((entry) => entry.src === "/sounds/reveal-hit.mp3")
+        .every((entry) => Math.abs(entry.volume - 0.78) < 0.0001),
+    ).toBe(true);
   });
 
   it("plays draft lock only through the committed draft cue", () => {

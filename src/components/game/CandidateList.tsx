@@ -4,6 +4,7 @@ import styles from "./candidateList.module.css";
 
 import type { GameMode } from "@/lib/game/types";
 import type { SpinCandidate } from "@/lib/game/spin";
+import { formatPlayerDisplayName } from "@/lib/game/playerName";
 import { CandidateCard } from "./CandidateCard";
 
 interface CandidateListProps {
@@ -26,7 +27,11 @@ export function CandidateList({
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return candidates;
-    return candidates.filter((candidate) => candidate.card.playerName.toLowerCase().includes(q));
+    return candidates.filter((candidate) => {
+      const stored = candidate.card.playerName.toLowerCase();
+      const displayed = formatPlayerDisplayName(candidate.card.playerName).toLowerCase();
+      return stored.includes(q) || displayed.includes(q);
+    });
   }, [candidates, query]);
 
   return (
