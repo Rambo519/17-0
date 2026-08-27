@@ -43,7 +43,7 @@
 
 .searchLabel {
   grid-column: 1 / -1;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -61,7 +61,7 @@
 
 .count {
   margin: 0;
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
   white-space: nowrap;
 }

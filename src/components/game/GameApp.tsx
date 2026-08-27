@@ -15,7 +15,6 @@ import {
   startGame,
   teamSkip,
 } from "@/lib/game/clientApi";
-import { qaForceBaltimore2000s, qaRerollSpin } from "@/lib/game/qaClient";
 import type { LineupSlot } from "@/lib/football/positions";
 import type { GameMode } from "@/lib/game/types";
 import type { SpinResult } from "@/lib/game/spin";
@@ -37,7 +36,7 @@ import { SpinPanel } from "./SpinPanel";
 
 type Screen = "mode" | "playing" | "complete";
 type MobileTab = "players" | "lineup";
-type BusyAction = "start" | "spin" | "pick" | "team-skip" | "era-skip" | "qa" | null;
+type BusyAction = "start" | "spin" | "pick" | "team-skip" | "era-skip" | null;
 
 export function GameApp() {
   const router = useRouter();
@@ -114,43 +113,6 @@ export function GameApp() {
     const filledCount = game ? filledPickCount(game) : 0;
     if (!confirmNewGameIfNeeded(filledCount)) return;
     resetToMode();
-  }
-
-  async function handleQaSpin(kind: "reroll" | "bal-2000s") {
-    if (busy !== null || spinInFlight.current) return;
-    spinInFlight.current = true;
-    setBusy("qa");
-    setError(null);
-    try {
-      let session = game;
-      if (!session || session.isComplete) {
-        unlockGameAudio();
-        const started = await startGame(session?.mode ?? "IQ");
-        if (!started.game) throw new GameClientError("INTERNAL_ERROR", "Missing game state.");
-        session = started.game;
-        setGame(session);
-        setScreen(session.isComplete ? "complete" : "playing");
-      }
-
-      const payload =
-        kind === "reroll"
-          ? await qaRerollSpin(session.sessionId)
-          : await qaForceBaltimore2000s(session.sessionId);
-      if (payload.game) setGame(payload.game);
-      if (!payload.spin) throw new GameClientError("INTERNAL_ERROR", "QA spin returned no result.");
-      setSpin(payload.spin);
-      setReveal(null);
-      setSelectedCardId(null);
-      setSpinning(false);
-      setMobileTab("players");
-    } catch (err) {
-      const message = err instanceof GameClientError ? err.userMessage : "QA spin failed.";
-      setError(message);
-      console.error(err);
-    } finally {
-      spinInFlight.current = false;
-      setBusy(null);
-    }
   }
 
   async function animateSpin(
@@ -314,13 +276,7 @@ export function GameApp() {
           onNewGame={() => {
             void handleNewGame();
           }}
-          onQaReroll={() => {
-            void handleQaSpin("reroll");
-          }}
-          onQaBal2000s={() => {
-            void handleQaSpin("bal-2000s");
-          }}
-          busy={busy === "start" || busy === "qa"}
+          busy={busy === "start"}
         />
       </main>
     );
@@ -370,12 +326,6 @@ export function GameApp() {
           void handleNewGame();
         }}
         newGameDisabled={busy !== null}
-        onQaReroll={() => {
-          void handleQaSpin("reroll");
-        }}
-        onQaBal2000s={() => {
-          void handleQaSpin("bal-2000s");
-        }}
       />
 
       <div className={shell.mobileTabs} role="tablist" aria-label="Game panels">

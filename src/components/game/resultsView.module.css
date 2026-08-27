@@ -4,9 +4,17 @@
   animation: game-fade-up 420ms ease;
 }
 
+.summary {
+  display: grid;
+  grid-template-columns: minmax(0, 0.45fr) minmax(0, 0.55fr);
+  gap: 12px;
+  align-items: stretch;
+}
+
 .hero,
+.heroJackpot,
 .metrics,
-.breakdown,
+.roster,
 .statusCard,
 .actions {
   background: var(--panel);
@@ -15,16 +23,18 @@
   box-shadow: var(--shadow);
 }
 
-.hero {
+.hero,
+.heroJackpot {
   text-align: center;
-  padding: clamp(18px, 3.5vw, 28px) 18px 22px;
+  padding: 12px 14px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
 }
 
 .heroJackpot {
-  text-align: center;
-  padding: clamp(18px, 3.5vw, 28px) 18px 22px;
   border: 1px solid rgba(232, 193, 90, 0.55);
-  border-radius: var(--radius);
   background:
     radial-gradient(circle at 50% 0%, rgba(232, 193, 90, 0.18), transparent 58%),
     var(--panel);
@@ -40,33 +50,33 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-muted);
-  font-size: 0.78rem;
+  font-size: 0.84rem;
 }
 
 .tier {
-  margin: 8px 0 0;
+  margin: 4px 0 0;
   font-family: var(--font-display);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--highlight);
-  font-size: clamp(1.15rem, 3vw, 1.55rem);
+  font-size: clamp(1.15rem, 2.4vw, 1.45rem);
 }
 
 .recordLabel {
-  margin: 12px 0 0;
+  margin: 8px 0 0;
   font-family: var(--font-display);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
-  font-size: 0.82rem;
+  font-size: 0.88rem;
 }
 
 .record {
-  margin: 4px 0 0;
+  margin: 2px 0 0;
   font-family: var(--font-display);
   letter-spacing: 0.04em;
-  font-size: clamp(3.6rem, 12vw, 6.4rem);
-  line-height: 0.88;
+  font-size: clamp(2.7rem, 6vw, 4.2rem);
+  line-height: 0.9;
   color: var(--text);
 }
 
@@ -76,27 +86,31 @@
 }
 
 .jackpotMark {
-  margin: 10px 0 0;
+  margin: 6px 0 0;
   font-family: var(--font-display);
   letter-spacing: 0.06em;
-  font-size: clamp(1.8rem, 6vw, 2.6rem);
+  font-size: clamp(1.25rem, 3vw, 1.7rem);
   color: var(--highlight);
 }
 
 .metrics {
+  margin: 0;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1px;
-  overflow: hidden;
-  background: var(--panel-border);
+  gap: 8px 12px;
+  align-content: center;
+  padding: 12px 14px;
 }
 
 .metric {
   margin: 0;
-  padding: 12px 14px;
-  background: var(--panel);
+  min-width: 0;
   display: grid;
   gap: 2px;
+}
+
+.metricWide {
+  grid-column: 1 / -1;
 }
 
 .metric dt {
@@ -105,14 +119,15 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
 }
 
 .metric dd {
   margin: 0;
   font-family: var(--font-display);
   letter-spacing: 0.03em;
-  font-size: clamp(1.45rem, 4vw, 2rem);
+  font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+  font-variant-numeric: tabular-nums;
 }
 
 .statusCard {
@@ -137,8 +152,21 @@
   margin-top: 14px;
 }
 
+.roster {
+  display: grid;
+  grid-template-columns: minmax(0, 0.48fr) minmax(0, 0.52fr);
+  gap: 14px;
+  align-items: start;
+  padding: 12px;
+}
+
+.rosterField {
+  min-width: 0;
+}
+
 .breakdown {
-  padding: 14px 14px 8px;
+  min-width: 0;
+  padding: 2px 4px 4px;
 }
 
 .breakdownTitle {
@@ -154,22 +182,39 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 8px;
+  gap: 0;
 }
 
 .player {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px;
   display: grid;
-  gap: 4px;
+  grid-template-columns: auto minmax(0, max-content) auto;
+  column-gap: 8px;
+  row-gap: 2px;
+  align-items: start;
+  width: fit-content;
+  max-width: 100%;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
 }
 
-.playerTop {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: baseline;
+.player:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.playerPos {
+  font-family: var(--font-display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--highlight);
+  padding-top: 0.12em;
+  min-width: 1.7rem;
+}
+
+.playerInfo {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
 }
 
 .playerName {
@@ -183,12 +228,14 @@
   letter-spacing: 0.04em;
   font-size: 1.3rem;
   color: var(--highlight);
+  line-height: 1.1;
+  padding-top: 0.02em;
 }
 
 .playerMeta {
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.84rem;
+  font-size: 0.9rem;
 }
 
 .details {
@@ -198,7 +245,7 @@
 .details summary {
   cursor: pointer;
   color: var(--highlight);
-  font-size: 0.84rem;
+  font-size: 0.9rem;
 }
 
 .metricRows {
@@ -211,7 +258,7 @@
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  font-size: 0.84rem;
+  font-size: 0.9rem;
   color: var(--text-muted);
 }
 
@@ -227,13 +274,21 @@
 }
 
 @media (max-width: 700px) {
-  .metrics {
+  .summary,
+  .roster {
     grid-template-columns: 1fr;
   }
 
-  .playerTop {
-    flex-direction: column;
-    gap: 2px;
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 12px;
+    padding: 12px;
+  }
+}
+
+@media (max-width: 380px) {
+  .metrics {
+    grid-template-columns: 1fr;
   }
 }
 

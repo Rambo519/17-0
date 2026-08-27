@@ -1,6 +1,5 @@
 import { FieldDecor } from "./FieldDecor";
 import { NewGameButton } from "./NewGameButton";
-import { QaControls } from "./QaControls";
 import { SoundToggle } from "./SoundToggle";
 import styles from "./modeSelector.module.css";
 
@@ -14,17 +13,9 @@ interface ModeSelectorProps {
   onStart: () => void;
   busy: boolean;
   onNewGame?: () => void;
-  onQaReroll?: () => void;
-  onQaBal2000s?: () => void;
 }
 
-export function ModeSelector({
-  onStart,
-  busy,
-  onNewGame,
-  onQaReroll,
-  onQaBal2000s,
-}: ModeSelectorProps) {
+export function ModeSelector({ onStart, busy, onNewGame }: ModeSelectorProps) {
   return (
     <section className={styles.root} aria-labelledby="start-heading">
       <div className={styles.atmosphere} aria-hidden>
@@ -38,7 +29,6 @@ export function ModeSelector({
       <div className={styles.topBar}>
         <SoundToggle />
         {onNewGame ? <NewGameButton onClick={onNewGame} disabled={busy} /> : null}
-        <QaControls onReroll={onQaReroll} onBal2000s={onQaBal2000s} disabled={busy} />
       </div>
 
       <div className={styles.content}>

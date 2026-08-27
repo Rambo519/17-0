@@ -17,23 +17,6 @@ export const spinRequestSchema = z.object({
   sessionId: sessionIdSchema,
 });
 
-export const qaSpinRequestSchema = z.discriminatedUnion("action", [
-  z.object({
-    action: z.literal("reroll"),
-    sessionId: sessionIdSchema,
-  }),
-  z.object({
-    action: z.literal("force"),
-    sessionId: sessionIdSchema,
-    franchiseAbbreviation: z.string().min(1).max(8),
-    eraLabel: z.string().min(1).max(16),
-  }),
-  z.object({
-    action: z.literal("inspect"),
-    sessionId: sessionIdSchema,
-  }),
-]);
-
 export const skipRequestSchema = z.object({
   sessionId: sessionIdSchema,
 });
@@ -46,6 +29,5 @@ export const pickRequestSchema = z.object({
 
 export type StartGameRequest = z.infer<typeof startGameRequestSchema>;
 export type SpinRequest = z.infer<typeof spinRequestSchema>;
-export type QaSpinRequest = z.infer<typeof qaSpinRequestSchema>;
 export type SkipRequest = z.infer<typeof skipRequestSchema>;
 export type PickRequest = z.infer<typeof pickRequestSchema>;

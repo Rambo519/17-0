@@ -130,6 +130,53 @@ describe("ResultsView", () => {
     expect(screen.getByText(/ALL-TIME OFFENSE/i)).toBeInTheDocument();
   });
 
+  it("places the projected record and season metrics in two summary cards", () => {
+    render(
+      <ResultsView
+        game={completedGame("IQ")}
+        score={scoreFixture()}
+        scoreStatus="ready"
+        errorMessage={null}
+        onRetry={() => undefined}
+        onPlayAgain={() => undefined}
+        onBackToLineup={() => undefined}
+      />,
+    );
+
+    const recordCard = screen.getByRole("heading", { name: /projected record/i }).closest("section");
+    const metricsCard = screen.getByLabelText(/season summary/i);
+    expect(recordCard).toBeTruthy();
+    expect(metricsCard).toBeTruthy();
+    expect(recordCard).not.toBe(metricsCard);
+    expect(recordCard?.parentElement).toBe(metricsCard.parentElement);
+    expect(screen.getByText(/iq results/i)).toBeInTheDocument();
+    expect(screen.getByText("Offense Rating")).toBeInTheDocument();
+    expect(screen.getByText("Expected Wins")).toBeInTheDocument();
+    expect(screen.getByText("Win Probability")).toBeInTheDocument();
+    expect(screen.getByText("17–0 Chance")).toBeInTheDocument();
+    expect(screen.getByText("Team Data Confidence")).toBeInTheDocument();
+  });
+
+  it("pairs the field and lineup in one lower results section", () => {
+    render(
+      <ResultsView
+        game={completedGame("IQ")}
+        score={scoreFixture()}
+        scoreStatus="ready"
+        errorMessage={null}
+        onRetry={() => undefined}
+        onPlayAgain={() => undefined}
+        onBackToLineup={() => undefined}
+      />,
+    );
+
+    const lineup = screen.getByRole("heading", { name: /^lineup$/i }).closest("section");
+    const field = screen.getByRole("region", { name: /i-formation lineup/i });
+    expect(lineup?.parentElement?.contains(field)).toBe(true);
+    expect(screen.getAllByText("Player QB").length).toBeGreaterThan(1);
+    expect(screen.getAllByText("84.5")).toHaveLength(6);
+  });
+
   it("shows Classic production details and hides them in IQ mode", () => {
     const { rerender } = render(
       <ResultsView

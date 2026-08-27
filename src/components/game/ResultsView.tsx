@@ -138,37 +138,36 @@ function PlayerBreakdown({
 
           return (
             <li key={slot} className={styles.player}>
-              <div className={styles.playerTop}>
-                <span className={styles.playerName}>
-                  {slot === "WR1" || slot === "WR2" ? "WR" : slot} {scored.playerName}
-                </span>
-                <span className={styles.playerRating}>{formatPlayerRating(scored.overall)}</span>
+              <span className={styles.playerPos}>{slot === "WR1" || slot === "WR2" ? "WR" : slot}</span>
+              <div className={styles.playerInfo}>
+                <span className={styles.playerName}>{scored.playerName}</span>
+                <p className={styles.playerMeta}>
+                  {player.franchiseName}
+                  <span aria-hidden> · </span>
+                  {player.eraLabel}
+                  <span aria-hidden> · </span>
+                  Season {formatScoringSeason(scored.scoringSeason)}
+                  <span aria-hidden> · </span>
+                  {formatConfidence(scored.dataConfidence)} confidence
+                </p>
+                {mode === "CLASSIC" && scored.metrics.length > 0 ? (
+                  <details className={styles.details}>
+                    <summary>Season production</summary>
+                    <div className={styles.metricRows}>
+                      {scored.metrics.map((metric) => (
+                        <div key={metric.key} className={styles.metricRow}>
+                          <span>{metricLabel(metric.key)}</span>
+                          <span>
+                            {formatMetricValue(metric.rawValue)}
+                            {metric.percentile != null ? ` · ${formatPercentile(metric.percentile)}` : ""}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                ) : null}
               </div>
-              <p className={styles.playerMeta}>
-                {player.franchiseName}
-                <span aria-hidden> · </span>
-                {player.eraLabel}
-                <span aria-hidden> · </span>
-                Season {formatScoringSeason(scored.scoringSeason)}
-                <span aria-hidden> · </span>
-                {formatConfidence(scored.dataConfidence)} confidence
-              </p>
-              {mode === "CLASSIC" && scored.metrics.length > 0 ? (
-                <details className={styles.details}>
-                  <summary>Season production</summary>
-                  <div className={styles.metricRows}>
-                    {scored.metrics.map((metric) => (
-                      <div key={metric.key} className={styles.metricRow}>
-                        <span>{metricLabel(metric.key)}</span>
-                        <span>
-                          {formatMetricValue(metric.rawValue)}
-                          {metric.percentile != null ? ` · ${formatPercentile(metric.percentile)}` : ""}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </details>
-              ) : null}
+              <span className={styles.playerRating}>{formatPlayerRating(scored.overall)}</span>
             </li>
           );
         })}
@@ -195,26 +194,51 @@ export function ResultsView({
   return (
     <div className={styles.root}>
       {scoreStatus === "ready" && score ? (
-        <section
-          className={perfect ? styles.heroJackpot : styles.hero}
-          aria-labelledby="projected-record-heading"
-        >
-          <p className={styles.kicker}>
-            {reveal.counting ? "Calculating season" : game.mode === "IQ" ? "IQ results" : "Classic results"}
-          </p>
-          <p className={styles.tier}>{reveal.counting ? "Projecting record" : tier?.label}</p>
-          <h1 id="projected-record-heading" className={styles.recordLabel}>
-            Projected Record
-          </h1>
-          <p
-            className={perfect ? `${styles.record} ${styles.recordJackpot}` : styles.record}
-            aria-live={reveal.landed ? "polite" : "off"}
-            aria-atomic="true"
+        <div className={styles.summary}>
+          <section
+            className={perfect ? styles.heroJackpot : styles.hero}
+            aria-labelledby="projected-record-heading"
           >
-            {formatProjectedRecord(reveal.wins, reveal.losses)}
-          </p>
-          {perfect ? <p className={styles.jackpotMark}>{PRODUCT_NAME}</p> : null}
-        </section>
+            <p className={styles.kicker}>
+              {reveal.counting ? "Calculating season" : game.mode === "IQ" ? "IQ results" : "Classic results"}
+            </p>
+            <p className={styles.tier}>{reveal.counting ? "Projecting record" : tier?.label}</p>
+            <h1 id="projected-record-heading" className={styles.recordLabel}>
+              Projected Record
+            </h1>
+            <p
+              className={perfect ? `${styles.record} ${styles.recordJackpot}` : styles.record}
+              aria-live={reveal.landed ? "polite" : "off"}
+              aria-atomic="true"
+            >
+              {formatProjectedRecord(reveal.wins, reveal.losses)}
+            </p>
+            {perfect ? <p className={styles.jackpotMark}>{PRODUCT_NAME}</p> : null}
+          </section>
+
+          <dl className={styles.metrics} aria-label="Season summary">
+            <div className={styles.metric}>
+              <dt>Offense Rating</dt>
+              <dd>{formatOffenseRating(score.offenseRating)}</dd>
+            </div>
+            <div className={styles.metric}>
+              <dt>Expected Wins</dt>
+              <dd>{formatExpectedWins(score.expectedWins)}</dd>
+            </div>
+            <div className={styles.metric}>
+              <dt>Win Probability</dt>
+              <dd>{formatWinProbability(score.perGameWinProbability)}</dd>
+            </div>
+            <div className={styles.metric}>
+              <dt>{formatProjectedRecord(REGULAR_SEASON_GAMES, 0)} Chance</dt>
+              <dd>{formatPerfectSeasonChance(score.perfectSeasonProbability)}</dd>
+            </div>
+            <div className={`${styles.metric} ${styles.metricWide}`}>
+              <dt>Team Data Confidence</dt>
+              <dd>{formatConfidence(score.dataConfidence)}</dd>
+            </div>
+          </dl>
+        </div>
       ) : (
         <section className={styles.statusCard} aria-live="polite">
           {scoreStatus === "loading" ? (
@@ -238,35 +262,15 @@ export function ResultsView({
       )}
 
       {scoreStatus === "ready" && score ? (
-        <dl className={styles.metrics}>
-          <div className={styles.metric}>
-            <dt>Offense Rating</dt>
-            <dd>{formatOffenseRating(score.offenseRating)}</dd>
+        <div className={styles.roster}>
+          <div className={styles.rosterField}>
+            <FormationField lineup={game.lineup} highlightedSlots={[]} onSelectSlot={() => undefined} />
           </div>
-          <div className={styles.metric}>
-            <dt>Expected Wins</dt>
-            <dd>{formatExpectedWins(score.expectedWins)}</dd>
-          </div>
-          <div className={styles.metric}>
-            <dt>Win Probability</dt>
-            <dd>{formatWinProbability(score.perGameWinProbability)}</dd>
-          </div>
-          <div className={styles.metric}>
-            <dt>{formatProjectedRecord(REGULAR_SEASON_GAMES, 0)} Chance</dt>
-            <dd>{formatPerfectSeasonChance(score.perfectSeasonProbability)}</dd>
-          </div>
-          <div className={styles.metric}>
-            <dt>Team Data Confidence</dt>
-            <dd>{formatConfidence(score.dataConfidence)}</dd>
-          </div>
-        </dl>
-      ) : null}
-
-      <FormationField lineup={game.lineup} highlightedSlots={[]} onSelectSlot={() => undefined} />
-
-      {scoreStatus === "ready" && score ? (
-        <PlayerBreakdown lineup={game.lineup} score={score} mode={game.mode} />
-      ) : null}
+          <PlayerBreakdown lineup={game.lineup} score={score} mode={game.mode} />
+        </div>
+      ) : (
+        <FormationField lineup={game.lineup} highlightedSlots={[]} onSelectSlot={() => undefined} />
+      )}
 
       <div className={styles.actions}>
         <button type="button" className={shell.btnPrimary} onClick={onPlayAgain}>

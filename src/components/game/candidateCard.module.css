@@ -13,7 +13,7 @@
   border-bottom-color: rgba(255, 255, 255, 0.08);
   background: rgba(8, 14, 24, 0.42);
   color: var(--text);
-  padding: 7px 8px 6px;
+  padding: 10px 8px 9px;
   cursor: pointer;
   transition:
     border-color 120ms ease,
@@ -36,7 +36,7 @@
 
 .player {
   display: grid;
-  gap: 2px;
+  gap: 3px;
   min-width: 0;
 }
 
@@ -50,7 +50,7 @@
 
 .meta {
   min-width: 0;
-  font-size: 0.7rem;
+  font-size: 0.76rem;
   line-height: 1.25;
 }
 
@@ -90,7 +90,7 @@
 
 .stat dt {
   margin: 0;
-  font-size: 0.58rem;
+  font-size: 0.7rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -99,7 +99,7 @@
 
 .stat dd {
   margin: 0;
-  font-size: 0.82rem;
+  font-size: 0.88rem;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
   line-height: 1.15;

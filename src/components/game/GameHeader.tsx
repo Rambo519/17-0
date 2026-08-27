@@ -4,7 +4,6 @@ import { PRODUCT_NAME } from "@/lib/brand";
 import type { GameMode } from "@/lib/game/types";
 import { GameProgress } from "./GameProgress";
 import { NewGameButton } from "./NewGameButton";
-import { QaControls } from "./QaControls";
 import { SoundToggle } from "./SoundToggle";
 
 interface GameHeaderProps {
@@ -14,8 +13,6 @@ interface GameHeaderProps {
   isComplete: boolean;
   onNewGame?: () => void;
   newGameDisabled?: boolean;
-  onQaReroll?: () => void;
-  onQaBal2000s?: () => void;
 }
 
 export function GameHeader({
@@ -25,8 +22,6 @@ export function GameHeader({
   isComplete,
   onNewGame,
   newGameDisabled = false,
-  onQaReroll,
-  onQaBal2000s,
 }: GameHeaderProps) {
   return (
     <header className={styles.root}>
@@ -43,15 +38,6 @@ export function GameHeader({
       <div className={styles.right}>
         <SoundToggle />
         {onNewGame ? <NewGameButton onClick={onNewGame} disabled={newGameDisabled} /> : null}
-        {onQaReroll || onQaBal2000s ? (
-          <div className={styles.qa}>
-            <QaControls
-              onReroll={onQaReroll}
-              onBal2000s={onQaBal2000s}
-              disabled={newGameDisabled}
-            />
-          </div>
-        ) : null}
         <GameProgress filledCount={filledCount} />
       </div>
     </header>
