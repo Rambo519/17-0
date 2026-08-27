@@ -200,6 +200,11 @@ export function createDrizzleGameRepository(db: Database): GameRepository {
       return rows.map(toDraftableCard);
     },
 
+    /**
+     * CLASSIC display totals: SUM of player_seasons for this player+franchise
+     * whose season falls in the card's firstSeason–lastSeason window.
+     * This is not the scoring engine's selected season.
+     */
     async getProductionForCards(cardIds: readonly number[]): Promise<Map<number, CardProduction>> {
       const result = new Map<number, CardProduction>();
       if (cardIds.length === 0) return result;

@@ -5,6 +5,7 @@ import { WIN_PROJECTION_MODEL } from "@/lib/scoring/config";
 import {
   minimumPerGameProbabilityForProjectedWins,
   perGameWinProbabilityFromRating,
+  perfectSeasonProbabilityFromWinProbability,
   projectWinsFromRating,
   ratingThresholdForProjectedWins,
 } from "@/lib/scoring/winProjection";
@@ -60,5 +61,30 @@ describe("scoring top-end win projection", () => {
   it("does not change mid-tier probabilities below the tail start", () => {
     const baseline = 1 / (1 + Math.exp(-WIN_PROJECTION_MODEL.steepness * (73 - 62)));
     expect(perGameWinProbabilityFromRating(73)).toBeCloseTo(baseline, 10);
+  });
+
+  it("starts 16-1 near offense 90.5–91.0 and keeps 17-0 near 92.86", () => {
+    const sixteen = ratingThresholdForProjectedWins(16);
+    const seventeen = ratingThresholdForProjectedWins(REGULAR_SEASON_GAMES);
+    expect(sixteen).toBeGreaterThanOrEqual(90.5);
+    expect(sixteen).toBeLessThanOrEqual(91.0);
+    expect(seventeen).toBeGreaterThan(92.7);
+    expect(seventeen).toBeLessThan(93.1);
+    expect(projectWinsFromRating(88.5).projectedWins).toBe(15);
+    expect(projectWinsFromRating(90).projectedWins).toBe(15);
+    expect(projectWinsFromRating(100).projectedWins).toBe(17);
+  });
+
+  it("computes 17-0 chance from full-precision p, not the displayed percentage", () => {
+    const projection = projectWinsFromRating(92.4);
+    expect(projection.perfectSeasonProbability).toBeCloseTo(
+      perfectSeasonProbabilityFromWinProbability(projection.perGameWinProbability),
+      12,
+    );
+    const displayRoundedP = Number((projection.perGameWinProbability * 100).toFixed(1)) / 100;
+    expect(projection.perfectSeasonProbability).not.toBeCloseTo(
+      displayRoundedP ** WIN_PROJECTION_MODEL.seasonLength,
+      5,
+    );
   });
 });

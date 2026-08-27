@@ -402,17 +402,17 @@ describe("GameApp results navigation", () => {
 
   it("opens the results route when View Results is pressed on a completed game", async () => {
     render(<GameApp />);
-    fireEvent.click(screen.getByRole("button", { name: /start game/i }));
+    fireEvent.click(screen.getByRole("button", { name: /prove it/i }));
     expect(await screen.findByRole("heading", { name: /offense complete/i })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /view results/i }));
     expect(push).toHaveBeenCalledWith("/game/session-1/results");
   });
 
-  it("returns to mode selection when Play Again is pressed", async () => {
+  it("returns to the simplified start screen when Play Again is pressed", async () => {
     render(<GameApp />);
-    fireEvent.click(screen.getByRole("button", { name: /start game/i }));
+    fireEvent.click(screen.getByRole("button", { name: /prove it/i }));
     expect(await screen.findByRole("heading", { name: /offense complete/i })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /play again/i }));
-    expect(screen.getByRole("heading", { name: /build the perfect offense/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /test your football iq/i })).toBeInTheDocument();
   });
 });

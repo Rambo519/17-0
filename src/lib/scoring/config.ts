@@ -105,6 +105,10 @@ export const BALANCE_ADJUSTMENT = {
  * Above that, a power-curve tail extends toward `maxWinProbability` so only
  * extraordinary offenses can project a perfect season
  * (requires p >= (seasonLength - 0.5) / seasonLength).
+ *
+ * Tail start sits at the 16-1 rounding boundary (~90.5) so the midrange
+ * logistic is unchanged and 16-1 no longer begins at the old 88.5 tail.
+ * Exponent is set so 17-0 remains near offense 92.86.
  */
 export const WIN_PROJECTION_MODEL = {
   midpointRating: 62,
@@ -113,9 +117,9 @@ export const WIN_PROJECTION_MODEL = {
   maxWinProbability: 0.99,
   seasonLength: REGULAR_SEASON_GAMES,
   tailExtension: {
-    startRating: 88,
+    startRating: 90.5,
     endRating: 95,
-    exponent: 0.6,
+    exponent: 0.428,
   },
 } as const;
 
@@ -129,3 +133,33 @@ export const MIN_PEER_SAMPLE = 5;
 
 /** FB peer fallback order when FB-eligible sample is thin. */
 export const FB_PEER_FALLBACK_POSITIONS: readonly NormalizedPosition[] = ["FB", "RB"];
+
+/**
+ * FB-slot metric weights (complementary role). Used only when the player is
+ * drafted to the FB slot — dual RB/FB cards still use RB weights at RB.
+ */
+export const FB_SLOT_METRIC_WEIGHTS: PositionMetricWeights = {
+  rushing_yards: 0.15,
+  rushing_touchdowns: 0.15,
+  receptions: 0.25,
+  receiving_yards: 0.25,
+  receiving_touchdowns: 0.2,
+};
+
+/** Feature-back seasons at FB are normalized against RB peers, not the thin FB pool. */
+export const FB_FEATURE_BACK_RUSH_YARDS = 400;
+export const FB_FEATURE_BACK_RUSH_ATTEMPTS = 100;
+
+/**
+ * After RB-peer normalization, feature-back seasons in the FB slot still look
+ * like RB seasons. Blend toward 50 so the complementary slot cannot keep full
+ * feature-back credit. 0.6 maps a 90th-percentile RB season to the 74th.
+ */
+export const FB_SLOT_FEATURE_PERCENTILE_BLEND = 0.6;
+
+/**
+ * Central model assumption for later UI copy. The six drafted skill players
+ * are the only units the player chooses; remaining team quality is average.
+ */
+export const PROJECTED_RECORD_ASSUMPTION =
+  "Projected record assumes league-average offensive line, defense, special teams, coaching, and schedule. You are drafting the skill-position core.";

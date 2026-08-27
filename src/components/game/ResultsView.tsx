@@ -17,10 +17,11 @@ import {
   formatMetricValue,
   formatOffenseRating,
   formatPercentile,
+  formatPerfectSeasonChance,
   formatPlayerRating,
-  formatProbability,
   formatProjectedRecord,
   formatScoringSeason,
+  formatWinProbability,
   metricLabel,
 } from "@/lib/results/format";
 import { prefersReducedMotion } from "@/lib/game/spinReveal";
@@ -248,11 +249,11 @@ export function ResultsView({
           </div>
           <div className={styles.metric}>
             <dt>Win Probability</dt>
-            <dd>{formatProbability(score.perGameWinProbability)}</dd>
+            <dd>{formatWinProbability(score.perGameWinProbability)}</dd>
           </div>
           <div className={styles.metric}>
             <dt>{formatProjectedRecord(REGULAR_SEASON_GAMES, 0)} Chance</dt>
-            <dd>{formatProbability(score.perfectSeasonProbability)}</dd>
+            <dd>{formatPerfectSeasonChance(score.perfectSeasonProbability)}</dd>
           </div>
           <div className={styles.metric}>
             <dt>Team Data Confidence</dt>

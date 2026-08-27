@@ -32,3 +32,9 @@
 .label {
   line-height: 1;
 }
+
+.group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

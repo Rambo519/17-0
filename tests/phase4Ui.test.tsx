@@ -65,31 +65,19 @@ function wrCandidate(): SpinCandidate {
 }
 
 describe("ModeSelector", () => {
-  it("lets the user choose CLASSIC or IQ before starting", () => {
-    const onModeChange = vi.fn();
+  it("starts with a single PROVE IT action and no mode choice", () => {
     const onStart = vi.fn();
-    render(
-      <ModeSelector mode="CLASSIC" onModeChange={onModeChange} onStart={onStart} busy={false} />,
-    );
+    render(<ModeSelector onStart={onStart} busy={false} />);
 
     expect(screen.getAllByText("17-0").length).toBeGreaterThan(0);
-    expect(screen.getByRole("heading", { name: /build the perfect offense/i })).toBeInTheDocument();
-    expect(screen.getByText(/see historical production while you draft/i)).toBeInTheDocument();
-    expect(screen.getByText(/no statistical help\. trust your football knowledge/i)).toBeInTheDocument();
-    expect(screen.getByRole("radio", { name: /classic/i })).toHaveAttribute("aria-checked", "true");
-    fireEvent.click(screen.getByRole("radio", { name: /iq/i }));
-    expect(onModeChange).toHaveBeenCalledWith("IQ");
-    fireEvent.click(screen.getByRole("button", { name: /start game/i }));
+    expect(screen.getByRole("heading", { name: /test your football iq/i })).toBeInTheDocument();
+    expect(
+      screen.getByText("You know the team. You know the era. Can you build 17–0?"),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("radio")).not.toBeInTheDocument();
+    expect(screen.queryByText(/classic/i)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /prove it/i }));
     expect(onStart).toHaveBeenCalled();
-  });
-
-  it("supports keyboard selection between Classic and IQ", () => {
-    const onModeChange = vi.fn();
-    render(
-      <ModeSelector mode="CLASSIC" onModeChange={onModeChange} onStart={() => undefined} busy={false} />,
-    );
-    fireEvent.keyDown(screen.getByRole("radiogroup"), { key: "ArrowRight" });
-    expect(onModeChange).toHaveBeenCalledWith("IQ");
   });
 });
 

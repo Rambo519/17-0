@@ -1,12 +1,16 @@
 .root {
-  height: 100%;
-  min-height: 420px;
+  width: 100%;
+  height: auto;
+  max-height: min(700px, 76dvh);
+  min-height: 0;
   display: flex;
+  align-self: start;
 }
 
 .field {
   position: relative;
-  flex: 1;
+  width: 100%;
+  flex: 0 0 auto;
   border-radius: var(--radius);
   overflow: hidden;
   border: 1px solid rgba(180, 255, 200, 0.18);
@@ -21,31 +25,63 @@
     linear-gradient(180deg, #1a4e36 0%, #133828 55%, #0e2a1f 100%);
   box-shadow: var(--shadow);
   display: grid;
-  grid-template-rows: 1.1fr 0.85fr 0.85fr 0.85fr 1fr;
-  gap: clamp(8px, 1.6vw, 18px);
-  padding: clamp(16px, 3vw, 28px) clamp(12px, 2.5vw, 24px);
+  grid-template-rows: auto auto auto auto auto;
+  align-content: start;
+  row-gap: 10px;
+  padding: 16px clamp(12px, 2.5vw, 24px) 22px;
 }
 
 .yardLines {
   pointer-events: none;
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(90deg, transparent 49.35%, rgba(255, 255, 255, 0.32) 49.35% 50.65%, transparent 50.65%),
-    repeating-linear-gradient(
-      90deg,
-      transparent 0,
-      transparent calc(10% - 1px),
-      rgba(255, 255, 255, 0.12) calc(10% - 1px),
-      rgba(255, 255, 255, 0.12) 10%
+  opacity: 0.7;
+  background-image:
+    linear-gradient(
+      180deg,
+      transparent 0 12.5%,
+      rgba(255, 255, 255, 0.28) 12.5% 13.6%,
+      transparent 13.6%
     ),
     repeating-linear-gradient(
       180deg,
-      transparent 0 18px,
-      rgba(255, 255, 255, 0.08) 18px 19px,
-      transparent 19px 36px
+      transparent 0 40px,
+      rgba(255, 255, 255, 0.15) 40px 42px
+    ),
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 20px,
+      rgba(255, 255, 255, 0.07) 20px 21px,
+      transparent 21px 42px
+    ),
+    repeating-linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.2) 0 7px,
+      transparent 7px 21px
+    ),
+    repeating-linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.2) 0 7px,
+      transparent 7px 21px
     );
-  opacity: 0.7;
+  background-size:
+    auto,
+    auto,
+    auto,
+    12px auto,
+    12px auto;
+  background-position:
+    0 0,
+    0 0,
+    0 0,
+    34% 0,
+    66% 0;
+  background-repeat:
+    no-repeat,
+    repeat,
+    repeat,
+    repeat-y,
+    repeat-y;
 }
 
 .rowWide,
@@ -60,6 +96,10 @@
   justify-content: space-between;
 }
 
+.rowWide + .rowCenter {
+  margin-top: -4px;
+}
+
 .rowCenter {
   justify-content: center;
 }
@@ -70,11 +110,19 @@
 
 @media (max-width: 900px) {
   .root {
-    min-height: 360px;
+    height: auto;
+    max-height: none;
+    min-height: 0;
+    align-self: stretch;
   }
 
   .field {
     grid-template-rows: auto;
-    gap: 12px;
+    row-gap: 12px;
+    padding: 16px 12px 18px;
+  }
+
+  .rowWide + .rowCenter {
+    margin-top: 0;
   }
 }

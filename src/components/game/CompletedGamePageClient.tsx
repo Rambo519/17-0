@@ -7,6 +7,7 @@ import shell from "./game.module.css";
 
 import { unlockGameAudio } from "@/lib/audio/soundEngine";
 import { GameClientError, loadGame } from "@/lib/game/clientApi";
+import { confirmNewGameIfNeeded } from "@/lib/game/newGame";
 import type { GameStateView } from "@/lib/game/view";
 import { filledPickCount } from "@/lib/game/uiHelpers";
 import { CompletedLineup } from "./CompletedLineup";
@@ -78,6 +79,10 @@ export function CompletedGamePageClient({ sessionId }: CompletedGamePageClientPr
         roundNumber={game.roundNumber}
         filledCount={filledPickCount(game)}
         isComplete
+        onNewGame={() => {
+          if (!confirmNewGameIfNeeded(filledPickCount(game))) return;
+          router.push("/");
+        }}
       />
       <CompletedLineup
         lineup={game.lineup}

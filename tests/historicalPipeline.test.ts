@@ -116,7 +116,7 @@ describe("player/team/era card derivation", () => {
     expect(cards.filter((card) => card.eraId === 4)).toHaveLength(2);
   });
 
-  it("marks non-participating developmental seasons undraftable", () => {
+  it("marks roster-only and non-participating seasons undraftable", () => {
     expect(
       isCardDraftable({
         positions: ["WR"],
@@ -127,7 +127,21 @@ describe("player/team/era card derivation", () => {
     expect(
       isCardDraftable({
         positions: ["WR"],
-        seasons: [{ games: 3, rosterStatus: "DEV", hasRosterEvidence: true }],
+        seasons: [{ games: null, rosterStatus: "ACT", hasRosterEvidence: true }],
+      }),
+    ).toBe(false);
+
+    expect(
+      isCardDraftable({
+        positions: ["WR"],
+        seasons: [
+          {
+            games: 3,
+            rosterStatus: "DEV",
+            hasRosterEvidence: true,
+            receivingYards: 48,
+          },
+        ],
       }),
     ).toBe(true);
 

@@ -20,8 +20,8 @@ WR                         WR
 The six draft slots are `QB`, `RB`, `FB`, `WR1`, `WR2`, `TE`. `WR1` and `WR2`
 are separate slots that both accept a normalized `WR`.
 
-**Phase 1 scope:** database model, draft engine, minimal API, developer test
-screen. No historical import, no scoring, no final UI.
+**Phase 1 scope:** database model, draft engine, minimal API. No historical
+import, no scoring, no final UI.
 
 ## Requirements
 
@@ -38,11 +38,7 @@ npm run db:seed              # small development dataset
 npm run dev
 ```
 
-Then open [http://localhost:3000/dev/game](http://localhost:3000/dev/game).
-
-The dev screen is a harness, not the product: Start Game, Spin, see the rolled
-franchise and decade, pick a player, assign them to a legal slot, watch slots
-lock until the game is `COMPLETE`.
+Then open [http://localhost:3000](http://localhost:3000).
 
 ## Scripts
 
@@ -74,7 +70,7 @@ src/lib/game/        pure draft engine (no React, no SQL)
 src/db/              Drizzle schema, client, development seed
 src/server/          Drizzle implementation of the engine's repository port
 src/app/api/game/    HTTP surface
-src/app/dev/game/    developer harness screen
+src/app/page.tsx     player-facing game
 tests/               engine rules + end-to-end run against real SQL
 ```
 

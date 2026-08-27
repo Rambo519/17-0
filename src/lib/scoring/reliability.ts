@@ -57,6 +57,7 @@ function volumePercentileForSeason(
   stat: SeasonStatRecord,
   position: NormalizedPosition,
   baselines: PeerBaselineIndex,
+  peerPositionForMetric?: (metric: MetricKey) => NormalizedPosition,
 ): number | null {
   const keys = VOLUME_METRICS[position];
   let weightSum = 0;
@@ -65,20 +66,22 @@ function volumePercentileForSeason(
   for (const key of keys) {
     const value = metricValueFromSeason(stat, key);
     if (value == null) continue;
-    const peers = baselines.peerValues(stat.season, position, key);
+    const peerPosition = peerPositionForMetric?.(key) ?? position;
+    const peers = baselines.peerValues(stat.season, peerPosition, key);
     if (peers.length === 0) continue;
     weightSum += 1;
-    percentileSum += baselines.percentile(stat.season, position, key, value);
+    percentileSum += baselines.percentileAgainst(stat.season, peerPosition, key, value);
   }
 
   if (stat.rushingAttempts != null && (position === "RB" || position === "FB")) {
-    const peers = baselines.peerValues(stat.season, position, "rushing_yards");
+    const peerPosition = peerPositionForMetric?.("rushing_yards") ?? position;
+    const peers = baselines.peerValues(stat.season, peerPosition, "rushing_yards");
     if (peers.length > 0) {
       const rushYardsProxy = stat.rushingAttempts * 4;
       weightSum += 1;
-      percentileSum += baselines.percentile(
+      percentileSum += baselines.percentileAgainst(
         stat.season,
-        position,
+        peerPosition,
         "rushing_yards",
         rushYardsProxy,
       );
@@ -97,8 +100,11 @@ export function computeSeasonReliability(
   stat: SeasonStatRecord,
   position: NormalizedPosition,
   baselines: PeerBaselineIndex,
+  options: {
+    peerPositionForMetric?: (metric: MetricKey) => NormalizedPosition;
+  } = {},
 ): ReliabilityResult {
-  const volumePercentile = volumePercentileForSeason(stat, position, baselines);
+  const volumePercentile = volumePercentileForSeason(stat, position, baselines, options.peerPositionForMetric);
   const gamesFactor = effectiveGamesFactor(stat, volumePercentile);
 
   const volumeNorm =

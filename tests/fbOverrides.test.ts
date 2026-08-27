@@ -81,9 +81,37 @@ describe("FB override application", () => {
 
   it("loads committed override file", async () => {
     const loaded = await loadPositionOverrides();
-    expect(loaded.length).toBeGreaterThanOrEqual(6);
+    expect(loaded.length).toBeGreaterThanOrEqual(7);
     expect(loaded.every((row) => row.eligiblePositions.includes("FB"))).toBe(true);
     expect(loaded.every((row) => row.reason.length > 0)).toBe(true);
+    expect(
+      loaded.some((row) => row.gsisId === "00-0038489" && row.franchiseSlug === "philadelphia-eagles"),
+    ).toBe(true);
     expect(typeof applyOverridesAndRebuildCards).toBe("function");
+  });
+
+  it("can attach FB to a non-skill roster label when an override matches", () => {
+    const overrides: PositionOverride[] = [
+      {
+        gsisId: "00-0038489",
+        playerName: "Ben VanSumeren",
+        franchiseSlug: "philadelphia-eagles",
+        fromSeason: 2024,
+        toSeason: 2024,
+        eligiblePositions: ["FB"],
+        reason: "test",
+      },
+    ];
+    expect(
+      normalizeRosterPositions({ position: "LB", depthChartPosition: "ILB" }).automatic,
+    ).toEqual([]);
+    const rescued = applyPositionOverrides([], overrides, {
+      gsisId: "00-0038489",
+      playerName: "Ben VanSumeren",
+      franchiseSlug: "philadelphia-eagles",
+      season: 2024,
+    });
+    expect(rescued.positions).toEqual(["FB"]);
+    expect(rescued.applied).toHaveLength(1);
   });
 });

@@ -69,6 +69,22 @@ export class PeerBaselineIndex {
     return percentileRank(value, peers, metric);
   }
 
+  /** Percentile against an explicit peer position. RB never uses the FB fallback. */
+  percentileAgainst(
+    season: number,
+    peerPosition: NormalizedPosition,
+    metric: MetricKey,
+    value: number,
+  ): number {
+    if (peerPosition === "FB") {
+      return this.percentile(season, "FB", metric, value);
+    }
+    const key = `${seasonPositionKey(season, peerPosition)}:${metric}`;
+    const exact = this.valuesBySeasonPositionMetric.get(key) ?? [];
+    const peers = exact.length > 0 ? exact : this.peerValues(season, peerPosition, metric);
+    return percentileRank(value, peers, metric);
+  }
+
   private resolveFbPeerPositions(season: number, metric: MetricKey): NormalizedPosition[] {
     for (const position of FB_PEER_FALLBACK_POSITIONS) {
       const key = `${seasonPositionKey(season, position)}:${metric}`;

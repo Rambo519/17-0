@@ -9,7 +9,10 @@ export function evaluateLineupPick(
   baselines: PeerBaselineIndex,
 ): PlayerEvaluation {
   const normalizedPosition = positionForSlot(pick.lineupSlot);
-  const selected = selectScoringSeason(pick.seasons, normalizedPosition, baselines);
+  const selected = selectScoringSeason(pick.seasons, normalizedPosition, baselines, {
+    lineupSlot: pick.lineupSlot,
+    cardPositions: pick.positions,
+  });
 
   return {
     playerId: pick.playerId,

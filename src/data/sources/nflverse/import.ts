@@ -19,17 +19,18 @@ import {
   replacePlayerTeamEraCards,
   type CardStintInput,
 } from "@/data/cards/buildCards";
+import {
+  applyPositionOverrides,
+  findMatchingOverrides,
+  loadPositionOverrides,
+  type PositionOverride,
+} from "@/data/positions/overrides";
 import { resolveFranchiseAlias } from "@/data/franchises/aliases";
 import {
   FRANCHISE_LINEAGES,
   namingForSeason,
   seasonsForFranchise,
 } from "@/data/franchises/lineages";
-import {
-  applyPositionOverrides,
-  loadPositionOverrides,
-  type PositionOverride,
-} from "@/data/positions/overrides";
 import {
   assertDestructiveImportAllowed,
   type DataDatabaseKind,
@@ -51,6 +52,7 @@ import {
   readCsvRows,
 } from "./download";
 import { isSkillEligibleRosterRow, normalizeRosterPositions } from "./positions";
+import { nflverseProductionJoinKey } from "./productionJoin";
 
 const SOURCE = "nflverse";
 const INSERT_CHUNK = 400;
@@ -180,11 +182,13 @@ async function loadProductionByPlayerTeamSeason(
         const week = row.week?.trim();
         if (!gsisId || !team || !week) continue;
 
-        const weekKey = `${gsisId}|${team}|${season}|${week}|${row.season_type ?? ""}`;
+        const seasonKey = nflverseProductionJoinKey(gsisId, team, season);
+        if (!seasonKey) continue;
+
+        const weekKey = `${seasonKey}|${week}|${row.season_type ?? ""}`;
         if (weekKeys.has(weekKey)) continue;
         weekKeys.add(weekKey);
 
-        const seasonKey = `${gsisId}|${team}|${season}`;
         const current = totals.get(seasonKey) ?? {
           games: 0,
           passingYards: 0,
@@ -222,15 +226,9 @@ function lookupProduction(
   season: number,
 ): SeasonProduction | null {
   if (!gsisId) return null;
-  const direct = productionByKey.get(`${gsisId}|${teamAbbr.toUpperCase()}|${season}`);
-  if (direct) return direct;
-
-  // Stats files use modern abbreviations; try common lineage codes.
-  for (const abbr of ["LA", "LAR", "LAC", "LV", "LVR", "OAK", "SD", "STL", "WAS", "WSH"]) {
-    const value = productionByKey.get(`${gsisId}|${abbr}|${season}`);
-    if (value) return value;
-  }
-  return null;
+  const key = nflverseProductionJoinKey(gsisId, teamAbbr, season);
+  if (!key) return null;
+  return productionByKey.get(key) ?? null;
 }
 
 export async function importNflverseHistoricalData(
@@ -369,9 +367,28 @@ export async function importNflverseHistoricalData(
       const position = row.position ?? "";
       const depthChartPosition = row.depth_chart_position ?? "";
 
-      if (!isSkillEligibleRosterRow({ position, depthChartPosition })) {
-        skippedNonSkill += 1;
-        continue;
+      const displayName =
+        row.full_name?.trim() ||
+        `${row.first_name ?? ""} ${row.last_name ?? ""}`.trim() ||
+        "Unknown Player";
+      const gsisId = row.gsis_id?.trim() || null;
+      const pfrId = row.pfr_id?.trim() || null;
+      const skillEligible = isSkillEligibleRosterRow({ position, depthChartPosition });
+
+      if (!skillEligible) {
+        const aliasPreview = resolveFranchiseAlias(team, season);
+        const overrideRescue =
+          aliasPreview.ok &&
+          findMatchingOverrides(overrides, {
+            gsisId,
+            playerName: displayName,
+            franchiseSlug: aliasPreview.slug,
+            season,
+          }).length > 0;
+        if (!overrideRescue) {
+          skippedNonSkill += 1;
+          continue;
+        }
       }
 
       const alias = resolveFranchiseAlias(team, season);
@@ -384,13 +401,6 @@ export async function importNflverseHistoricalData(
 
       const normalized = normalizeRosterPositions({ position, depthChartPosition });
       for (const label of normalized.unmappedLabels) bump(unmappedPositions, label);
-
-      const displayName =
-        row.full_name?.trim() ||
-        `${row.first_name ?? ""} ${row.last_name ?? ""}`.trim() ||
-        "Unknown Player";
-      const gsisId = row.gsis_id?.trim() || null;
-      const pfrId = row.pfr_id?.trim() || null;
 
       const overrideResult = applyPositionOverrides(normalized.automatic, overrides, {
         gsisId,
@@ -588,6 +598,14 @@ export async function importNflverseHistoricalData(
         games: row.games,
         rosterStatus: row.rosterStatus,
         hasRosterEvidence: true,
+        passingYards: row.passingYards,
+        passingTouchdowns: row.passingTouchdowns,
+        rushingAttempts: null,
+        rushingYards: row.rushingYards,
+        rushingTouchdowns: row.rushingTouchdowns,
+        receptions: row.receptions,
+        receivingYards: row.receivingYards,
+        receivingTouchdowns: row.receivingTouchdowns,
       },
     ];
     stintMap.set(key, stint);

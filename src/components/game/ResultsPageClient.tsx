@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import shell from "./game.module.css";
 
 import { GameClientError, loadGame, loadGameScore } from "@/lib/game/clientApi";
+import { confirmNewGameIfNeeded } from "@/lib/game/newGame";
 import type { GameStateView } from "@/lib/game/view";
 import type { ScoringResultView } from "@/lib/scoring/view";
 import { GameHeader } from "./GameHeader";
@@ -102,7 +103,16 @@ export function ResultsPageClient({ sessionId }: ResultsPageClientProps) {
 
   return (
     <main className={shell.shell}>
-      <GameHeader mode={game.mode} roundNumber={game.roundNumber} filledCount={6} isComplete />
+      <GameHeader
+        mode={game.mode}
+        roundNumber={game.roundNumber}
+        filledCount={6}
+        isComplete
+        onNewGame={() => {
+          if (!confirmNewGameIfNeeded(6)) return;
+          router.push("/");
+        }}
+      />
       <ResultsView
         game={game}
         score={score}

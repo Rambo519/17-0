@@ -13,6 +13,17 @@ describe("franchise alias mapping", () => {
     expect(FRANCHISE_LINEAGES).toHaveLength(32);
   });
 
+  it("joins Ravens roster BLT with player_stats BAL for the same season", () => {
+    expect(resolveFranchiseAlias("BLT", 2005)).toEqual({ ok: true, slug: "baltimore-ravens" });
+    expect(resolveFranchiseAlias("BAL", 2005)).toEqual({ ok: true, slug: "baltimore-ravens" });
+  });
+
+  it("joins Texans roster HST with player_stats HOU for the same season", () => {
+    expect(resolveFranchiseAlias("HST", 2005)).toEqual({ ok: true, slug: "houston-texans" });
+    expect(resolveFranchiseAlias("HOU", 2005)).toEqual({ ok: true, slug: "houston-texans" });
+    expect(resolveFranchiseAlias("HOU", 1999).ok).toBe(false);
+  });
+
   it("maps relocation aliases to permanent lineages", () => {
     expect(resolveFranchiseAlias("OAK", 1976)).toEqual({ ok: true, slug: "las-vegas-raiders" });
     expect(resolveFranchiseAlias("SD", 2005)).toEqual({ ok: true, slug: "los-angeles-chargers" });

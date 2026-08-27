@@ -1,6 +1,6 @@
 import type { Database } from "@/db/client";
 import { playerTeamEraCards, playerTeamEraPositions } from "@/db/schema";
-import { isCardDraftable, type SeasonParticipation } from "@/data/draftable";
+import { isCardDraftable, productionEvidenceFrom, type SeasonParticipation } from "@/data/draftable";
 import type { NormalizedPosition } from "@/lib/football/positions";
 
 /**
@@ -63,13 +63,7 @@ export function derivePlayerTeamEraCards(stints: readonly CardStintInput[]): Bui
           representativeSeason: games > 0 ? season.season : null,
           bestGames: games,
           positions: new Set(season.positions),
-          seasons: [
-            {
-              games: season.games,
-              rosterStatus: season.rosterStatus,
-              hasRosterEvidence: season.hasRosterEvidence,
-            },
-          ],
+          seasons: [toSeasonParticipation(season)],
         });
         continue;
       }
@@ -77,11 +71,7 @@ export function derivePlayerTeamEraCards(stints: readonly CardStintInput[]): Bui
       existing.firstSeason = Math.min(existing.firstSeason, season.season);
       existing.lastSeason = Math.max(existing.lastSeason, season.season);
       for (const position of season.positions) existing.positions.add(position);
-      existing.seasons.push({
-        games: season.games,
-        rosterStatus: season.rosterStatus,
-        hasRosterEvidence: season.hasRosterEvidence,
-      });
+      existing.seasons.push(toSeasonParticipation(season));
       if (games > existing.bestGames) {
         existing.bestGames = games;
         existing.representativeSeason = season.season;
@@ -140,4 +130,14 @@ export async function replacePlayerTeamEraCards(
   }
 
   return written;
+}
+
+function toSeasonParticipation(season: CardSeasonInput): SeasonParticipation {
+  return {
+    ...productionEvidenceFrom(season),
+    games: season.games,
+    rosterStatus: season.rosterStatus,
+    hasRosterEvidence: season.hasRosterEvidence,
+    positions: season.positions,
+  };
 }

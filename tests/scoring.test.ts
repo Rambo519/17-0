@@ -174,19 +174,19 @@ describe("scoring engine", () => {
       season: 1990,
       playerId: 301,
       positions: ["FB"],
-      rushingYards: 520,
-      rushingTouchdowns: 4,
-      receptions: 22,
-      receivingYards: 320,
+      rushingYards: 280,
+      rushingTouchdowns: 3,
+      receptions: 28,
+      receivingYards: 260,
     });
     const rb = season({
       season: 1990,
       playerId: 210,
       positions: ["RB"],
-      rushingYards: 520,
-      rushingTouchdowns: 4,
-      receptions: 22,
-      receivingYards: 320,
+      rushingYards: 280,
+      rushingTouchdowns: 3,
+      receptions: 28,
+      receivingYards: 260,
     });
 
     const fbScore = scorePlayerSeason(fb, "FB", baselines);

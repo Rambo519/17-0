@@ -74,6 +74,21 @@ describe("uiHelpers", () => {
     expect(qb.find((row) => row.label === "Pass TD")?.value).toBe("—");
   });
 
+  it("shows games for a blocking FB instead of a blank CLASSIC card", () => {
+    const stats = classicProductionStats(["FB"], { ...EMPTY_PRODUCTION, games: 16 });
+    expect(stats[0]).toEqual({ label: "G", value: "16" });
+    expect(stats.every((row) => row.value === "—")).toBe(false);
+  });
+
+  it("shows rushing for a dual WR/RB whose only production is rushing", () => {
+    const stats = classicProductionStats(["WR", "RB"], {
+      ...EMPTY_PRODUCTION,
+      rushingYards: 214,
+      rushingTouchdowns: 1,
+    });
+    expect(stats.some((row) => row.label === "Rush Yds" && row.value === "214")).toBe(true);
+  });
+
   it("lists only positions present among current eligible candidates", () => {
     const wr = candidate({ eligibleSlots: ["WR1", "WR2"], positions: ["WR"], cardId: 2, playerId: 2 });
     const rbFb = candidate({ eligibleSlots: ["RB", "FB"], positions: ["RB", "FB"], cardId: 3, playerId: 3 });

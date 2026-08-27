@@ -16,6 +16,10 @@ import {
 import type { NormalizedPosition } from "@/lib/football/positions";
 import { NORMALIZED_POSITIONS } from "@/lib/football/positions";
 import { PLAYABLE_ERA_LABELS } from "@/lib/football/eras";
+import {
+  buildDisplayedProductionCoverage,
+  type DisplayedProductionCoverage,
+} from "@/data/audit/displayedProduction";
 
 export interface FranchiseEraCoverageRow {
   franchise: string;
@@ -46,6 +50,7 @@ export interface CoverageAuditReport {
   generatedAt: string;
   franchiseEraRows: FranchiseEraCoverageRow[];
   productionByEra: EraProductionCoverageRow[];
+  displayedProduction: DisplayedProductionCoverage;
   summary: {
     franchiseEraCombinations: number;
     fullFormationViable: number;
@@ -223,11 +228,13 @@ export async function runCoverageAudit(db: Database): Promise<CoverageAuditRepor
     .where(eq(playerTeamEraCards.draftable, true));
 
   const productionByEra = await buildProductionCoverageByEra(db);
+  const displayedProduction = await buildDisplayedProductionCoverage(db);
 
   return {
     generatedAt: new Date().toISOString(),
     franchiseEraRows,
     productionByEra,
+    displayedProduction,
     summary: {
       franchiseEraCombinations: franchiseEraRows.length,
       fullFormationViable: franchiseEraRows.filter((row) => row.fullFormationViable).length,
@@ -327,6 +334,22 @@ export async function writeCoverageAuditReports(
     ...report.productionByEra.map(
       (row) => `  ${row.era}: ${row.productionCoveragePercent}%`,
     ),
+    "",
+    "CLASSIC DISPLAYED PRODUCTION (position-relevant, not any-field)",
+    `  draftable=${report.displayedProduction.totals.draftableCards}` +
+      ` relevant=${report.displayedProduction.totals.positionRelevant}` +
+      ` dashes=${report.displayedProduction.totals.classicAllDashes}` +
+      ` unrelated=${report.displayedProduction.totals.unrelatedOnly}` +
+      ` partialSpan=${report.displayedProduction.totals.partialModernSpan}` +
+      ` fbExceptionOnly=${report.displayedProduction.totals.fbExceptionOnly}`,
+    ...report.displayedProduction.byEraAndPosition
+      .filter((row) => row.position === "ALL")
+      .map(
+        (row) =>
+          `  ${row.era}: relevant=${row.positionRelevant}/${row.draftableCards}` +
+          ` dashes=${row.classicAllDashes} unrelated=${row.unrelatedOnly}` +
+          ` partial=${row.partialModernSpan}`,
+      ),
     "",
     "FULLBACK COVERAGE",
     `  0 FB:  ${report.fullbackCoverage.zeroFb}`,

@@ -14,6 +14,18 @@ function baseLogisticWinProbability(rating: number): number {
 }
 
 /**
+ * Perfect-season chance from the engine win probability. Never round `p`
+ * to a display percentage before raising it to season length — that is what
+ * turned 0.96605^17 (55.6%) into a lower figure from 0.966^17.
+ */
+export function perfectSeasonProbabilityFromWinProbability(
+  perGameWinProbability: number,
+  seasonLength: number = WIN_PROJECTION_MODEL.seasonLength,
+): number {
+  return perGameWinProbability ** seasonLength;
+}
+
+/**
  * Maps offense rating to per-game win probability via a tunable logistic curve
  * with an elite-only tail extension above `tailExtension.startRating`.
  */
@@ -51,7 +63,10 @@ export function projectWinsFromRating(rating: number): WinProjection {
     projectedWins,
     projectedLosses,
     perGameWinProbability,
-    perfectSeasonProbability: perGameWinProbability ** seasonLength,
+    perfectSeasonProbability: perfectSeasonProbabilityFromWinProbability(
+      perGameWinProbability,
+      seasonLength,
+    ),
   };
 }
 

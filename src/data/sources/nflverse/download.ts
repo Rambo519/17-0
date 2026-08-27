@@ -84,8 +84,8 @@ export async function downloadNflverseData(
         try {
           await downloadFile(NFLVERSE_PLAYER_STATS_URL(season), statsPath);
         } catch (error) {
-          // Stats lag the roster release for the newest season; roster-only
-          // participation (ACT status) still covers draftable decisions.
+          // Stats lag the roster release for the newest season. Games stay
+          // NULL until player_stats exist; roster ACT is not enough to draft.
           process.stdout.write(
             `Skipping player_stats ${season}: ${(error as Error).message}\n`,
           );

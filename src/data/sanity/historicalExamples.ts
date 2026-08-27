@@ -43,6 +43,24 @@ export const PHASE2_SANITY_EXPECTATIONS: readonly SanityExpectation[] = [
     eraLabel: "2010s",
     playerNames: ["Tom Brady", "Rob Gronkowski", "Julian Edelman"],
   },
+  {
+    label: "Houston — 2000s",
+    franchiseSlug: "houston-texans",
+    eraLabel: "2000s",
+    playerNames: ["Andre Johnson", "Matt Schaub", "Owen Daniels", "Domanick Williams"],
+  },
+  {
+    label: "Baltimore — 2000s",
+    franchiseSlug: "baltimore-ravens",
+    eraLabel: "2000s",
+    playerNames: [
+      "Todd Heap",
+      "Daniel Wilcox",
+      "Chester Taylor",
+      "Anthony Wright",
+      "Demetrius Williams",
+    ],
+  },
 ];
 
 export interface ProductionSanityExpectation {
@@ -59,6 +77,16 @@ export interface ProductionSanityExpectation {
     | "rushingTouchdowns"
     | "receivingTouchdowns"
     | "receptions"
+  >;
+  /** Guard against partial era-window aggregation (e.g. 2001-only Todd Heap). */
+  requireAtLeast?: Partial<
+    Record<
+      | "passingYards"
+      | "rushingYards"
+      | "receivingYards"
+      | "receptions",
+      number
+    >
   >;
 }
 
@@ -133,6 +161,74 @@ export const HISTORICAL_PRODUCTION_SANITY: readonly ProductionSanityExpectation[
     franchiseSlug: "green-bay-packers",
     eraLabel: "1990s",
     requirePositive: ["passingYards", "passingTouchdowns"],
+  },
+  {
+    label: "Andre Johnson — Houston — 2000s",
+    playerName: "Andre Johnson",
+    franchiseSlug: "houston-texans",
+    eraLabel: "2000s",
+    requirePositive: ["receivingYards", "receptions"],
+  },
+  {
+    label: "Matt Schaub — Houston — 2000s",
+    playerName: "Matt Schaub",
+    franchiseSlug: "houston-texans",
+    eraLabel: "2000s",
+    requirePositive: ["passingYards", "passingTouchdowns"],
+  },
+  {
+    label: "Owen Daniels — Houston — 2000s",
+    playerName: "Owen Daniels",
+    franchiseSlug: "houston-texans",
+    eraLabel: "2000s",
+    requirePositive: ["receivingYards", "receptions"],
+  },
+  {
+    label: "Domanick Williams — Houston — 2000s",
+    playerName: "Domanick Williams",
+    franchiseSlug: "houston-texans",
+    eraLabel: "2000s",
+    requirePositive: ["rushingYards"],
+  },
+  {
+    label: "Todd Heap — Baltimore — 2000s",
+    playerName: "Todd Heap",
+    franchiseSlug: "baltimore-ravens",
+    eraLabel: "2000s",
+    requirePositive: ["receivingYards", "receptions"],
+    requireAtLeast: { receivingYards: 4000, receptions: 300 },
+  },
+  {
+    label: "Daniel Wilcox — Baltimore — 2000s",
+    playerName: "Daniel Wilcox",
+    franchiseSlug: "baltimore-ravens",
+    eraLabel: "2000s",
+    requirePositive: ["receivingYards", "receptions"],
+    requireAtLeast: { receivingYards: 400, receptions: 50 },
+  },
+  {
+    label: "Chester Taylor — Baltimore — 2000s",
+    playerName: "Chester Taylor",
+    franchiseSlug: "baltimore-ravens",
+    eraLabel: "2000s",
+    requirePositive: ["rushingYards"],
+    requireAtLeast: { rushingYards: 1000 },
+  },
+  {
+    label: "Anthony Wright — Baltimore — 2000s",
+    playerName: "Anthony Wright",
+    franchiseSlug: "baltimore-ravens",
+    eraLabel: "2000s",
+    requirePositive: ["passingYards"],
+    requireAtLeast: { passingYards: 2000 },
+  },
+  {
+    label: "Demetrius Williams — Baltimore — 2000s",
+    playerName: "Demetrius Williams",
+    franchiseSlug: "baltimore-ravens",
+    eraLabel: "2000s",
+    requirePositive: ["receivingYards", "receptions"],
+    requireAtLeast: { receivingYards: 800, receptions: 40 },
   },
 ];
 
@@ -288,17 +384,25 @@ export async function runHistoricalProductionSanityChecks(
       receivingTouchdowns: production.receivingTouchdowns,
     };
 
-    const ok = expectation.requirePositive.every((field) => {
+    const okPositive = expectation.requirePositive.every((field) => {
       const value = production[field];
       return value != null && value > 0;
     });
+    const floors = expectation.requireAtLeast ?? {};
+    const okFloors = (Object.entries(floors) as Array<[keyof typeof floors, number]>).every(
+      ([field, minimum]) => {
+        const value = production[field];
+        return value != null && value >= minimum;
+      },
+    );
+    const ok = okPositive && okFloors;
 
     results.push({
       label: expectation.label,
       ok,
       detail: ok
         ? "production populated"
-        : `missing/zero required fields: ${expectation.requirePositive.join(", ")}`,
+        : `missing/zero/short required fields: ${expectation.requirePositive.join(", ")}`,
       values,
     });
   }

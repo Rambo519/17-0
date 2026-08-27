@@ -1,32 +1,32 @@
-import type { KeyboardEvent } from "react";
-
 import { FieldDecor } from "./FieldDecor";
+import { NewGameButton } from "./NewGameButton";
+import { QaControls } from "./QaControls";
 import { SoundToggle } from "./SoundToggle";
 import styles from "./modeSelector.module.css";
 
 import { PRODUCT_NAME } from "@/lib/brand";
-import type { GameMode } from "@/lib/game/types";
+
+export const START_HEADLINE = "TEST YOUR FOOTBALL IQ";
+export const START_SUBTITLE = "You know the team. You know the era. Can you build 17–0?";
+export const START_ACTION_LABEL = "PROVE IT";
 
 interface ModeSelectorProps {
-  mode: GameMode;
-  onModeChange: (mode: GameMode) => void;
   onStart: () => void;
   busy: boolean;
+  onNewGame?: () => void;
+  onQaReroll?: () => void;
+  onQaBal2000s?: () => void;
 }
 
-export function ModeSelector({ mode, onModeChange, onStart, busy }: ModeSelectorProps) {
-  function handleModeKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
-      event.preventDefault();
-      onModeChange("IQ");
-    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
-      event.preventDefault();
-      onModeChange("CLASSIC");
-    }
-  }
-
+export function ModeSelector({
+  onStart,
+  busy,
+  onNewGame,
+  onQaReroll,
+  onQaBal2000s,
+}: ModeSelectorProps) {
   return (
-    <section className={styles.root} aria-labelledby="mode-heading">
+    <section className={styles.root} aria-labelledby="start-heading">
       <div className={styles.atmosphere} aria-hidden>
         <FieldDecor variant="start" />
         <div className={styles.glow} />
@@ -37,51 +37,19 @@ export function ModeSelector({ mode, onModeChange, onStart, busy }: ModeSelector
 
       <div className={styles.topBar}>
         <SoundToggle />
+        {onNewGame ? <NewGameButton onClick={onNewGame} disabled={busy} /> : null}
+        <QaControls onReroll={onQaReroll} onBal2000s={onQaBal2000s} disabled={busy} />
       </div>
 
       <div className={styles.content}>
         <p className={styles.brand}>{PRODUCT_NAME}</p>
-        <h1 id="mode-heading" className={styles.headline}>
-          Build the Perfect Offense
+        <h1 id="start-heading" className={styles.headline}>
+          {START_HEADLINE}
         </h1>
-        <p className={styles.pitch}>
-          Six picks. Six eras.
-          <br />
-          One shot at perfection.
-        </p>
-
-        <div
-          className={styles.modes}
-          role="radiogroup"
-          aria-label="Game mode"
-          onKeyDown={handleModeKeyDown}
-        >
-          <button
-            type="button"
-            role="radio"
-            aria-checked={mode === "CLASSIC"}
-            className={mode === "CLASSIC" ? styles.modeActive : styles.mode}
-            onClick={() => onModeChange("CLASSIC")}
-            disabled={busy}
-          >
-            <span className={styles.modeTitle}>Classic</span>
-            <span className={styles.modeCopy}>See historical production while you draft.</span>
-          </button>
-          <button
-            type="button"
-            role="radio"
-            aria-checked={mode === "IQ"}
-            className={mode === "IQ" ? styles.modeActive : styles.mode}
-            onClick={() => onModeChange("IQ")}
-            disabled={busy}
-          >
-            <span className={styles.modeTitle}>IQ</span>
-            <span className={styles.modeCopy}>No statistical help. Trust your football knowledge.</span>
-          </button>
-        </div>
+        <p className={styles.pitch}>{START_SUBTITLE}</p>
 
         <button type="button" className={styles.start} onClick={onStart} disabled={busy}>
-          {busy ? "Starting…" : "Start Game"}
+          {busy ? "Starting…" : START_ACTION_LABEL}
         </button>
 
         <details className={styles.how}>

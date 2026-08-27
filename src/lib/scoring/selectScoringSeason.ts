@@ -2,7 +2,7 @@ import { isLegitimateScoringSeason } from "./metrics";
 import { scorePlayerSeason, type PlayerSeasonScoreResult } from "./playerSeasonScore";
 import type { PeerBaselineIndex } from "./peerBaselines";
 import type { SeasonStatRecord } from "./types";
-import type { NormalizedPosition } from "@/lib/football/positions";
+import type { LineupSlot, NormalizedPosition } from "@/lib/football/positions";
 
 export interface ScoringSeasonCandidate {
   season: number;
@@ -26,6 +26,7 @@ export function selectScoringSeason(
   seasons: readonly SeasonStatRecord[],
   scoringPosition: NormalizedPosition,
   baselines: PeerBaselineIndex,
+  options?: { lineupSlot?: LineupSlot; cardPositions?: readonly NormalizedPosition[] },
 ): SelectedScoringSeason {
   const eligible = seasons.filter(isLegitimateScoringSeason);
 
@@ -34,6 +35,7 @@ export function selectScoringSeason(
       seasons[0] ?? emptySeasonStat(),
       scoringPosition,
       baselines,
+      options,
     );
     return {
       season: seasons[0]?.season ?? null,
@@ -44,7 +46,7 @@ export function selectScoringSeason(
   }
 
   const scored = eligible.map((seasonStat) => {
-    const score = scorePlayerSeason(seasonStat, scoringPosition, baselines);
+    const score = scorePlayerSeason(seasonStat, scoringPosition, baselines, options);
     return { seasonStat, score };
   });
 

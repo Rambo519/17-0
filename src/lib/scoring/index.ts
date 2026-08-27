@@ -2,6 +2,7 @@ export * from "./types";
 export * from "./config";
 export * from "./evaluateGame";
 export * from "./evaluateLineup";
+export * from "./fbSlot";
 export * from "./offenseRating";
 export * from "./peerBaselines";
 export * from "./playerEvaluation";

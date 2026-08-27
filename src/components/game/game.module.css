@@ -148,12 +148,67 @@
   grid-template-columns: minmax(300px, 1fr) minmax(300px, 1fr);
   gap: 16px;
   flex: 1;
+  min-height: 0;
 }
 
 .leftColumn,
 .rightColumn {
   display: flex;
   flex-direction: column;
+  min-height: 0;
+}
+
+/*
+ * Desktop gameplay: constrain the shell to the viewport so CSS Grid's default
+ * align-items: stretch cannot grow the football field to the candidate list's
+ * content height. The left player-selection column is the only scrollport.
+ */
+@media (min-width: 901px) {
+  .playing {
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+  }
+
+  .playing > header,
+  .playing > .mobileTabs,
+  .playing > .errorBanner {
+    flex-shrink: 0;
+  }
+
+  .playing .leftColumn {
+    overflow: auto;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+
+  /*
+   * Panel chrome lives on the column scrollport so the navy fill stays put
+   * while cards scroll. The inner panel must not shrink to the field height
+   * (flex min-height: 100% + shrink lets content overflow onto the page bg).
+   */
+  .playing .leftColumn > .panel {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    flex-shrink: 0;
+  }
+
+  .playing .rightColumn {
+    overflow: hidden;
+    align-items: flex-start;
+  }
+
+  .playing .rightColumn > * {
+    width: 100%;
+    height: auto;
+    max-height: min(700px, 78dvh);
+    min-height: 0;
+    flex: 0 0 auto;
+  }
 }
 
 .mobileTabs {
@@ -184,8 +239,21 @@
 }
 
 @media (max-width: 900px) {
+  .playing {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
   .board {
     grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .leftColumn,
+  .rightColumn {
+    overflow: visible;
+    min-height: 0;
   }
 
   .mobileTabs {

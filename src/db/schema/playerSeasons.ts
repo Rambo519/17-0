@@ -51,8 +51,8 @@ export const playerSeasons = pgTable(
     receivingTouchdowns: integer("receiving_touchdowns"),
 
     /**
-     * Source roster status when available (e.g. ACT, DEV). Used for
-     * participation / draftable decisions when game counts are missing.
+     * Source roster status when available (e.g. ACT, DEV). Kept for
+     * provenance. Roster status alone does not make a card draftable.
      */
     rosterStatus: text("roster_status"),
 

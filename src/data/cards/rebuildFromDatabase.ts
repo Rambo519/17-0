@@ -142,6 +142,14 @@ export async function applyOverridesAndRebuildCards(
         games: season.games,
         rosterStatus: season.rosterStatus,
         hasRosterEvidence: season.rosterStatus != null,
+        passingYards: season.passingYards,
+        passingTouchdowns: season.passingTouchdowns,
+        rushingAttempts: season.rushingAttempts,
+        rushingYards: season.rushingYards,
+        rushingTouchdowns: season.rushingTouchdowns,
+        receptions: season.receptions,
+        receivingYards: season.receivingYards,
+        receivingTouchdowns: season.receivingTouchdowns,
       },
     ];
     stintMap.set(key, stint);

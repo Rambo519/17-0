@@ -29,12 +29,54 @@ export interface DisplayStat {
   value: string;
 }
 
+function isPositiveKnown(value: number | null | undefined): boolean {
+  return value != null && value > 0;
+}
+
+function classicDisplayPosition(
+  positions: readonly NormalizedPosition[],
+  production: CardProduction,
+): NormalizedPosition {
+  for (const position of positions) {
+    if (position === "QB") {
+      if (
+        isPositiveKnown(production.passingYards) ||
+        isPositiveKnown(production.passingTouchdowns) ||
+        isPositiveKnown(production.rushingYards) ||
+        isPositiveKnown(production.rushingTouchdowns)
+      ) {
+        return position;
+      }
+    } else if (position === "RB" || position === "FB") {
+      if (
+        isPositiveKnown(production.rushingYards) ||
+        isPositiveKnown(production.rushingTouchdowns) ||
+        isPositiveKnown(production.receptions) ||
+        isPositiveKnown(production.receivingYards) ||
+        isPositiveKnown(production.receivingTouchdowns)
+      ) {
+        return position;
+      }
+    } else if (
+      isPositiveKnown(production.receptions) ||
+      isPositiveKnown(production.receivingYards) ||
+      isPositiveKnown(production.receivingTouchdowns)
+    ) {
+      return position;
+    }
+  }
+  if (positions.includes("FB") && production.games != null && production.games > 0) {
+    return "FB";
+  }
+  return positions[0] ?? "WR";
+}
+
 /** Position-aware Classic production rows for candidate cards; dashes for missing values. */
 export function classicProductionStats(
   positions: readonly NormalizedPosition[],
   production: CardProduction,
 ): DisplayStat[] {
-  const primary = positions[0] ?? "WR";
+  const primary = classicDisplayPosition(positions, production);
 
   if (primary === "QB") {
     return [
@@ -45,6 +87,20 @@ export function classicProductionStats(
   }
 
   if (primary === "RB" || primary === "FB") {
+    const hasRushOrRec =
+      isPositiveKnown(production.rushingYards) ||
+      isPositiveKnown(production.rushingTouchdowns) ||
+      isPositiveKnown(production.receptions) ||
+      isPositiveKnown(production.receivingYards) ||
+      isPositiveKnown(production.receivingTouchdowns);
+    if (primary === "FB" && !hasRushOrRec && production.games != null && production.games > 0) {
+      return [
+        { label: "G", value: formatStat(production.games) },
+        { label: "Rush Yds", value: formatStat(production.rushingYards) },
+        { label: "Rec", value: formatStat(production.receptions) },
+        { label: "Rec Yds", value: formatStat(production.receivingYards) },
+      ];
+    }
     return [
       { label: "Rush Yds", value: formatStat(production.rushingYards) },
       { label: "Rush TD", value: formatStat(production.rushingTouchdowns) },

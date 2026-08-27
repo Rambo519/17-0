@@ -148,4 +148,70 @@ describe("classic production from isolated database", () => {
     expect(production.get(classicQbId)?.games).toBe(16);
     expect(production.get(classicQbId)?.passingYards).toBe(3630);
   }, 60_000);
+
+  it("sums BAL 2000s TE production across the full card window, not a single season", async () => {
+    const db = await createTestDatabase();
+    const repository = createDrizzleGameRepository(db);
+    const [era] = await db.insert(eras).values({ label: "2000s", startYear: 2000, endYear: 2009 }).returning();
+    const [franchise] = await db
+      .insert(franchises)
+      .values({
+        slug: "baltimore-ravens",
+        canonicalName: "Baltimore Ravens",
+        canonicalAbbreviation: "BAL",
+      })
+      .returning();
+    if (!era || !franchise) throw new Error("fixture insert failed");
+    const [player] = await db
+      .insert(players)
+      .values({ firstName: "Todd", lastName: "Heap", displayName: "Todd Heap" })
+      .returning();
+    if (!player) throw new Error("player insert failed");
+
+    await db.insert(playerSeasons).values([
+      {
+        playerId: player.id,
+        franchiseId: franchise.id,
+        season: 2001,
+        rawPosition: "TE",
+        primaryNormalizedPosition: "TE",
+        games: 12,
+        receptions: 16,
+        receivingYards: 206,
+        receivingTouchdowns: 1,
+        source: "isolated-fixture",
+      },
+      {
+        playerId: player.id,
+        franchiseId: franchise.id,
+        season: 2005,
+        rawPosition: "TE",
+        primaryNormalizedPosition: "TE",
+        games: 16,
+        receptions: 75,
+        receivingYards: 855,
+        receivingTouchdowns: 7,
+        source: "isolated-fixture",
+      },
+    ]);
+    const [card] = await db
+      .insert(playerTeamEraCards)
+      .values({
+        playerId: player.id,
+        franchiseId: franchise.id,
+        eraId: era.id,
+        firstSeason: 2001,
+        lastSeason: 2005,
+        representativeSeason: 2005,
+        draftable: true,
+      })
+      .returning();
+    if (!card) throw new Error("card insert failed");
+    await db.insert(playerTeamEraPositions).values({ playerTeamEraCardId: card.id, position: "TE" });
+
+    const production = await repository.getProductionForCards([card.id]);
+    expect(production.get(card.id)?.receptions).toBe(91);
+    expect(production.get(card.id)?.receivingYards).toBe(1061);
+    expect(production.get(card.id)?.receivingTouchdowns).toBe(8);
+  }, 60_000);
 });

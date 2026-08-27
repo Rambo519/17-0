@@ -15,6 +15,7 @@ import {
   startGame,
   teamSkip,
 } from "@/lib/game/clientApi";
+import { qaForceBaltimore2000s, qaRerollSpin } from "@/lib/game/qaClient";
 import type { LineupSlot } from "@/lib/football/positions";
 import type { GameMode } from "@/lib/game/types";
 import type { SpinResult } from "@/lib/game/spin";
@@ -26,6 +27,7 @@ import {
   type SpinRevealKind,
 } from "@/lib/game/spinReveal";
 import type { GameStateView } from "@/lib/game/view";
+import { confirmNewGameIfNeeded } from "@/lib/game/newGame";
 import { filledPickCount, highlightedSlotsForCandidate } from "@/lib/game/uiHelpers";
 import { CompletedLineup } from "./CompletedLineup";
 import { FormationField } from "./FormationField";
@@ -35,12 +37,11 @@ import { SpinPanel } from "./SpinPanel";
 
 type Screen = "mode" | "playing" | "complete";
 type MobileTab = "players" | "lineup";
-type BusyAction = "start" | "spin" | "pick" | "team-skip" | "era-skip" | null;
+type BusyAction = "start" | "spin" | "pick" | "team-skip" | "era-skip" | "qa" | null;
 
 export function GameApp() {
   const router = useRouter();
   const [screen, setScreen] = useState<Screen>("mode");
-  const [modeChoice, setModeChoice] = useState<GameMode>("CLASSIC");
   const [game, setGame] = useState<GameStateView | null>(null);
   const [spin, setSpin] = useState<SpinResult | null>(null);
   const [selectedCardId, setSelectedCardId] = useState<number | null>(null);
@@ -81,17 +82,18 @@ export function GameApp() {
     setMobileTab("players");
   }
 
-  async function handleStart() {
+  async function beginFreshGame(nextMode: GameMode) {
     unlockGameAudio();
     setBusy("start");
     setError(null);
     try {
-      const payload = await startGame(modeChoice);
+      const payload = await startGame(nextMode);
       if (!payload.game) throw new GameClientError("INTERNAL_ERROR", "Missing game state.");
       setGame(payload.game);
       setSpin(null);
       setReveal(null);
       setSelectedCardId(null);
+      setSpinning(false);
       setScreen(payload.game.isComplete ? "complete" : "playing");
       setMobileTab("players");
     } catch (err) {
@@ -99,6 +101,54 @@ export function GameApp() {
       setError(message);
       console.error(err);
     } finally {
+      setBusy(null);
+    }
+  }
+
+  async function handleStart() {
+    await beginFreshGame("IQ");
+  }
+
+  async function handleNewGame() {
+    if (busy !== null) return;
+    const filledCount = game ? filledPickCount(game) : 0;
+    if (!confirmNewGameIfNeeded(filledCount)) return;
+    resetToMode();
+  }
+
+  async function handleQaSpin(kind: "reroll" | "bal-2000s") {
+    if (busy !== null || spinInFlight.current) return;
+    spinInFlight.current = true;
+    setBusy("qa");
+    setError(null);
+    try {
+      let session = game;
+      if (!session || session.isComplete) {
+        unlockGameAudio();
+        const started = await startGame(session?.mode ?? "IQ");
+        if (!started.game) throw new GameClientError("INTERNAL_ERROR", "Missing game state.");
+        session = started.game;
+        setGame(session);
+        setScreen(session.isComplete ? "complete" : "playing");
+      }
+
+      const payload =
+        kind === "reroll"
+          ? await qaRerollSpin(session.sessionId)
+          : await qaForceBaltimore2000s(session.sessionId);
+      if (payload.game) setGame(payload.game);
+      if (!payload.spin) throw new GameClientError("INTERNAL_ERROR", "QA spin returned no result.");
+      setSpin(payload.spin);
+      setReveal(null);
+      setSelectedCardId(null);
+      setSpinning(false);
+      setMobileTab("players");
+    } catch (err) {
+      const message = err instanceof GameClientError ? err.userMessage : "QA spin failed.";
+      setError(message);
+      console.error(err);
+    } finally {
+      spinInFlight.current = false;
       setBusy(null);
     }
   }
@@ -260,10 +310,17 @@ export function GameApp() {
       <main className={shell.shell}>
         {error ? <p className={shell.errorBanner}>{error}</p> : null}
         <ModeSelector
-          mode={modeChoice}
-          onModeChange={setModeChoice}
           onStart={handleStart}
-          busy={busy === "start"}
+          onNewGame={() => {
+            void handleNewGame();
+          }}
+          onQaReroll={() => {
+            void handleQaSpin("reroll");
+          }}
+          onQaBal2000s={() => {
+            void handleQaSpin("bal-2000s");
+          }}
+          busy={busy === "start" || busy === "qa"}
         />
       </main>
     );
@@ -279,6 +336,10 @@ export function GameApp() {
           roundNumber={game.roundNumber}
           filledCount={filledPickCount(game)}
           isComplete
+          onNewGame={() => {
+            void handleNewGame();
+          }}
+          newGameDisabled={busy !== null}
         />
         {error ? <p className={shell.errorBanner}>{error}</p> : null}
         <CompletedLineup
@@ -299,12 +360,22 @@ export function GameApp() {
       : `${shell.board} ${shell.hideOnMobilePlayers}`;
 
   return (
-    <main className={shell.shell}>
+    <main className={`${shell.shell} ${shell.playing}`}>
       <GameHeader
         mode={game.mode}
         roundNumber={game.roundNumber}
         filledCount={filledPickCount(game)}
         isComplete={false}
+        onNewGame={() => {
+          void handleNewGame();
+        }}
+        newGameDisabled={busy !== null}
+        onQaReroll={() => {
+          void handleQaSpin("reroll");
+        }}
+        onQaBal2000s={() => {
+          void handleQaSpin("bal-2000s");
+        }}
       />
 
       <div className={shell.mobileTabs} role="tablist" aria-label="Game panels">

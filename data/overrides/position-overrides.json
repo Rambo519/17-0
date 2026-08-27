@@ -52,6 +52,15 @@
       "toSeason": 2023,
       "eligiblePositions": ["FB"],
       "reason": "nflverse depth_charts_2023.csv lists depth_position=FB for WAS"
+    },
+    {
+      "gsisId": "00-0038489",
+      "playerName": "Ben VanSumeren",
+      "franchiseSlug": "philadelphia-eagles",
+      "fromSeason": 2024,
+      "toSeason": 2024,
+      "eligiblePositions": ["FB"],
+      "reason": "nflverse player_stats_2024.csv week 9 lists position=FB for PHI with 1 reception; roster_2024.csv has position=LB / depth_chart_position=ILB so the skill-position skip would otherwise drop a real FB game"
     }
   ]
 }

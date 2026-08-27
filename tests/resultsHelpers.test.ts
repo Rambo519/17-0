@@ -1,8 +1,14 @@
 import { describe, expect, it } from "vitest";
 
 import { PRODUCT_NAME } from "@/lib/brand";
-import { formatProbability, formatProjectedRecord } from "@/lib/results/format";
+import {
+  formatPerfectSeasonChance,
+  formatProbability,
+  formatProjectedRecord,
+  formatWinProbability,
+} from "@/lib/results/format";
 import { isPerfectProjectedSeason, resultTierFromProjectedWins } from "@/lib/results/tiers";
+import { perfectSeasonProbabilityFromWinProbability } from "@/lib/scoring/winProjection";
 
 describe("result presentation helpers", () => {
   it("maps projected wins onto presentation-only tiers", () => {
@@ -30,5 +36,30 @@ describe("result presentation helpers", () => {
     expect(formatProbability(0.0048)).toBe("0.48%");
     expect(formatProbability(0.00004)).not.toBe("0%");
     expect(formatProbability(0)).toBe("0%");
+  });
+});
+
+describe("17-0 chance uses full-precision win probability", () => {
+  /** Engine per-game p for the 92.4 offense example before/independent of display rounding. */
+  const fullPrecisionWinProbability = 0.9660465823824238;
+
+  it("drives perfect-season chance from full-precision p, not the 96.6% display", () => {
+    const perfect = perfectSeasonProbabilityFromWinProbability(fullPrecisionWinProbability);
+    expect(perfect * 100).toBeCloseTo(55.6, 1);
+    expect(formatPerfectSeasonChance(perfect)).toBe("55.6%");
+    expect(formatPerfectSeasonChance(perfect)).not.toBe("55.3%");
+    expect(formatWinProbability(fullPrecisionWinProbability)).toBe("96.6%");
+
+    const fromDisplayedPercentage = perfectSeasonProbabilityFromWinProbability(0.966);
+    expect(fromDisplayedPercentage).toBeLessThan(perfect);
+  });
+
+  it("treats rounded win probability as presentation only", () => {
+    expect(formatWinProbability(fullPrecisionWinProbability)).toBe("96.6%");
+    expect(formatWinProbability(fullPrecisionWinProbability)).not.toBe(
+      formatPerfectSeasonChance(
+        perfectSeasonProbabilityFromWinProbability(fullPrecisionWinProbability),
+      ),
+    );
   });
 });

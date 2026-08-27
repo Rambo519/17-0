@@ -67,6 +67,8 @@
   z-index: 2;
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
   padding: 14px 16px 0;
 }
 
@@ -92,72 +94,26 @@
 .headline {
   margin: 10px 0 0;
   font-family: var(--font-display);
-  font-size: clamp(1.35rem, 3.6vw, 2.05rem);
-  font-weight: 600;
+  font-size: clamp(1.7rem, 4.6vw, 2.7rem);
+  font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--highlight);
 }
 
 .pitch {
-  margin: 12px auto 22px;
-  max-width: 20rem;
-  color: var(--text);
-  font-size: 1.02rem;
-  line-height: 1.45;
+  margin: 14px auto 28px;
+  max-width: 34rem;
+  color: #ffffff;
+  font-size: clamp(1.05rem, 2.4vw, 1.25rem);
+  font-weight: 400;
+  line-height: 1.5;
   text-wrap: balance;
 }
 
-.modes {
-  display: grid;
-  gap: 10px;
-  grid-template-columns: 1fr 1fr;
-  margin-bottom: 18px;
-}
-
-.mode,
-.modeActive {
-  text-align: left;
-  padding: 14px 14px 14px 16px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(8, 16, 28, 0.78);
-  color: var(--text);
-  cursor: pointer;
-  transition:
-    border-color 140ms ease,
-    background 140ms ease,
-    box-shadow 140ms ease;
-}
-
-.mode:focus-visible,
-.modeActive:focus-visible,
 .start:focus-visible {
   outline: 2px solid var(--highlight);
   outline-offset: 3px;
-}
-
-.modeActive {
-  border-color: rgba(232, 193, 90, 0.7);
-  background: rgba(232, 193, 90, 0.12);
-  box-shadow: inset 4px 0 0 var(--highlight);
-}
-
-.modeTitle {
-  display: block;
-  font-family: var(--font-display);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-size: 1.45rem;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.modeCopy {
-  display: block;
-  color: var(--text-muted);
-  font-size: 0.88rem;
-  line-height: 1.35;
 }
 
 .start {
@@ -218,10 +174,6 @@
   .content {
     width: min(100%, calc(100% - 16px));
     padding: 12px 14px 28px;
-  }
-
-  .modes {
-    grid-template-columns: 1fr;
   }
 
   .watermark {

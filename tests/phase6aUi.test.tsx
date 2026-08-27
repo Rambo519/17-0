@@ -315,7 +315,7 @@ describe("GameApp spin and draft sounds", () => {
 
   it("does not submit duplicate spin requests", async () => {
     render(<GameApp />);
-    fireEvent.click(screen.getByRole("button", { name: /start game/i }));
+    fireEvent.click(screen.getByRole("button", { name: /prove it/i }));
     const spin = await screen.findByRole("button", { name: /^spin$/i });
     fireEvent.click(spin);
     fireEvent.click(spin);
@@ -327,7 +327,7 @@ describe("GameApp spin and draft sounds", () => {
 
   it("plays the spin start cue exactly once per SPIN click", async () => {
     render(<GameApp />);
-    fireEvent.click(screen.getByRole("button", { name: /start game/i }));
+    fireEvent.click(screen.getByRole("button", { name: /prove it/i }));
     const spin = await screen.findByRole("button", { name: /^spin$/i });
     fireEvent.click(spin);
     await screen.findByText("Joe Montana");
@@ -336,7 +336,7 @@ describe("GameApp spin and draft sounds", () => {
 
   it("plays draft lock only after a successful committed pick", async () => {
     render(<GameApp />);
-    fireEvent.click(screen.getByRole("button", { name: /start game/i }));
+    fireEvent.click(screen.getByRole("button", { name: /prove it/i }));
     fireEvent.click(await screen.findByRole("button", { name: /^spin$/i }));
     const candidate = await screen.findByRole("button", { name: /joe montana/i });
     fireEvent.click(candidate);
