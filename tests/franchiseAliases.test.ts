@@ -13,6 +13,50 @@ describe("franchise alias mapping", () => {
     expect(FRANCHISE_LINEAGES).toHaveLength(32);
   });
 
+  it("uses the current player-facing display abbreviation for every franchise", () => {
+    const expected: Record<string, string> = {
+      "Buffalo Bills": "BUF",
+      "Miami Dolphins": "MIA",
+      "New England Patriots": "NE",
+      "New York Jets": "NYJ",
+      "Baltimore Ravens": "BAL",
+      "Cincinnati Bengals": "CIN",
+      "Cleveland Browns": "CLE",
+      "Pittsburgh Steelers": "PIT",
+      "Houston Texans": "HOU",
+      "Indianapolis Colts": "IND",
+      "Jacksonville Jaguars": "JAX",
+      "Tennessee Titans": "TEN",
+      "Denver Broncos": "DEN",
+      "Kansas City Chiefs": "KC",
+      "Las Vegas Raiders": "LV",
+      "Los Angeles Chargers": "LAC",
+      "Dallas Cowboys": "DAL",
+      "New York Giants": "NYG",
+      "Philadelphia Eagles": "PHI",
+      "Washington Commanders": "WAS",
+      "Chicago Bears": "CHI",
+      "Detroit Lions": "DET",
+      "Green Bay Packers": "GB",
+      "Minnesota Vikings": "MIN",
+      "Atlanta Falcons": "ATL",
+      "Carolina Panthers": "CAR",
+      "New Orleans Saints": "NO",
+      "Tampa Bay Buccaneers": "TB",
+      "Arizona Cardinals": "ARI",
+      "Los Angeles Rams": "LAR",
+      "San Francisco 49ers": "SF",
+      "Seattle Seahawks": "SEA",
+    };
+
+    const actual = Object.fromEntries(
+      FRANCHISE_LINEAGES.map((franchise) => [franchise.canonicalName, franchise.canonicalAbbreviation]),
+    );
+    expect(actual).toEqual(expected);
+    expect(resolveFranchiseAlias("LA", 2024)).toEqual({ ok: true, slug: "los-angeles-rams" });
+    expect(resolveFranchiseAlias("LAR", 2024)).toEqual({ ok: true, slug: "los-angeles-rams" });
+  });
+
   it("joins Ravens roster BLT with player_stats BAL for the same season", () => {
     expect(resolveFranchiseAlias("BLT", 2005)).toEqual({ ok: true, slug: "baltimore-ravens" });
     expect(resolveFranchiseAlias("BAL", 2005)).toEqual({ ok: true, slug: "baltimore-ravens" });

@@ -203,13 +203,13 @@ export const FRANCHISE_LINEAGES: readonly FranchiseLineage[] = [
   {
     slug: "los-angeles-rams",
     canonicalName: "Los Angeles Rams",
-    canonicalAbbreviation: "LA",
+    canonicalAbbreviation: "LAR",
     firstSeason: 1960,
     activeRanges: [{ from: 1960, to: null }],
     history: [
       { throughSeason: 1994, displayName: "Los Angeles Rams", abbreviation: "LA" },
       { throughSeason: 2015, displayName: "St. Louis Rams", abbreviation: "STL" },
-      { throughSeason: ONGOING, displayName: "Los Angeles Rams", abbreviation: "LA" },
+      { throughSeason: ONGOING, displayName: "Los Angeles Rams", abbreviation: "LAR" },
     ],
   },
   {

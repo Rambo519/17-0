@@ -19,21 +19,18 @@
 
 .glow {
   position: absolute;
-  inset: -18% 8% auto;
-  height: 38%;
-  background: radial-gradient(ellipse at center, rgba(90, 210, 140, 0.18), transparent 70%);
-  filter: blur(10px);
+  inset: 8% 12% auto;
+  height: 52%;
+  background:
+    radial-gradient(ellipse at 50% 42%, rgba(232, 193, 90, 0.1), transparent 58%),
+    radial-gradient(ellipse at center, rgba(90, 210, 140, 0.2), transparent 72%);
+  filter: blur(12px);
 }
 
 .sweep {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    108deg,
-    transparent 38%,
-    rgba(255, 255, 255, 0.045) 50%,
-    transparent 62%
-  );
+  background: radial-gradient(ellipse at 50% 38%, rgba(255, 255, 255, 0.07), transparent 56%);
   animation: start-sweep 11s ease-in-out infinite;
 }
 
@@ -190,11 +187,9 @@
 @keyframes start-sweep {
   0%,
   100% {
-    opacity: 0.22;
-    transform: translateX(-6%);
+    opacity: 0.28;
   }
   50% {
-    opacity: 0.55;
-    transform: translateX(6%);
+    opacity: 0.7;
   }
 }

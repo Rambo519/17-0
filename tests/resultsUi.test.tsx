@@ -149,7 +149,9 @@ describe("ResultsView", () => {
     expect(metricsCard).toBeTruthy();
     expect(recordCard).not.toBe(metricsCard);
     expect(recordCard?.parentElement).toBe(metricsCard.parentElement);
-    expect(screen.getByText(/iq results/i)).toBeInTheDocument();
+    expect(screen.queryByText(/iq results/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/classic results/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/ALL-TIME OFFENSE/i)).toBeInTheDocument();
     expect(screen.getByText("Offense Rating")).toBeInTheDocument();
     expect(screen.getByText("Expected Wins")).toBeInTheDocument();
     expect(screen.getByText("Win Probability")).toBeInTheDocument();
@@ -319,7 +321,8 @@ describe("ResultsView record count", () => {
     );
 
     expect(screen.getByText("0–17")).toBeInTheDocument();
-    expect(screen.getByText(/calculating season/i)).toBeInTheDocument();
+    expect(screen.getByText(/projecting record/i)).toBeInTheDocument();
+    expect(screen.queryByText(/iq results/i)).not.toBeInTheDocument();
     await vi.advanceTimersByTimeAsync(1600);
     expect(screen.getByText("14–3")).toBeInTheDocument();
   });

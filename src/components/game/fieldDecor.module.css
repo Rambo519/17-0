@@ -28,7 +28,57 @@
 }
 
 .start .grid {
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.9));
+  mask-image: none;
+  background:
+    radial-gradient(ellipse 82% 70% at 50% 40%, transparent 34%, rgba(2, 8, 14, 0.62) 100%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.52) 0%, transparent 16%, transparent 84%, rgba(0, 0, 0, 0.52) 100%),
+    linear-gradient(
+      180deg,
+      rgba(8, 32, 22, 0.92) 0 11.6%,
+      rgba(232, 193, 90, 0.32) 11.6% 12.35%,
+      transparent 12.35% 87.65%,
+      rgba(232, 193, 90, 0.32) 87.65% 88.4%,
+      rgba(8, 32, 22, 0.92) 88.4% 100%
+    ),
+    repeating-linear-gradient(
+      180deg,
+      transparent 0,
+      transparent calc(6.25% - 1px),
+      rgba(236, 248, 236, 0.14) calc(6.25% - 1px),
+      rgba(236, 248, 236, 0.14) 6.25%
+    ),
+    repeating-linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.018) 0 6.25%,
+      rgba(0, 0, 0, 0.05) 6.25% 12.5%
+    ),
+    linear-gradient(180deg, #154a32 0%, #0f3324 48%, #0a1c18 100%);
+}
+
+.start .hashes {
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0,
+    transparent calc(6.25% - 7px),
+    rgba(255, 255, 255, 0.2) calc(6.25% - 7px),
+    rgba(255, 255, 255, 0.2) calc(6.25% - 1px),
+    transparent calc(6.25% - 1px),
+    transparent 6.25%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0 36%,
+    #000 36% 40.5%,
+    transparent 40.5% 59.5%,
+    #000 59.5% 64%,
+    transparent 64% 100%
+  );
+  opacity: 0.72;
+}
+
+.start .goalpost,
+.start .laces {
+  display: none;
 }
 
 .ready .grid {

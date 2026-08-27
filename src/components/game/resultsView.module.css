@@ -44,22 +44,13 @@
   animation: results-glow 2.8s ease-in-out infinite;
 }
 
-.kicker {
-  margin: 0;
-  font-family: var(--font-display);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  font-size: 0.84rem;
-}
-
 .tier {
-  margin: 4px 0 0;
+  margin: 0;
   font-family: var(--font-display);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--highlight);
-  font-size: clamp(1.15rem, 2.4vw, 1.45rem);
+  font-size: clamp(1.5rem, 3.2vw, 1.95rem);
 }
 
 .recordLabel {
@@ -68,15 +59,15 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
-  font-size: 0.88rem;
+  font-size: 0.95rem;
 }
 
 .record {
   margin: 2px 0 0;
   font-family: var(--font-display);
   letter-spacing: 0.04em;
-  font-size: clamp(2.7rem, 6vw, 4.2rem);
-  line-height: 0.9;
+  font-size: clamp(3.35rem, 7.4vw, 5.15rem);
+  line-height: 0.88;
   color: var(--text);
 }
 
@@ -166,7 +157,7 @@
 
 .breakdown {
   min-width: 0;
-  padding: 2px 4px 4px;
+  padding: 2px 12px 4px 4px;
 }
 
 .breakdownTitle {
@@ -187,12 +178,12 @@
 
 .player {
   display: grid;
-  grid-template-columns: auto minmax(0, max-content) auto;
-  column-gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  column-gap: 10px;
   row-gap: 2px;
   align-items: start;
-  width: fit-content;
-  max-width: 100%;
+  width: 100%;
+  min-width: 0;
   padding: 8px 0;
   border-bottom: 1px solid var(--border);
 }
@@ -221,6 +212,7 @@
   font-family: var(--font-display);
   font-weight: 600;
   letter-spacing: 0.02em;
+  overflow-wrap: anywhere;
 }
 
 .playerRating {
@@ -230,12 +222,17 @@
   color: var(--highlight);
   line-height: 1.1;
   padding-top: 0.02em;
+  justify-self: end;
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .playerMeta {
   margin: 0;
   color: var(--text-muted);
   font-size: 0.9rem;
+  overflow-wrap: anywhere;
 }
 
 .details {

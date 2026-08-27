@@ -199,9 +199,6 @@ export function ResultsView({
             className={perfect ? styles.heroJackpot : styles.hero}
             aria-labelledby="projected-record-heading"
           >
-            <p className={styles.kicker}>
-              {reveal.counting ? "Calculating season" : game.mode === "IQ" ? "IQ results" : "Classic results"}
-            </p>
             <p className={styles.tier}>{reveal.counting ? "Projecting record" : tier?.label}</p>
             <h1 id="projected-record-heading" className={styles.recordLabel}>
               Projected Record

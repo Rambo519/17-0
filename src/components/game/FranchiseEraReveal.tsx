@@ -23,16 +23,20 @@ export function FranchiseEraReveal({
   return (
     <div className={styles.root}>
       <div className={teamClass}>
-        <p className={styles.kicker}>Team</p>
-        <p key={franchiseAbbreviation} className={styles.abbr}>
-          {franchiseAbbreviation}
-        </p>
+        <div className={styles.cluster}>
+          <p className={styles.kicker}>Team</p>
+          <p key={franchiseAbbreviation} className={styles.abbr}>
+            {franchiseAbbreviation}
+          </p>
+        </div>
       </div>
       <div className={eraClass}>
-        <p className={styles.kicker}>Era</p>
-        <p key={eraLabel} className={styles.era}>
-          {eraLabel}
-        </p>
+        <div className={styles.cluster}>
+          <p className={styles.kicker}>Era</p>
+          <p key={eraLabel} className={styles.era}>
+            {eraLabel}
+          </p>
+        </div>
       </div>
       {teamLocked && eraLocked ? (
         <p className={styles.srOnly} aria-live="polite" aria-atomic="true">
