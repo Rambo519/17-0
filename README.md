@@ -161,11 +161,6 @@ normalization.
 Franchise abbreviation → lineage mapping is centralized in
 `src/data/franchises/aliases.ts` (season-aware for BAL / HOU / STL, etc.).
 
-## Windows note
-
-`.npmrc` sets `script-shell=powershell.exe` so `npm run ...` works with this
-repo's tooling on Windows.
-
 Runtime sounds live in `public/sounds/` (`spin-tick.mp3`, `reveal-hit.mp3`,
 `draft-lock.mp3`, `show-results.mp3`, `jackpot.mp3`). Canonical copies:
 https://github.com/Rambo519/17-0
