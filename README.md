@@ -53,6 +53,7 @@ Then open [http://localhost:3000](http://localhost:3000).
 | `npm run db:migrate`  | Apply migrations                               |
 | `npm run db:push`     | Push the schema directly (dev convenience)     |
 | `npm run db:seed`     | Reset and load the development dataset         |
+| `npm run scoring:build-baselines` | Rebuild committed peer-baseline snapshot for `/score` |
 
 ## Architecture
 
@@ -137,7 +138,7 @@ Recorded in `data/manifests/nflverse.json` when you download.
 ```bash
 npm run data:download   # caches CSVs under .cache/nflverse/ (gitignored)
 npm run data:import     # loads into local PGlite, or DATABASE_URL with opt-in
-npm run data:build-cards
+npm run data:build-cards  # also regenerates the peer-baseline snapshot
 npm run data:audit      # writes data/reports/coverage-audit.*
 npm run data:sanity     # landmark player spot-checks against the imported DB
 npm run data:refresh    # download + import + audit
@@ -160,6 +161,20 @@ normalization.
 
 Franchise abbreviation → lineage mapping is centralized in
 `src/data/franchises/aliases.ts` (season-aware for BAL / HOU / STL, etc.).
+
+Production scoring loads a committed peer-baseline snapshot
+(`src/lib/scoring/generated/peer-baselines.json`) instead of transferring
+the full player-season corpus on every `/score` request. `npm run build`
+does not need Supabase; the snapshot must already be in the repo.
+
+Regenerate with `npm run scoring:build-baselines` (also runs at the end of
+`npm run data:build-cards`) after:
+
+- historical data import or player-season production changes
+- position or peer-baseline rule changes
+
+A missing or invalid snapshot fails scoring clearly. There is no runtime
+fallback to a full player-season database scan.
 
 Runtime sounds live in `public/sounds/` (`spin-tick.mp3`, `reveal-hit.mp3`,
 `draft-lock.mp3`, `show-results.mp3`, `jackpot.mp3`). Canonical copies:

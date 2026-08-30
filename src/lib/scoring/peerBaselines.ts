@@ -20,14 +20,37 @@ function seasonPositionKey(season: number, position: NormalizedPosition): Season
  * Built once from the full player-season corpus for percentile normalization.
  */
 export class PeerBaselineIndex {
-  private readonly valuesBySeasonPositionMetric = new Map<string, number[]>();
+  private readonly valuesBySeasonPositionMetric: Map<string, number[]>;
 
   constructor(seasonStats: readonly SeasonStatRecord[]) {
+    this.valuesBySeasonPositionMetric = new Map();
     for (const stat of seasonStats) {
       for (const position of stat.positions) {
         this.addSeasonToPeerGroups(stat, position);
       }
     }
+  }
+
+  /** Restore an index from buckets produced by `buildPeerBaselineIndex`. */
+  static fromSerializedBuckets(
+    buckets: Readonly<Record<string, readonly number[]>>,
+  ): PeerBaselineIndex {
+    const index = new PeerBaselineIndex([]);
+    index.valuesBySeasonPositionMetric.clear();
+    for (const key of Object.keys(buckets).sort()) {
+      const values = buckets[key];
+      if (!values) continue;
+      index.valuesBySeasonPositionMetric.set(key, values.slice());
+    }
+    return index;
+  }
+
+  toSerializedBuckets(): Record<string, number[]> {
+    const buckets: Record<string, number[]> = {};
+    for (const key of [...this.valuesBySeasonPositionMetric.keys()].sort()) {
+      buckets[key] = (this.valuesBySeasonPositionMetric.get(key) ?? []).slice();
+    }
+    return buckets;
   }
 
   private addSeasonToPeerGroups(stat: SeasonStatRecord, position: NormalizedPosition): void {
@@ -99,4 +122,14 @@ export class PeerBaselineIndex {
 
 export function buildPeerBaselineIndex(seasonStats: readonly SeasonStatRecord[]): PeerBaselineIndex {
   return new PeerBaselineIndex(seasonStats);
+}
+
+export function serializePeerBaselineIndex(index: PeerBaselineIndex): Record<string, number[]> {
+  return index.toSerializedBuckets();
+}
+
+export function peerBaselineIndexFromSerialized(
+  buckets: Readonly<Record<string, readonly number[]>>,
+): PeerBaselineIndex {
+  return PeerBaselineIndex.fromSerializedBuckets(buckets);
 }

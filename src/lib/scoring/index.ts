@@ -5,6 +5,7 @@ export * from "./evaluateLineup";
 export * from "./fbSlot";
 export * from "./offenseRating";
 export * from "./peerBaselines";
+export * from "./peerBaselineSnapshot";
 export * from "./playerEvaluation";
 export * from "./playerSeasonScore";
 export * from "./selectScoringSeason";

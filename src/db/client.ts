@@ -32,7 +32,7 @@ function connectionString(): string {
 
 /** Explicit Postgres connection. Requires `DATABASE_URL`. */
 export function createDatabase() {
-  const client = postgres(connectionString(), { max: 5, prepare: false });
+  const client = postgres(connectionString(), { max: 1, prepare: false });
   return drizzle(client, { schema });
 }
 

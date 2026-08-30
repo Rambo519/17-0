@@ -1,9 +1,9 @@
 import { LINEUP_SLOTS } from "@/lib/football/positions";
+import { deriveGameState } from "@/lib/game/gameState";
 import { buildLineup, isLineupComplete } from "@/lib/game/lineup";
-import { loadGameState } from "@/lib/game/gameState";
 
 import { evaluateLineup } from "./evaluateLineup";
-import { buildPeerBaselineIndex } from "./peerBaselines";
+import { loadRuntimePeerBaselines } from "./loadPeerBaselines";
 import type { ScoringRepository } from "./ports";
 import type { GameScoringResult } from "./types";
 
@@ -26,7 +26,8 @@ export async function evaluateCompletedGame(
     throw new ScoringError("Game is not complete");
   }
 
-  const state = await loadGameState(repository, sessionId);
+  const picksForState = await repository.listPicks(sessionId);
+  const state = deriveGameState(session, picksForState);
   const lineup = buildLineup(state.picks);
 
   if (!isLineupComplete(lineup)) {
@@ -42,20 +43,19 @@ export async function evaluateCompletedGame(
   });
 
   const cardIds = picks.map((pick) => pick.playerTeamEraCardId);
-  const [cards, seasonsByCard, peerSeasons] = await Promise.all([
+  const [cards, seasonsByCard] = await Promise.all([
     repository.findCards(cardIds),
     repository.loadSeasonStatsForCards(cardIds),
-    repository.loadAllSeasonStatsForPeers(),
   ]);
+  const cardById = new Map(cards.map((card) => [card.cardId, card]));
+  const baselines = loadRuntimePeerBaselines();
 
-  const baselines = buildPeerBaselineIndex(peerSeasons);
-
-  const lineupInputs = picks.map((pick, index) => {
-    const card = cards[index];
+  const lineupInputs = picks.map((pick) => {
+    const card = cardById.get(pick.playerTeamEraCardId);
     if (!card) {
       throw new ScoringError(`Card not found for pick in slot ${pick.lineupSlot}`);
     }
-  return {
+    return {
       lineupSlot: pick.lineupSlot,
       playerId: pick.playerId,
       playerName: pick.playerName,
