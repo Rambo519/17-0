@@ -1,88 +1,87 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { createElement, type ReactElement } from "react";
 
-import { ImageResponse } from "next/og";
+import sharp from "sharp";
 
-import { HIGHLIGHT_COLOR, THEME_COLOR } from "../src/lib/brand";
+import { THEME_COLOR } from "../src/lib/brand";
 
-function iconElement(size: number, maskable: boolean): ReactElement {
-  const inset = maskable ? 0.2 : 0.1;
-  const inner = Math.round(size * (1 - inset * 2));
-  const stroke = Math.max(3, Math.round(inner * 0.09));
-  const fontSize = Math.round(inner * (size <= 32 ? 0.5 : 0.4));
+const MASTER_ICON = path.join(
+  process.cwd(),
+  "assets",
+  "brand",
+  "gold_football_17_emblem.png",
+);
 
-  return createElement(
-    "div",
-    {
-      style: {
-        width: size,
-        height: size,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: THEME_COLOR,
-      },
-    },
-    createElement(
-      "div",
-      {
-        style: {
-          width: inner,
-          height: inner,
-          borderRadius: inner / 2,
-          border: `${stroke}px solid ${HIGHLIGHT_COLOR}`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: HIGHLIGHT_COLOR,
-          fontSize,
-          fontWeight: 700,
-          letterSpacing: size <= 32 ? "-0.06em" : "-0.04em",
-          fontFamily: "Arial Black, Impact, Arial, sans-serif",
-          lineHeight: 1,
-        },
-      },
-      "17",
-    ),
-  );
-}
-
-function pngToIco(png: Buffer): Buffer {
+function pngToIco(images: { width: number; height: number; png: Buffer }[]): Buffer {
+  const count = images.length;
   const header = Buffer.alloc(6);
   header.writeUInt16LE(0, 0);
   header.writeUInt16LE(1, 2);
-  header.writeUInt16LE(1, 4);
+  header.writeUInt16LE(count, 4);
 
-  const entry = Buffer.alloc(16);
-  entry[0] = 32;
-  entry[1] = 32;
-  entry.writeUInt16LE(1, 4);
-  entry.writeUInt16LE(32, 6);
-  entry.writeUInt32LE(png.length, 8);
-  entry.writeUInt32LE(22, 12);
+  const entries = Buffer.alloc(16 * count);
+  const bodies: Buffer[] = [];
+  let offset = 6 + 16 * count;
 
-  return Buffer.concat([header, entry, png]);
+  for (const [index, image] of images.entries()) {
+    const entry = entries.subarray(index * 16, index * 16 + 16);
+    entry[0] = image.width >= 256 ? 0 : image.width;
+    entry[1] = image.height >= 256 ? 0 : image.height;
+    entry.writeUInt16LE(1, 4);
+    entry.writeUInt16LE(32, 6);
+    entry.writeUInt32LE(image.png.length, 8);
+    entry.writeUInt32LE(offset, 12);
+    bodies.push(image.png);
+    offset += image.png.length;
+  }
+
+  return Buffer.concat([header, entries, ...bodies]);
 }
 
-async function renderPng(size: number, maskable = false): Promise<Buffer> {
-  const response = new ImageResponse(iconElement(size, maskable), {
-    width: size,
-    height: size,
-  });
-  return Buffer.from(await response.arrayBuffer());
+async function resizeIcon(source: Buffer, size: number): Promise<Buffer> {
+  return sharp(source)
+    .flatten({ background: THEME_COLOR })
+    .resize(size, size, { fit: "cover" })
+    .ensureAlpha()
+    .png()
+    .toBuffer();
+}
+
+async function resizeMaskable(source: Buffer, size: number): Promise<Buffer> {
+  const inner = Math.round(size * 0.8);
+  const emblem = await sharp(source)
+    .flatten({ background: THEME_COLOR })
+    .resize(inner, inner, { fit: "contain", background: THEME_COLOR })
+    .ensureAlpha()
+    .png()
+    .toBuffer();
+
+  return sharp({
+    create: {
+      width: size,
+      height: size,
+      channels: 4,
+      background: THEME_COLOR,
+    },
+  })
+    .composite([{ input: emblem, gravity: "center" }])
+    .ensureAlpha()
+    .png()
+    .toBuffer();
 }
 
 async function main(): Promise<void> {
+  const source = await readFile(MASTER_ICON);
   const publicIcons = path.join(process.cwd(), "public", "icons");
   const appDir = path.join(process.cwd(), "src", "app");
   await mkdir(publicIcons, { recursive: true });
 
-  const png32 = await renderPng(32);
-  const png180 = await renderPng(180);
-  const png192 = await renderPng(192);
-  const png512 = await renderPng(512);
-  const pngMaskable = await renderPng(512, true);
+  const png16 = await resizeIcon(source, 16);
+  const png32 = await resizeIcon(source, 32);
+  const png180 = await resizeIcon(source, 180);
+  const png192 = await resizeIcon(source, 192);
+  const png512 = await resizeIcon(source, 512);
+  const pngMaskable = await resizeMaskable(source, 512);
 
   await writeFile(path.join(publicIcons, "icon-32.png"), png32);
   await writeFile(path.join(publicIcons, "icon-180.png"), png180);
@@ -91,16 +90,21 @@ async function main(): Promise<void> {
   await writeFile(path.join(publicIcons, "icon-512-maskable.png"), pngMaskable);
   await writeFile(path.join(appDir, "icon.png"), png32);
   await writeFile(path.join(appDir, "apple-icon.png"), png180);
-  await writeFile(path.join(appDir, "favicon.ico"), pngToIco(png32));
+  await writeFile(
+    path.join(appDir, "favicon.ico"),
+    pngToIco([
+      { width: 16, height: 16, png: png16 },
+      { width: 32, height: 32, png: png32 },
+    ]),
+  );
 
-  const svg = `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="17-0">
-  <rect width="512" height="512" fill="${THEME_COLOR}"/>
-  <circle cx="256" cy="256" r="188" fill="none" stroke="${HIGHLIGHT_COLOR}" stroke-width="42"/>
-  <text x="256" y="256" fill="${HIGHLIGHT_COLOR}" font-family="Arial Black, Impact, Arial, sans-serif" font-size="200" font-weight="700" text-anchor="middle" dominant-baseline="central" letter-spacing="-8">17</text>
-</svg>
-`;
-  await writeFile(path.join(publicIcons, "icon.svg"), svg);
+  try {
+    await unlink(path.join(publicIcons, "icon.svg"));
+  } catch (error) {
+    if (!(error instanceof Error) || !("code" in error) || error.code !== "ENOENT") {
+      throw error;
+    }
+  }
 }
 
 main().catch((error: unknown) => {
