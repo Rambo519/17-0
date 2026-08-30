@@ -2,7 +2,8 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Oswald, Source_Sans_3 } from "next/font/google";
 
-import { PRODUCT_NAME } from "@/lib/brand";
+import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
+import { PRODUCT_DESCRIPTION, PRODUCT_NAME, THEME_COLOR } from "@/lib/brand";
 
 import "./globals.css";
 
@@ -20,18 +21,28 @@ const body = Source_Sans_3({
 
 export const metadata: Metadata = {
   title: PRODUCT_NAME,
-  description: "Build the perfect historical NFL offense.",
+  description: PRODUCT_DESCRIPTION,
+  applicationName: PRODUCT_NAME,
+  appleWebApp: {
+    capable: true,
+    title: PRODUCT_NAME,
+    statusBarStyle: "black-translucent",
+  },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: THEME_COLOR,
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <ServiceWorkerRegister />
+      </body>
     </html>
   );
 }

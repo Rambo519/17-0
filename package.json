@@ -24,7 +24,8 @@
     "data:enrich-historical": "tsx src/data/cli/enrichHistorical.ts",
     "data:refresh": "tsx src/data/cli/refresh.ts",
     "scoring:audit": "tsx src/data/cli/scoringAudit.ts",
-    "scoring:build-baselines": "tsx src/data/cli/buildPeerBaselines.ts"
+    "scoring:build-baselines": "tsx src/data/cli/buildPeerBaselines.ts",
+    "icons:generate": "tsx scripts/generate-app-icons.mts"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
