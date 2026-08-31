@@ -1,4 +1,4 @@
-export { SOUND_EVENTS, SOUND_FILES, SOUND_STORAGE_KEY, soundFileForEvent } from "./events";
+export { SOUND_EVENTS, SOUND_FILES, SOUND_MASTER_VOLUME, SOUND_STORAGE_KEY, soundFileForEvent } from "./events";
 export type { SoundEvent } from "./events";
 export {
   playDraftLockSound,
@@ -6,6 +6,7 @@ export {
   playJackpotIfPerfect,
   playShowResultsSound,
   playSpinStartSound,
+  playStadiumCrowdIfPerfect,
 } from "./cues";
 export {
   isAudioSourceMissing,

@@ -29,6 +29,7 @@ import { recordRevealAt, recordRevealEndsAt } from "@/lib/results/recordReveal";
 import { isPerfectProjectedSeason, resultTierFromProjectedWins } from "@/lib/results/tiers";
 import type { ScoringResultView } from "@/lib/scoring/view";
 import { FormationField } from "./FormationField";
+import { PerfectSeasonConfetti } from "./PerfectSeasonConfetti";
 
 interface ResultsViewProps {
   game: GameStateView;
@@ -193,6 +194,7 @@ export function ResultsView({
 
   return (
     <div className={styles.root}>
+      {perfect ? <PerfectSeasonConfetti /> : null}
       {scoreStatus === "ready" && score ? (
         <div className={styles.summary}>
           <section

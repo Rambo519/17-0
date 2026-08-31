@@ -1,6 +1,6 @@
 /** @vitest-environment jsdom */
 
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { GameApp } from "@/components/game/GameApp";
@@ -232,6 +232,7 @@ describe("ResultsView", () => {
     expect(screen.getAllByText("17-0").length).toBeGreaterThan(1);
     expect(screen.getByText("17–0 Chance")).toBeInTheDocument();
     expect(screen.queryByText("16–0 Chance")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("perfect-season-confetti")).not.toBeInTheDocument();
   });
 
   it("does not use jackpot presentation for a 16–1 projection", () => {
@@ -256,6 +257,7 @@ describe("ResultsView", () => {
     expect(screen.getByText("16–1")).toBeInTheDocument();
     expect(screen.queryByText("17-0")).not.toBeInTheDocument();
     expect(screen.getByText("ALL-TIME OFFENSE")).toBeInTheDocument();
+    expect(screen.queryByTestId("perfect-season-confetti")).not.toBeInTheDocument();
   });
 
   it("keeps the lineup visible while scoring loads", () => {
@@ -352,6 +354,38 @@ describe("ResultsView record count", () => {
     await vi.advanceTimersByTimeAsync(400);
     expect(screen.getByText("17–0")).toBeInTheDocument();
     expect(screen.getAllByText("17-0").length).toBeGreaterThan(0);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0);
+    });
+    expect(screen.getByTestId("perfect-season-confetti")).toBeInTheDocument();
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(2600);
+    });
+    expect(screen.queryByTestId("perfect-season-confetti")).not.toBeInTheDocument();
+  });
+
+  it("does not fire confetti for a 16-1 projection", async () => {
+    render(
+      <ResultsView
+        game={completedGame()}
+        score={scoreFixture({
+          projectedWins: 16,
+          projectedLosses: 1,
+          expectedWins: 15.8,
+          perGameWinProbability: 0.93,
+          perfectSeasonProbability: 0.3,
+        })}
+        scoreStatus="ready"
+        errorMessage={null}
+        onRetry={() => undefined}
+        onPlayAgain={() => undefined}
+        onBackToLineup={() => undefined}
+      />,
+    );
+
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(screen.getByText("16–1")).toBeInTheDocument();
+    expect(screen.queryByTestId("perfect-season-confetti")).not.toBeInTheDocument();
   });
 });
 

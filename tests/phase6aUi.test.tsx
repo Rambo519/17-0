@@ -372,6 +372,7 @@ describe("ResultsPageClient jackpot cue", () => {
     render(<ResultsPageClient sessionId="session-1" />);
     expect(await screen.findByText("17–0", {}, { timeout: 4000 })).toBeInTheDocument();
     await waitFor(() => expect(playFinalRecordSound).toHaveBeenCalledWith(17), { timeout: 4000 });
+    expect(playFinalRecordSound).toHaveBeenCalledTimes(1);
   });
 
   it("does not fire jackpot for a 16-1 projection", async () => {

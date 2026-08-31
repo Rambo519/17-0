@@ -23,10 +23,17 @@ export function playJackpotIfPerfect(projectedWins: number): void {
   playGameSound("JACKPOT");
 }
 
-/** Exactly one landing cue: jackpot for a perfect season, otherwise show-results. Never both. */
+/** Crowd bed for a landed 17-0. Respects SOUND ON/OFF via the sound engine. */
+export function playStadiumCrowdIfPerfect(projectedWins: number): void {
+  if (!isPerfectProjectedSeason(projectedWins)) return;
+  playGameSound("STADIUM_CROWD");
+}
+
+/** Landing cue: jackpot + crowd for 17-0, otherwise show-results. Never jackpot and show-results together. */
 export function playFinalRecordSound(projectedWins: number): void {
   if (isPerfectProjectedSeason(projectedWins)) {
     playGameSound("JACKPOT");
+    playStadiumCrowdIfPerfect(projectedWins);
     return;
   }
   playGameSound("SHOW_RESULTS");

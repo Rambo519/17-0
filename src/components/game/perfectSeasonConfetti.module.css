@@ -1,0 +1,47 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: none;
+  overflow: hidden;
+  contain: layout paint;
+}
+
+.piece {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  width: var(--w);
+  height: var(--h);
+  margin-left: calc(var(--w) / -2);
+  border-radius: 1px;
+  background: var(--c);
+  opacity: 0;
+  pointer-events: none;
+  animation: confetti-burst var(--dur) linear var(--delay) forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes confetti-burst {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 0.95;
+  }
+  14% {
+    transform: translate3d(calc(var(--dx) * 0.42), 7vh, 0) rotate(calc(var(--rot) * 0.22));
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate3d(var(--dx), 108vh, 0) rotate(var(--rot));
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay {
+    display: none;
+  }
+}

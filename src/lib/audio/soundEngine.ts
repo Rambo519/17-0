@@ -3,7 +3,7 @@ import {
   SOUND_FILES,
   SOUND_STORAGE_KEY,
   type SoundEvent,
-  cuePlaybackVolume,
+  enginePlaybackVolume,
   soundFileForEvent,
 } from "./events";
 
@@ -164,7 +164,8 @@ export function markAudioSourceMissing(src: string): void {
 
 function startPlayback(node: HTMLAudioElement, event: SoundEvent): void {
   const defaults = SOUND_DEFAULTS[event];
-  node.volume = cuePlaybackVolume(event);
+  node.loop = false;
+  node.volume = enginePlaybackVolume(event);
   node.playbackRate = defaults.playbackRate;
   try {
     if (!node.paused) {

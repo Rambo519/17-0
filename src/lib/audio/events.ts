@@ -6,6 +6,7 @@ export const SOUND_EVENTS = [
   "SKIP",
   "SHOW_RESULTS",
   "JACKPOT",
+  "STADIUM_CROWD",
 ] as const;
 
 export type SoundEvent = (typeof SOUND_EVENTS)[number];
@@ -19,6 +20,7 @@ export const SOUND_FILES = {
   SKIP: "/sounds/reveal-hit.mp3",
   SHOW_RESULTS: "/sounds/show-results.mp3",
   JACKPOT: "/sounds/jackpot.mp3",
+  STADIUM_CROWD: "/sounds/stadium-crowd.mp3",
 } as const satisfies Record<SoundEvent, string>;
 
 export interface SoundCueDefaults {
@@ -37,11 +39,19 @@ export const SOUND_DEFAULTS: Readonly<Record<SoundEvent, SoundCueDefaults>> = {
   SKIP: { volume: 0.62, gain: 1, playbackRate: 0.96, throttleMs: 0 },
   SHOW_RESULTS: { volume: 0.8, gain: 1, playbackRate: 1, throttleMs: 2500 },
   JACKPOT: { volume: 0.85, gain: 1, playbackRate: 1, throttleMs: 2500 },
+  STADIUM_CROWD: { volume: 0.75, gain: 1, playbackRate: 1, throttleMs: 2500 },
 };
+
+/** Applied to every cue at playback. Per-cue volume and gain stay unchanged. */
+export const SOUND_MASTER_VOLUME = 0.75;
 
 export function cuePlaybackVolume(event: SoundEvent): number {
   const defaults = SOUND_DEFAULTS[event];
   return Math.min(1, Math.max(0, defaults.volume * defaults.gain));
+}
+
+export function enginePlaybackVolume(event: SoundEvent): number {
+  return Math.min(1, Math.max(0, cuePlaybackVolume(event) * SOUND_MASTER_VOLUME));
 }
 
 export const SOUND_STORAGE_KEY = "seventeen-and-oh.soundEnabled";

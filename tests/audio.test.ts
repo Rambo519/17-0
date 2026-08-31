@@ -2,12 +2,15 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { playDraftLockSound, playFinalRecordSound, playJackpotIfPerfect } from "@/lib/audio/cues";
+import { playDraftLockSound, playFinalRecordSound, playJackpotIfPerfect, playStadiumCrowdIfPerfect } from "@/lib/audio/cues";
 import {
   SOUND_DEFAULTS,
+  SOUND_EVENTS,
   SOUND_FILES,
+  SOUND_MASTER_VOLUME,
   SOUND_STORAGE_KEY,
   cuePlaybackVolume,
+  enginePlaybackVolume,
   soundFileForEvent,
 } from "@/lib/audio/events";
 import {
@@ -28,6 +31,7 @@ class FakeAudio {
   currentTime = 0;
   preload = "";
   muted = false;
+  loop = true;
   paused = true;
   play = () => {
     this.paused = false;
@@ -55,6 +59,7 @@ describe("audio event mapping", () => {
     expect(soundFileForEvent("SKIP")).toBe("/sounds/reveal-hit.mp3");
     expect(soundFileForEvent("SHOW_RESULTS")).toBe("/sounds/show-results.mp3");
     expect(soundFileForEvent("JACKPOT")).toBe("/sounds/jackpot.mp3");
+    expect(soundFileForEvent("STADIUM_CROWD")).toBe("/sounds/stadium-crowd.mp3");
     expect(SOUND_FILES.TEAM_REVEAL).toBe(SOUND_FILES.ERA_REVEAL);
     expect(SOUND_STORAGE_KEY).toBe("seventeen-and-oh.soundEnabled");
   });
@@ -67,11 +72,24 @@ describe("audio event mapping", () => {
     expect(cuePlaybackVolume("ERA_REVEAL")).toBe(SOUND_DEFAULTS.ERA_REVEAL.volume);
     expect(cuePlaybackVolume("SHOW_RESULTS")).toBe(SOUND_DEFAULTS.SHOW_RESULTS.volume);
     expect(cuePlaybackVolume("JACKPOT")).toBe(SOUND_DEFAULTS.JACKPOT.volume);
+    expect(cuePlaybackVolume("STADIUM_CROWD")).toBe(0.75);
+    expect(SOUND_DEFAULTS.STADIUM_CROWD.volume).toBe(0.75);
+    expect(SOUND_DEFAULTS.STADIUM_CROWD.gain).toBe(1);
     expect(SOUND_DEFAULTS.SPIN_TICK.gain).toBe(1);
     expect(SOUND_DEFAULTS.TEAM_REVEAL.gain).toBe(1);
     expect(SOUND_DEFAULTS.ERA_REVEAL.gain).toBe(1);
     expect(SOUND_DEFAULTS.SHOW_RESULTS.gain).toBe(1);
     expect(SOUND_DEFAULTS.JACKPOT.gain).toBe(1);
+  });
+
+  it("keeps per-cue volumes unchanged and applies a 0.75 master multiplier at playback", () => {
+    expect(SOUND_MASTER_VOLUME).toBe(0.75);
+    expect(SOUND_DEFAULTS.STADIUM_CROWD.volume).toBe(0.75);
+    expect(cuePlaybackVolume("STADIUM_CROWD")).toBe(0.75);
+    expect(enginePlaybackVolume("STADIUM_CROWD")).toBeCloseTo(0.5625, 8);
+    for (const event of SOUND_EVENTS) {
+      expect(enginePlaybackVolume(event)).toBeCloseTo(cuePlaybackVolume(event) * SOUND_MASTER_VOLUME, 8);
+    }
   });
 });
 
@@ -175,7 +193,7 @@ describe("sound engine", () => {
     expect(played.some((entry) => entry.src === "/sounds/draft-lock.mp3")).toBe(true);
     expect(
       played.filter((entry) => entry.src === "/sounds/draft-lock.mp3").every(
-        (entry) => Math.abs(entry.volume - 0.72 * 0.75) < 0.0001,
+        (entry) => Math.abs(entry.volume - 0.72 * 0.75 * SOUND_MASTER_VOLUME) < 0.0001,
       ),
     ).toBe(true);
 
@@ -184,7 +202,7 @@ describe("sound engine", () => {
     expect(
       played
         .filter((entry) => entry.src === "/sounds/reveal-hit.mp3")
-        .every((entry) => Math.abs(entry.volume - 0.78) < 0.0001),
+        .every((entry) => Math.abs(entry.volume - 0.78 * SOUND_MASTER_VOLUME) < 0.0001),
     ).toBe(true);
   });
 
@@ -203,6 +221,28 @@ describe("sound engine", () => {
     expect(play).not.toHaveBeenCalled();
     playJackpotIfPerfect(17);
     expect(play).toHaveBeenCalledTimes(1);
+  });
+
+  it("plays stadium crowd only for a projected 17-0 season", () => {
+    const played: string[] = [];
+    class TrackingAudio extends FakeAudio {
+      play = () => {
+        played.push(this.src);
+        this.paused = false;
+        return play();
+      };
+    }
+    vi.stubGlobal("Audio", TrackingAudio);
+    unlockGameAudio();
+    played.length = 0;
+    play.mockClear();
+    playStadiumCrowdIfPerfect(16);
+    playStadiumCrowdIfPerfect(15);
+    expect(play).not.toHaveBeenCalled();
+    expect(played).toEqual([]);
+    playStadiumCrowdIfPerfect(17);
+    expect(play).toHaveBeenCalledTimes(1);
+    expect(played).toEqual(["/sounds/stadium-crowd.mp3"]);
   });
 
   it("plays show-results once for a non-perfect result and jackpot once for 17-0", () => {
@@ -236,7 +276,65 @@ describe("sound engine", () => {
     played.length = 0;
     play.mockClear();
     playFinalRecordSound(17);
-    expect(play).toHaveBeenCalledTimes(1);
-    expect(played).toEqual(["/sounds/jackpot.mp3"]);
+    expect(play).toHaveBeenCalledTimes(2);
+    expect(played).toEqual(["/sounds/jackpot.mp3", "/sounds/stadium-crowd.mp3"]);
+    expect(played).not.toContain("/sounds/show-results.mp3");
+  });
+
+  it("plays stadium crowd at configured 0.75, effective 0.5625, once and without looping", () => {
+    const played: Array<{ src: string; volume: number; loop: boolean }> = [];
+    class TrackingAudio extends FakeAudio {
+      play = () => {
+        played.push({ src: this.src, volume: this.volume, loop: this.loop });
+        this.paused = false;
+        return play();
+      };
+    }
+    vi.stubGlobal("Audio", TrackingAudio);
+    unlockGameAudio();
+    played.length = 0;
+    play.mockClear();
+    playFinalRecordSound(17);
+    const crowd = played.filter((entry) => entry.src === "/sounds/stadium-crowd.mp3");
+    expect(crowd).toHaveLength(1);
+    expect(SOUND_DEFAULTS.STADIUM_CROWD.volume).toBe(0.75);
+    expect(crowd[0]?.volume).toBeCloseTo(0.5625, 8);
+    expect(crowd[0]?.loop).toBe(false);
+  });
+
+  it("applies the master volume to every sound event at playback", () => {
+    const played: Array<{ src: string; volume: number }> = [];
+    class TrackingAudio extends FakeAudio {
+      play = () => {
+        played.push({ src: this.src, volume: this.volume });
+        this.paused = false;
+        return play();
+      };
+    }
+    vi.stubGlobal("Audio", TrackingAudio);
+
+    for (const event of SOUND_EVENTS) {
+      resetSoundEngineForTests();
+      unlockGameAudio();
+      played.length = 0;
+      play.mockClear();
+      playGameSound(event);
+      const src = soundFileForEvent(event);
+      const matching = played.filter((entry) => entry.src === src);
+      expect(matching.length).toBeGreaterThan(0);
+      expect(
+        matching.every(
+          (entry) => Math.abs(entry.volume - enginePlaybackVolume(event)) < 0.0001,
+        ),
+      ).toBe(true);
+    }
+  });
+
+  it("does not play stadium crowd when sound is off", () => {
+    setSoundEnabled(false);
+    unlockGameAudio();
+    play.mockClear();
+    playFinalRecordSound(17);
+    expect(play).not.toHaveBeenCalled();
   });
 });
