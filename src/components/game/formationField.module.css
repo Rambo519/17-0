@@ -114,12 +114,19 @@
     max-height: none;
     min-height: 0;
     align-self: stretch;
+    overflow-x: clip;
   }
 
   .field {
     grid-template-rows: auto;
     row-gap: 12px;
-    padding: 16px 12px 18px;
+    padding: 14px 10px 16px;
+    min-width: 0;
+  }
+
+  .rowWide,
+  .rowCenter {
+    min-width: 0;
   }
 
   .rowWide + .rowCenter {

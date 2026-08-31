@@ -86,11 +86,20 @@
   animation: candidate-in 220ms ease both;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 900px) {
   .chip,
   .chipActive {
-    min-height: 32px;
-    padding: 0.34rem 0.7rem;
+    min-height: 36px;
+    padding: 0.36rem 0.72rem;
+  }
+
+  .search {
+    min-height: 40px;
+  }
+
+  .toolbar,
+  .list {
+    min-width: 0;
   }
 }
 

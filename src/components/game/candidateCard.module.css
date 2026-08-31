@@ -105,9 +105,18 @@
   line-height: 1.15;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 900px) {
+  .root,
+  .selected {
+    padding: 10px 8px 11px;
+  }
+
   .withStats {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .name {
+    overflow-wrap: anywhere;
   }
 
   .statZone {
@@ -116,5 +125,6 @@
 
   .stats {
     justify-content: flex-start;
+    gap: 6px 1rem;
   }
 }

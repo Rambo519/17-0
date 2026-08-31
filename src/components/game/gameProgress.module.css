@@ -23,3 +23,15 @@
 .empty {
   background: transparent;
 }
+
+@media (max-width: 900px) {
+  .root {
+    gap: 6px;
+  }
+
+  .filled,
+  .empty {
+    width: 10px;
+    height: 10px;
+  }
+}

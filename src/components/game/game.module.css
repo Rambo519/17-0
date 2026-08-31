@@ -239,6 +239,13 @@
 }
 
 @media (max-width: 900px) {
+  .shell {
+    padding: 10px 12px 20px;
+    gap: 12px;
+    overflow-x: clip;
+    min-height: 100dvh;
+  }
+
   .playing {
     height: auto;
     max-height: none;
@@ -260,8 +267,13 @@
     display: flex;
   }
 
-  .hideOnMobilePlayers .rightColumn,
-  .hideOnMobileLineup .leftColumn {
+  .mobileTab,
+  .mobileTabActive {
+    min-height: 44px;
+  }
+
+  .hideOnMobileLineup .rightColumn,
+  .hideOnMobilePlayers .leftColumn {
     display: none;
   }
 }

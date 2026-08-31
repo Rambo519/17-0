@@ -93,9 +93,28 @@
   border: 0;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 900px) {
   .root {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .team,
+  .teamCycling,
+  .teamLocked,
+  .eraBox,
+  .eraCycling,
+  .eraLocked {
+    min-height: 5.1rem;
+    min-width: 0;
+    padding: 8px 6px;
+  }
+
+  .abbr {
+    font-size: clamp(2.1rem, 12vw, 2.8rem);
+  }
+
+  .era {
+    font-size: clamp(1.7rem, 10vw, 2.35rem);
   }
 }
 

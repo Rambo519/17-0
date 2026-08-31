@@ -20,6 +20,7 @@
   letter-spacing: 0.02em;
   font-size: 2rem;
   line-height: 0.9;
+  white-space: nowrap;
 }
 
 .meta {
@@ -27,12 +28,13 @@
   color: var(--text-muted);
   font-size: 0.88rem;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 6px;
   font-family: var(--font-display);
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .dot {
@@ -48,4 +50,57 @@
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.progress {
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .root {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "brand actions"
+      "meta progress";
+    column-gap: 10px;
+    row-gap: 8px;
+    align-items: center;
+    padding: 4px 0 8px;
+  }
+
+  .left,
+  .right {
+    display: contents;
+  }
+
+  .brand {
+    grid-area: brand;
+    font-size: clamp(1.55rem, 7.2vw, 1.85rem);
+  }
+
+  .meta {
+    grid-area: meta;
+    font-size: clamp(0.72rem, 3.1vw, 0.82rem);
+    letter-spacing: 0.05em;
+    min-width: 0;
+  }
+
+  .actions {
+    grid-area: actions;
+    justify-self: end;
+    gap: 8px;
+  }
+
+  .progress {
+    grid-area: progress;
+    justify-self: end;
+  }
 }

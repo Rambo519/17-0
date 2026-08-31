@@ -36,9 +36,13 @@ export function GameHeader({
         </p>
       </div>
       <div className={styles.right}>
-        <SoundToggle />
-        {onNewGame ? <NewGameButton onClick={onNewGame} disabled={newGameDisabled} /> : null}
-        <GameProgress filledCount={filledCount} />
+        <div className={styles.actions}>
+          <SoundToggle />
+          {onNewGame ? <NewGameButton onClick={onNewGame} disabled={newGameDisabled} /> : null}
+        </div>
+        <div className={styles.progress}>
+          <GameProgress filledCount={filledCount} />
+        </div>
       </div>
     </header>
   );

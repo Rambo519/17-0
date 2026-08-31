@@ -69,3 +69,18 @@
   color: var(--highlight);
   font-size: 0.95rem;
 }
+
+@media (max-width: 900px) {
+  .root {
+    padding: 12px;
+    min-height: 0;
+  }
+
+  .ready {
+    min-height: 200px;
+  }
+
+  .readyTitle {
+    font-size: clamp(1.55rem, 7vw, 2rem);
+  }
+}

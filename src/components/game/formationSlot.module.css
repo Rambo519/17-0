@@ -71,7 +71,14 @@
   .empty,
   .highlight,
   .filled {
-    width: min(100%, 124px);
+    width: min(100%, 42vw, 124px);
+    min-width: 0;
     min-height: 58px;
+    padding: 6px 6px;
+  }
+
+  .player {
+    overflow-wrap: anywhere;
+    max-width: 100%;
   }
 }

@@ -40,6 +40,13 @@ body {
   font-family: var(--font-body);
 }
 
+@media (max-width: 900px) {
+  html,
+  body {
+    overflow-x: clip;
+  }
+}
+
 body {
   background:
     radial-gradient(900px 420px at 50% -8%, rgba(58, 214, 141, 0.1), transparent 58%),
