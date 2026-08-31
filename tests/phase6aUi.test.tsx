@@ -10,6 +10,7 @@ import { SpinPanel } from "@/components/game/SpinPanel";
 import { playDraftLockSound, playFinalRecordSound, playSpinStartSound } from "@/lib/audio/cues";
 import { SOUND_STORAGE_KEY } from "@/lib/audio/events";
 import { resetSoundEngineForTests } from "@/lib/audio/soundEngine";
+import { LINEUP_SLOTS, positionForSlot } from "@/lib/football/positions";
 import { EMPTY_PRODUCTION } from "@/lib/game/production";
 import type { SpinResult } from "@/lib/game/spin";
 import type { SpinRevealFrame } from "@/lib/game/spinReveal";
@@ -50,10 +51,9 @@ afterEach(() => {
 });
 
 function emptyLineup(): GameStateView["lineup"] {
-  const slots = ["QB", "RB", "FB", "WR1", "WR2", "TE"] as const;
-  return slots.map((slot) => ({
+  return LINEUP_SLOTS.map((slot) => ({
     slot,
-    accepts: slot === "WR1" || slot === "WR2" ? "WR" : slot,
+    accepts: positionForSlot(slot),
     filled: false,
     player: null,
   }));
@@ -67,8 +67,8 @@ function activeGame(overrides: Partial<GameStateView> = {}): GameStateView {
     isComplete: false,
     roundNumber: 1,
     nextRoundNumber: 1,
-    openSlots: ["QB", "RB", "FB", "WR1", "WR2", "TE"],
-    usefulPositions: ["QB", "RB", "FB", "WR", "TE"],
+    openSlots: ["QB", "RB1", "RB2", "WR1", "WR2", "TE"],
+    usefulPositions: ["QB", "RB", "WR", "TE"],
     teamSkipRemaining: 1,
     eraSkipRemaining: 1,
     lineup: emptyLineup(),
@@ -81,7 +81,7 @@ function qbSpin(): SpinResult {
     sessionId: "session-1",
     franchise: { id: 1, name: "San Francisco 49ers", abbreviation: "SF" },
     era: { id: 1, label: "1980s" },
-    openSlots: ["QB", "RB", "FB", "WR1", "WR2", "TE"],
+    openSlots: ["QB", "RB1", "RB2", "WR1", "WR2", "TE"],
     candidates: [
       {
         eligibleSlots: ["QB"],
@@ -119,7 +119,7 @@ function cyclingReveal(): SpinRevealFrame {
 }
 
 function scoreFixture(overrides: Partial<ScoringResultView> = {}): ScoringResultView {
-  const slots = ["QB", "RB", "FB", "WR1", "WR2", "TE"] as const;
+  const slots = ["QB", "RB1", "RB2", "WR1", "WR2", "TE"] as const;
   return {
     offenseRating: 99,
     weightedTalentRating: 99,
@@ -148,7 +148,6 @@ function scoreFixture(overrides: Partial<ScoringResultView> = {}): ScoringResult
 }
 
 function completedGame(): GameStateView {
-  const slots = ["QB", "RB", "FB", "WR1", "WR2", "TE"] as const;
   return {
     sessionId: "session-1",
     mode: "CLASSIC",
@@ -160,9 +159,9 @@ function completedGame(): GameStateView {
     usefulPositions: [],
     teamSkipRemaining: 1,
     eraSkipRemaining: 1,
-    lineup: slots.map((slot, index) => ({
+    lineup: LINEUP_SLOTS.map((slot, index) => ({
       slot,
-      accepts: slot === "WR1" || slot === "WR2" ? "WR" : slot,
+      accepts: positionForSlot(slot),
       filled: true,
       player: {
         playerId: index + 1,
@@ -279,8 +278,8 @@ describe("GameApp spin and draft sounds", () => {
               game: activeGame({
                 roundNumber: 2,
                 nextRoundNumber: 2,
-                openSlots: ["RB", "FB", "WR1", "WR2", "TE"],
-                usefulPositions: ["RB", "FB", "WR", "TE"],
+                openSlots: ["RB1", "RB2", "WR1", "WR2", "TE"],
+                usefulPositions: ["RB", "WR", "TE"],
                 lineup: emptyLineup().map((slot) =>
                   slot.slot === "QB"
                     ? {

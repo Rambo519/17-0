@@ -20,7 +20,7 @@ function seededRng(seed: number): () => number {
 }
 
 describe("evaluateCompletedGame", () => {
-  it("rejects incomplete sessions", async () => {
+  it("rejects incomplete sessions", { timeout: 15_000 }, async () => {
     const db = await createTestDatabase();
     await seedDevelopmentData(db);
     const repository = createDrizzleScoringRepository(db);

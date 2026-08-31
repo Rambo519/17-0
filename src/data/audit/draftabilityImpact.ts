@@ -103,7 +103,7 @@ function addPositions(counts: PositionCounts, positions: readonly NormalizedPosi
 }
 
 function isViable(counts: Record<NormalizedPosition, number>): boolean {
-  return counts.QB >= 1 && counts.RB >= 1 && counts.FB >= 1 && counts.WR >= 2 && counts.TE >= 1;
+  return counts.QB >= 1 && counts.RB >= 2 && counts.WR >= 2 && counts.TE >= 1;
 }
 
 function hasProduction(row: {

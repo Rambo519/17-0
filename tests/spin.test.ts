@@ -69,7 +69,7 @@ describe("spinGame", () => {
   it("only rolls combinations that contain the last open position", async () => {
     for (const value of RNG_SAMPLES) {
       const { id } = await repository.createSession({ mode: "CLASSIC" });
-      await occupySlots(repository, id, ["QB", "RB", "FB", "WR1", "WR2"]);
+      await occupySlots(repository, id, ["QB", "RB1", "RB2", "WR1", "WR2"]);
 
       const spin = await spinGame(repository, id, () => value);
 
@@ -90,7 +90,7 @@ describe("spinGame", () => {
 
       const spin = await spinGame(repository, id, () => value);
 
-      expect(spin.openSlots).toEqual(["QB", "RB", "FB", "TE"]);
+      expect(spin.openSlots).toEqual(["QB", "RB1", "RB2", "TE"]);
       // Franchise 1 / era 1 only has wide receivers, so it is out of the pool.
       expect(`${spin.franchise.id}:${spin.era.id}`).not.toBe("1:1");
       for (const candidate of spin.candidates) {
@@ -104,11 +104,11 @@ describe("spinGame", () => {
     const { id } = await repository.createSession({ mode: "CLASSIC" });
     // Player 205 (RB/FB) is already used, leaving franchise 3 as the only
     // remaining source of a running back.
-    await occupySlots(repository, id, ["QB", "FB", "WR1", "WR2", "TE"], [204, 205, 201, 202, 203]);
+    await occupySlots(repository, id, ["QB", "RB1", "WR1", "WR2", "TE"], [204, 205, 201, 202, 203]);
 
     const spin = await spinGame(repository, id, () => 0);
 
-    expect(spin.openSlots).toEqual(["RB"]);
+    expect(spin.openSlots).toEqual(["RB2"]);
     expect(spin.candidates.map((candidate) => candidate.card.playerId)).toEqual([206]);
   });
 
@@ -117,7 +117,7 @@ describe("spinGame", () => {
       multiTeamCards().filter((entry) => !entry.positions.includes("TE")),
     );
     const { id } = await withoutTightEnds.createSession({ mode: "CLASSIC" });
-    await occupySlots(withoutTightEnds, id, ["QB", "RB", "FB", "WR1", "WR2"]);
+    await occupySlots(withoutTightEnds, id, ["QB", "RB1", "RB2", "WR1", "WR2"]);
 
     await expect(spinGame(withoutTightEnds, id, () => 0)).rejects.toMatchObject({
       code: "NO_VALID_SPIN",
@@ -126,7 +126,7 @@ describe("spinGame", () => {
 
   it("refuses to spin a finished or unknown game", async () => {
     const { id } = await repository.createSession({ mode: "CLASSIC" });
-    await occupySlots(repository, id, ["QB", "RB", "FB", "WR1", "WR2", "TE"]);
+    await occupySlots(repository, id, ["QB", "RB1", "RB2", "WR1", "WR2", "TE"]);
 
     await expect(spinGame(repository, id, () => 0)).rejects.toBeInstanceOf(GameRuleError);
     await expect(

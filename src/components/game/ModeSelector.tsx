@@ -45,7 +45,7 @@ export function ModeSelector({ onStart, busy, onNewGame }: ModeSelectorProps) {
         <details className={styles.how}>
           <summary>How to Play</summary>
           <p>
-            Spin a franchise and era, then draft one eligible player. Fill all six I-formation
+            Spin a franchise and era, then draft one eligible player. Fill all six pro-set
             spots. One team reroll. One era reroll. Then see if the offense can run the table.
           </p>
         </details>

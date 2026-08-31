@@ -40,7 +40,7 @@ export function FormationField({
   }
 
   return (
-    <section className={styles.root} aria-label="I-formation lineup">
+    <section className={styles.root} aria-label="Pro-set lineup">
       <div className={styles.field}>
         <div className={styles.yardLines} aria-hidden />
         <div className={styles.rowWide}>
@@ -50,8 +50,10 @@ export function FormationField({
         </div>
         <div className={styles.rowCenter}>{render("TE")}</div>
         <div className={styles.rowCenter}>{render("QB")}</div>
-        <div className={styles.rowCenter}>{render("FB")}</div>
-        <div className={styles.rowCenter}>{render("RB")}</div>
+        <div className={styles.rowBackfield}>
+          {render("RB1")}
+          {render("RB2")}
+        </div>
       </div>
     </section>
   );

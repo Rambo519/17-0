@@ -161,7 +161,7 @@ export function singleTeamCards(): DraftableCard[] {
   return [
     card({ cardId: 101, playerId: 101, playerName: "Dev QB", positions: ["QB"] }),
     card({ cardId: 102, playerId: 102, playerName: "Dev RB", positions: ["RB"] }),
-    card({ cardId: 103, playerId: 103, playerName: "Dev FB", positions: ["FB"] }),
+    card({ cardId: 103, playerId: 103, playerName: "Dev RB 2", positions: ["RB"] }),
     card({ cardId: 104, playerId: 104, playerName: "Dev WR A", positions: ["WR"] }),
     card({ cardId: 105, playerId: 105, playerName: "Dev WR B", positions: ["WR"] }),
     card({ cardId: 106, playerId: 106, playerName: "Dev TE", positions: ["TE"] }),
@@ -215,7 +215,7 @@ export function skipScenarioCards(): DraftableCard[] {
       eraId,
       franchiseName: `Franchise ${franchiseId}`,
       eraLabel: `Era ${eraId}`,
-      positions: ["FB"],
+      positions: ["RB"],
     }),
     card({
       cardId: base + 4,
@@ -250,7 +250,7 @@ export function skipScenarioCards(): DraftableCard[] {
     ...makeTeam(1, 1, 300),
     ...makeTeam(2, 1, 400),
     ...makeTeam(1, 2, 500),
-    // Franchise 3 / Era 1 has no FB — useful when only FB remains.
+    // Franchise 3 / Era 1 has no RB — useful when only an RB slot remains.
     card({
       cardId: 601,
       playerId: 601,
@@ -259,15 +259,6 @@ export function skipScenarioCards(): DraftableCard[] {
       franchiseName: "Franchise 3",
       eraLabel: "Era 1",
       positions: ["QB"],
-    }),
-    card({
-      cardId: 602,
-      playerId: 602,
-      franchiseId: 3,
-      eraId: 1,
-      franchiseName: "Franchise 3",
-      eraLabel: "Era 1",
-      positions: ["RB"],
     }),
     card({
       cardId: 603,

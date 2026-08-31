@@ -10,6 +10,7 @@ import {
   START_HEADLINE,
   START_SUBTITLE,
 } from "@/components/game/ModeSelector";
+import { LINEUP_SLOTS, positionForSlot } from "@/lib/football/positions";
 import { startGame } from "@/lib/game/startGame";
 import { createInMemoryGameRepository, skipScenarioCards } from "./helpers/inMemoryGameRepository";
 import type { GameStateView } from "@/lib/game/view";
@@ -27,10 +28,9 @@ afterEach(() => {
 });
 
 function emptyLineup(): GameStateView["lineup"] {
-  const slots = ["QB", "RB", "FB", "WR1", "WR2", "TE"] as const;
-  return slots.map((slot) => ({
+  return LINEUP_SLOTS.map((slot) => ({
     slot,
-    accepts: slot === "WR1" || slot === "WR2" ? "WR" : slot,
+    accepts: positionForSlot(slot),
     filled: false,
     player: null,
   }));
@@ -44,8 +44,8 @@ function activeGame(overrides: Partial<GameStateView> = {}): GameStateView {
     isComplete: false,
     roundNumber: 1,
     nextRoundNumber: 1,
-    openSlots: ["QB", "RB", "FB", "WR1", "WR2", "TE"],
-    usefulPositions: ["QB", "RB", "FB", "WR", "TE"],
+    openSlots: ["QB", "RB1", "RB2", "WR1", "WR2", "TE"],
+    usefulPositions: ["QB", "RB", "WR", "TE"],
     teamSkipRemaining: 1,
     eraSkipRemaining: 1,
     lineup: emptyLineup(),

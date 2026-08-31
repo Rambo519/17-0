@@ -9,6 +9,7 @@ import { CompletedLineup } from "@/components/game/CompletedLineup";
 import { FormationField } from "@/components/game/FormationField";
 import { ModeSelector } from "@/components/game/ModeSelector";
 import { SkipControls } from "@/components/game/SkipControls";
+import { LINEUP_SLOTS, positionForSlot } from "@/lib/football/positions";
 import { EMPTY_PRODUCTION } from "@/lib/game/production";
 import type { SpinCandidate } from "@/lib/game/spin";
 import type { LineupSlotView } from "@/lib/game/view";
@@ -18,10 +19,9 @@ afterEach(() => {
 });
 
 function lineupFixture(filled: Partial<Record<string, true>> = {}): LineupSlotView[] {
-  const slots = ["QB", "RB", "FB", "WR1", "WR2", "TE"] as const;
-  return slots.map((slot) => ({
+  return LINEUP_SLOTS.map((slot) => ({
     slot,
-    accepts: slot === "WR1" || slot === "WR2" ? "WR" : slot,
+    accepts: positionForSlot(slot),
     filled: Boolean(filled[slot]),
     player: filled[slot]
       ? {
@@ -219,7 +219,7 @@ describe("FormationField", () => {
     render(
       <FormationField
         lineup={lineupFixture()}
-        highlightedSlots={["RB"]}
+        highlightedSlots={["RB1"]}
         onSelectSlot={onSelectSlot}
       />,
     );
@@ -259,7 +259,7 @@ describe("CompletedLineup", () => {
     const onViewResults = vi.fn();
     render(
       <CompletedLineup
-        lineup={lineupFixture({ QB: true, RB: true, FB: true, WR1: true, WR2: true, TE: true })}
+        lineup={lineupFixture({ QB: true, RB1: true, RB2: true, WR1: true, WR2: true, TE: true })}
         onNewGame={onNewGame}
         onViewResults={onViewResults}
       />,

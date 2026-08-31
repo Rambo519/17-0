@@ -1,11 +1,9 @@
 import {
   calibratePercentileToScore,
   DATA_CONFIDENCE_THRESHOLDS,
-  FB_SLOT_METRIC_WEIGHTS,
   POSITION_METRIC_WEIGHTS,
   SCORE_CALIBRATION,
 } from "./config";
-import { blendFeatureBackPercentile, fbSlotPeerPosition, isFeatureBackSeason } from "./fbSlot";
 import { metricValueFromSeason } from "./metrics";
 import type { PeerBaselineIndex } from "./peerBaselines";
 import {
@@ -70,24 +68,18 @@ export interface ScorePlayerSeasonOptions {
   cardPositions?: readonly NormalizedPosition[];
 }
 
-function isFbSlot(scoringPosition: NormalizedPosition, slot: LineupSlot | undefined): boolean {
-  return slot === "FB" || (slot == null && scoringPosition === "FB");
-}
-
 /**
  * Score a single player season against same-season position peers.
- * FB-slot evaluation is complementary and slot-aware; RB evaluation of the
- * same dual-eligible card is unchanged.
+ * Playable RB slots (RB1/RB2) both use normal RB weights and RB peers.
+ * FB remains a historical position profile only — not a lineup slot.
  */
 export function scorePlayerSeason(
   stat: SeasonStatRecord,
   scoringPosition: NormalizedPosition,
   baselines: PeerBaselineIndex,
-  options: ScorePlayerSeasonOptions = {},
+  _options: ScorePlayerSeasonOptions = {},
 ): PlayerSeasonScoreResult {
-  const fbSlot = isFbSlot(scoringPosition, options.lineupSlot);
-  const cardPositions = options.cardPositions ?? stat.positions;
-  const weights = fbSlot ? FB_SLOT_METRIC_WEIGHTS : POSITION_METRIC_WEIGHTS[scoringPosition];
+  const weights = POSITION_METRIC_WEIGHTS[scoringPosition];
   const metricEntries = Object.entries(weights) as [MetricKey, number][];
 
   let availableWeight = 0;
@@ -101,10 +93,7 @@ export function scorePlayerSeason(
       continue;
     }
 
-    const peerPosition = fbSlot
-      ? fbSlotPeerPosition(key, stat, cardPositions)
-      : scoringPosition;
-    const percentile = baselines.percentileAgainst(stat.season, peerPosition, key, rawValue);
+    const percentile = baselines.percentileAgainst(stat.season, scoringPosition, key, rawValue);
     availableWeight += baseWeight;
     weightedPercentileSum += baseWeight * percentile;
     metrics.push({ key, rawValue, percentile, weight: 0 });
@@ -114,10 +103,7 @@ export function scorePlayerSeason(
     return neutralFallback(scoringPosition);
   }
 
-  let compositePercentile = weightedPercentileSum / availableWeight;
-  if (fbSlot && isFeatureBackSeason(stat)) {
-    compositePercentile = blendFeatureBackPercentile(compositePercentile);
-  }
+  const compositePercentile = weightedPercentileSum / availableWeight;
   const rawProductionScore = calibratePercentileToScore(compositePercentile);
   const coverageRatio = availableWeight / metricEntries.reduce((sum, [, w]) => sum + w, 0);
 
@@ -128,11 +114,7 @@ export function scorePlayerSeason(
     }
   }
 
-  const reliabilityResult = computeSeasonReliability(stat, scoringPosition, baselines, {
-    peerPositionForMetric: fbSlot
-      ? (metric) => fbSlotPeerPosition(metric, stat, cardPositions)
-      : undefined,
-  });
+  const reliabilityResult = computeSeasonReliability(stat, scoringPosition, baselines);
   const adjustedProductionScore = applyReliabilityShrinkage(
     rawProductionScore,
     reliabilityResult.reliability,

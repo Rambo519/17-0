@@ -90,6 +90,16 @@ function hasPosition(positions: readonly NormalizedPosition[], target: Normalize
   return positions.includes(target) ? 1 : 0;
 }
 
+/** Playable pro-set: QB + 2 RB + 2 WR + TE. FB is historical coverage only. */
+export function isFullFormationViable(counts: {
+  qbCount: number;
+  rbCount: number;
+  wrCount: number;
+  teCount: number;
+}): boolean {
+  return counts.qbCount >= 1 && counts.rbCount >= 2 && counts.wrCount >= 2 && counts.teCount >= 1;
+}
+
 export async function runCoverageAudit(db: Database): Promise<CoverageAuditReport> {
   const franchiseRows = await db.select().from(franchises);
   const eraRows = await db
@@ -166,7 +176,12 @@ export async function runCoverageAudit(db: Database): Promise<CoverageAuditRepor
         wrCount: wr,
         teCount: te,
         totalSkillPlayers: cardPositions.length,
-        fullFormationViable: qb >= 1 && rb >= 1 && fb >= 1 && wr >= 2 && te >= 1,
+        fullFormationViable: isFullFormationViable({
+          qbCount: qb,
+          rbCount: rb,
+          wrCount: wr,
+          teCount: te,
+        }),
       });
     }
   }

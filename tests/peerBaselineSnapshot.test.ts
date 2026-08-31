@@ -167,10 +167,10 @@ const weakLineup: LineupPickInput[] = [
   lineupPick("QB", 1, "Weak QB", ["QB"], [
     season({ season: 1990, playerId: 1, positions: ["QB"], passingYards: 2100, passingTouchdowns: 11, interceptions: 19 }),
   ]),
-  lineupPick("RB", 2, "Weak RB", ["RB"], [
+  lineupPick("RB1", 2, "Weak RB", ["RB"], [
     season({ season: 1990, playerId: 2, positions: ["RB"], rushingYards: 620, rushingTouchdowns: 4, receptions: 21, receivingYards: 210 }),
   ]),
-  lineupPick("FB", 3, "Weak FB", ["FB"], [
+  lineupPick("RB2", 3, "Weak FB", ["FB"], [
     season({ season: 1990, playerId: 3, positions: ["FB"], rushingYards: 210, rushingTouchdowns: 1, receptions: 16, receivingYards: 160 }),
   ]),
   lineupPick("WR1", 4, "Weak WR1", ["WR"], [
@@ -188,10 +188,10 @@ const averageLineup: LineupPickInput[] = [
   lineupPick("QB", 11, "Avg QB", ["QB"], [
     season({ season: 1990, playerId: 11, positions: ["QB"], passingYards: 3350, passingTouchdowns: 20, interceptions: 12 }),
   ]),
-  lineupPick("RB", 12, "Avg RB", ["RB"], [
+  lineupPick("RB1", 12, "Avg RB", ["RB"], [
     season({ season: 1990, playerId: 12, positions: ["RB"], rushingYards: 1240, rushingTouchdowns: 10, receptions: 30, receivingYards: 360 }),
   ]),
-  lineupPick("FB", 13, "Avg FB", ["FB"], [
+  lineupPick("RB2", 13, "Avg FB", ["FB"], [
     season({ season: 1990, playerId: 13, positions: ["FB"], rushingYards: 360, rushingTouchdowns: 3, receptions: 22, receivingYards: 250 }),
   ]),
   lineupPick("WR1", 14, "Avg WR1", ["WR"], [
@@ -209,10 +209,10 @@ const eliteLineup: LineupPickInput[] = [
   lineupPick("QB", 21, "Elite QB", ["QB"], [
     season({ season: 1990, playerId: 21, positions: ["QB"], passingYards: 4800, passingTouchdowns: 28, interceptions: 8 }),
   ]),
-  lineupPick("RB", 22, "Elite RB", ["RB"], [
+  lineupPick("RB1", 22, "Elite RB", ["RB"], [
     season({ season: 1990, playerId: 22, positions: ["RB"], rushingYards: 2200, rushingTouchdowns: 18, receptions: 40, receivingYards: 400 }),
   ]),
-  lineupPick("FB", 23, "Elite FB", ["FB"], [
+  lineupPick("RB2", 23, "Elite FB", ["FB"], [
     season({ season: 1990, playerId: 23, positions: ["FB"], rushingYards: 700, rushingTouchdowns: 6, receptions: 30, receivingYards: 450 }),
   ]),
   lineupPick("WR1", 24, "Elite WR1", ["WR"], [
@@ -230,10 +230,10 @@ const fbDualLineup: LineupPickInput[] = [
   lineupPick("QB", 31, "QB", ["QB"], [
     season({ season: 1990, playerId: 31, positions: ["QB"], passingYards: 3500, passingTouchdowns: 22, interceptions: 10 }),
   ]),
-  lineupPick("RB", 32, "RB", ["RB"], [
+  lineupPick("RB1", 32, "RB", ["RB"], [
     season({ season: 1990, playerId: 32, positions: ["RB"], rushingYards: 1400, rushingTouchdowns: 12, receptions: 35, receivingYards: 380 }),
   ]),
-  lineupPick("FB", 33, "Ware", ["FB", "RB"], [
+  lineupPick("RB2", 33, "Ware", ["FB", "RB"], [
     season({
       season: 1990,
       playerId: 33,
@@ -308,8 +308,8 @@ describe("peer baseline snapshot equivalence", () => {
     const session = await repository.createSession({ mode: "IQ" });
     const picks = [
       { slot: "QB" as const, card: cards[0]! },
-      { slot: "RB" as const, card: cards[1]! },
-      { slot: "FB" as const, card: cards[2]! },
+      { slot: "RB1" as const, card: cards[1]! },
+      { slot: "RB2" as const, card: cards[2]! },
       { slot: "WR1" as const, card: cards[3]! },
       { slot: "WR2" as const, card: cards[4]! },
       { slot: "TE" as const, card: cards[5]! },

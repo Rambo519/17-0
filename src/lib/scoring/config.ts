@@ -77,11 +77,11 @@ export function calibratePercentileToScore(percentile: number): number {
   return 50 + t ** 0.78 * (maxScore - 50);
 }
 
-/** Slot weights for offense talent rating (WR1/WR2 evaluated as WR, not slot-inflated). */
+/** Slot weights for offense talent rating (WR1/WR2 evaluated as WR; RB1/RB2 as RB). */
 export const LINEUP_SLOT_WEIGHTS: Readonly<Record<LineupSlot, number>> = {
   QB: 0.3,
-  RB: 0.15,
-  FB: 0.08,
+  RB1: 0.115,
+  RB2: 0.115,
   WR1: 0.16,
   WR2: 0.14,
   TE: 0.12,
@@ -108,7 +108,7 @@ export const BALANCE_ADJUSTMENT = {
  *
  * Tail start sits at the 16-1 rounding boundary (~90.5) so the midrange
  * logistic is unchanged and 16-1 no longer begins at the old 88.5 tail.
- * Exponent is set so 17-0 remains near offense 92.86.
+ * Exponent is set so 17-0 begins near offense 92.25.
  */
 export const WIN_PROJECTION_MODEL = {
   midpointRating: 62,
@@ -119,7 +119,7 @@ export const WIN_PROJECTION_MODEL = {
   tailExtension: {
     startRating: 90.5,
     endRating: 95,
-    exponent: 0.428,
+    exponent: 0.292,
   },
 } as const;
 

@@ -7,8 +7,8 @@ export type Lineup = Record<LineupSlot, DraftPickRecord | null>;
 export function createEmptyLineup(): Lineup {
   return {
     QB: null,
-    RB: null,
-    FB: null,
+    RB1: null,
+    RB2: null,
     WR1: null,
     WR2: null,
     TE: null,

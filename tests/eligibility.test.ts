@@ -44,14 +44,14 @@ function stateWithFilledSlots(slots: LineupSlot[]) {
 
 describe("eligibility", () => {
   it("treats WR as useful while either receiver slot is open", () => {
-    expect(usefulPositions([...LINEUP_SLOTS])).toEqual(["QB", "RB", "FB", "WR", "TE"]);
+    expect(usefulPositions([...LINEUP_SLOTS])).toEqual(["QB", "RB", "WR", "TE"]);
     expect(usefulPositions(["WR2", "TE"])).toEqual(["WR", "TE"]);
   });
 
   it("drops WR from useful positions once both receiver slots are filled", () => {
     const state = stateWithFilledSlots(["WR1", "WR2"]);
 
-    expect(state.usefulPositions).toEqual(["QB", "RB", "FB", "TE"]);
+    expect(state.usefulPositions).toEqual(["QB", "RB", "TE"]);
     expect(isCardSelectable(card({ positions: ["WR"] }), state)).toBe(false);
     expect(isCardSelectable(card({ positions: ["RB", "WR"] }), state)).toBe(true);
   });
@@ -59,16 +59,29 @@ describe("eligibility", () => {
   it("keeps a TE-only player out of the RB slot", () => {
     const tightEnd = card({ positions: ["TE"] });
 
-    expect(cardIsEligibleForSlot(tightEnd, "RB")).toBe(false);
+    expect(cardIsEligibleForSlot(tightEnd, "RB1")).toBe(false);
     expect(cardIsEligibleForSlot(tightEnd, "TE")).toBe(true);
     expect(eligibleSlotsForCard(tightEnd, [...LINEUP_SLOTS])).toEqual(["TE"]);
   });
 
-  it("lets a multi-position RB/FB fill either slot", () => {
+  it("lets a multi-position RB/FB fill either RB slot, but not as FB", () => {
     const dual = card({ positions: ["RB", "FB"] });
+    const fbOnly = card({ positions: ["FB"] });
 
-    expect(eligibleSlotsForCard(dual, [...LINEUP_SLOTS])).toEqual(["RB", "FB"]);
-    expect(eligibleSlotsForCard(dual, ["FB", "TE"])).toEqual(["FB"]);
+    expect(eligibleSlotsForCard(dual, [...LINEUP_SLOTS])).toEqual(["RB1", "RB2"]);
+    expect(eligibleSlotsForCard(dual, ["RB2", "TE"])).toEqual(["RB2"]);
+    expect(eligibleSlotsForCard(fbOnly, [...LINEUP_SLOTS])).toEqual([]);
+    expect(cardIsEligibleForSlot(fbOnly, "RB1")).toBe(false);
+    expect(cardIsEligibleForSlot(fbOnly, "RB2")).toBe(false);
+  });
+
+  it("keeps RB useful after one running back is drafted", () => {
+    const state = stateWithFilledSlots(["RB1"]);
+    const back = card({ positions: ["RB"] });
+
+    expect(state.usefulPositions).toContain("RB");
+    expect(eligibleSlotsForCard(back, state.openSlots)).toEqual(["RB2"]);
+    expect(isCardSelectable(back, state)).toBe(true);
   });
 
   it("offers a WR the second receiver slot once the first is taken", () => {

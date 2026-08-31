@@ -2,7 +2,7 @@
 
 An original historical NFL team-building draft game spanning the **1970s through
 2020s**. You spin for a franchise and a decade, pick one of that team's offensive
-skill players, and assign them to an open slot in a six-man I-formation lineup.
+skill players, and assign them to an open slot in a six-man pro-set lineup.
 A completed offense projects a **17-game** regular-season record.
 
 ```text
@@ -12,13 +12,13 @@ WR                         WR
 
              QB
 
-             FB
-
-             RB
+          RB        RB
 ```
 
-The six draft slots are `QB`, `RB`, `FB`, `WR1`, `WR2`, `TE`. `WR1` and `WR2`
-are separate slots that both accept a normalized `WR`.
+The six draft slots are `QB`, `RB1`, `RB2`, `WR1`, `WR2`, `TE`. `WR1` and `WR2`
+are separate slots that both accept a normalized `WR`. `RB1` and `RB2` both
+accept a normalized `RB`. Historical `FB` position data is kept but is not a
+playable slot.
 
 **Phase 1 scope:** database model, draft engine, minimal API. No historical
 import, no scoring, no final UI.

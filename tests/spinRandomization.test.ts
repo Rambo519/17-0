@@ -145,11 +145,11 @@ describe("production SPIN randomization (audit only — no behavior change)", ()
   it("keeps later-round draws uniform after illegal combinations drop out", async () => {
     const repository = createInMemoryGameRepository(laterRoundCards());
     const scenarios: Array<{ name: string; filled: LineupSlot[]; expected: string[] }> = [
-      { name: "all slots open", filled: [], expected: ["WRS:2000s", "TES:2000s", "QBS:2000s", "FBS:2000s", "RBS:2000s"] },
-      { name: "QB filled", filled: ["QB"], expected: ["WRS:2000s", "TES:2000s", "FBS:2000s", "RBS:2000s"] },
-      { name: "WR1/WR2 filled", filled: ["WR1", "WR2"], expected: ["TES:2000s", "QBS:2000s", "FBS:2000s", "RBS:2000s"] },
-      { name: "only FB open", filled: ["QB", "RB", "WR1", "WR2", "TE"], expected: ["FBS:2000s"] },
-      { name: "only TE open", filled: ["QB", "RB", "FB", "WR1", "WR2"], expected: ["TES:2000s"] },
+      { name: "all slots open", filled: [], expected: ["WRS:2000s", "TES:2000s", "QBS:2000s", "RBS:2000s"] },
+      { name: "QB filled", filled: ["QB"], expected: ["WRS:2000s", "TES:2000s", "RBS:2000s"] },
+      { name: "WR1/WR2 filled", filled: ["WR1", "WR2"], expected: ["TES:2000s", "QBS:2000s", "RBS:2000s"] },
+      { name: "only RB2 open", filled: ["QB", "RB1", "WR1", "WR2", "TE"], expected: ["RBS:2000s"] },
+      { name: "only TE open", filled: ["QB", "RB1", "RB2", "WR1", "WR2"], expected: ["TES:2000s"] },
     ];
 
     for (const scenario of scenarios) {

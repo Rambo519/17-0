@@ -8,10 +8,11 @@ export const NORMALIZED_POSITIONS = ["QB", "RB", "FB", "WR", "TE"] as const;
 export type NormalizedPosition = (typeof NORMALIZED_POSITIONS)[number];
 
 /**
- * The six draft slots of the I-formation offense. Order is the canonical
+ * The six draft slots of the pro-set offense. Order is the canonical
  * display order used by the UI and by round-by-round output.
+ * FB remains a historical normalized position, not a playable slot.
  */
-export const LINEUP_SLOTS = ["QB", "RB", "FB", "WR1", "WR2", "TE"] as const;
+export const LINEUP_SLOTS = ["QB", "RB1", "RB2", "WR1", "WR2", "TE"] as const;
 
 export type LineupSlot = (typeof LINEUP_SLOTS)[number];
 
@@ -19,13 +20,12 @@ export const LINEUP_SLOT_COUNT = LINEUP_SLOTS.length;
 
 /**
  * The only place in the codebase that decides which normalized position a
- * lineup slot accepts. WR1 and WR2 are distinct slots backed by the same
- * normalized position.
+ * lineup slot accepts. WR1/WR2 share WR; RB1/RB2 share RB.
  */
 const SLOT_ELIGIBILITY: Readonly<Record<LineupSlot, NormalizedPosition>> = {
   QB: "QB",
-  RB: "RB",
-  FB: "FB",
+  RB1: "RB",
+  RB2: "RB",
   WR1: "WR",
   WR2: "WR",
   TE: "TE",

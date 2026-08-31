@@ -27,13 +27,13 @@ function pick(overrides: Partial<DraftPickRecord>): DraftPickRecord {
 }
 
 describe("lineup", () => {
-  it("has exactly the six I-formation slots", () => {
-    expect([...LINEUP_SLOTS]).toEqual(["QB", "RB", "FB", "WR1", "WR2", "TE"]);
+  it("has exactly the six pro-set slots", () => {
+    expect([...LINEUP_SLOTS]).toEqual(["QB", "RB1", "RB2", "WR1", "WR2", "TE"]);
   });
 
   it("starts a new game with all six slots empty", () => {
     const lineup = createEmptyLineup();
-    expect(openSlots(lineup)).toEqual(["QB", "RB", "FB", "WR1", "WR2", "TE"]);
+    expect(openSlots(lineup)).toEqual(["QB", "RB1", "RB2", "WR1", "WR2", "TE"]);
     expect(filledSlots(lineup)).toEqual([]);
     expect(isLineupComplete(lineup)).toBe(false);
   });
@@ -41,7 +41,10 @@ describe("lineup", () => {
   it("maps both receiver slots to the WR position", () => {
     expect(positionForSlot("WR1")).toBe("WR");
     expect(positionForSlot("WR2")).toBe("WR");
+    expect(positionForSlot("RB1")).toBe("RB");
+    expect(positionForSlot("RB2")).toBe("RB");
     expect(slotsForPosition("WR")).toEqual(["WR1", "WR2"]);
+    expect(slotsForPosition("RB")).toEqual(["RB1", "RB2"]);
     expect(slotsForPosition("TE")).toEqual(["TE"]);
   });
 
@@ -52,7 +55,7 @@ describe("lineup", () => {
     ]);
 
     expect(filledSlots(lineup)).toEqual(["QB", "WR1"]);
-    expect(openSlots(lineup)).toEqual(["RB", "FB", "WR2", "TE"]);
+    expect(openSlots(lineup)).toEqual(["RB1", "RB2", "WR2", "TE"]);
     expect(isLineupComplete(lineup)).toBe(false);
   });
 

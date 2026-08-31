@@ -63,16 +63,21 @@ describe("scoring top-end win projection", () => {
     expect(perGameWinProbabilityFromRating(73)).toBeCloseTo(baseline, 10);
   });
 
-  it("starts 16-1 near offense 90.5–91.0 and keeps 17-0 near 92.86", () => {
+  it("starts 16-1 near offense 90.5–91.0 and keeps 17-0 near 92.25", () => {
     const sixteen = ratingThresholdForProjectedWins(16);
     const seventeen = ratingThresholdForProjectedWins(REGULAR_SEASON_GAMES);
     expect(sixteen).toBeGreaterThanOrEqual(90.5);
     expect(sixteen).toBeLessThanOrEqual(91.0);
-    expect(seventeen).toBeGreaterThan(92.7);
-    expect(seventeen).toBeLessThan(93.1);
+    expect(seventeen).toBeGreaterThan(92.2);
+    expect(seventeen).toBeLessThan(92.3);
     expect(projectWinsFromRating(88.5).projectedWins).toBe(15);
     expect(projectWinsFromRating(90).projectedWins).toBe(15);
+    expect(projectWinsFromRating(92.24).projectedWins).toBe(16);
+    expect(projectWinsFromRating(92.25).projectedWins).toBe(17);
     expect(projectWinsFromRating(100).projectedWins).toBe(17);
+    expect(perGameWinProbabilityFromRating(100)).toBe(
+      WIN_PROJECTION_MODEL.maxWinProbability,
+    );
   });
 
   it("computes 17-0 chance from full-precision p, not the displayed percentage", () => {

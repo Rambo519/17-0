@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  isFullFormationViable,
   runCoverageAudit,
   type CoverageAuditReport,
   type FranchiseEraCoverageRow,
@@ -48,7 +49,9 @@ describe("coverage audit logic", () => {
     expect(zeroFb).toHaveLength(1);
     expect(oneFb).toHaveLength(1);
     expect(twoOrMore).toHaveLength(1);
-    expect(rows[2]?.qbCount && rows[2].rbCount && rows[2].fbCount && rows[2].wrCount >= 2 && rows[2].teCount).toBeTruthy();
+    expect(isFullFormationViable({ qbCount: 2, rbCount: 2, wrCount: 3, teCount: 1 })).toBe(true);
+    expect(isFullFormationViable({ qbCount: 2, rbCount: 1, wrCount: 3, teCount: 1 })).toBe(false);
+    expect(isFullFormationViable({ qbCount: 2, rbCount: 30, wrCount: 3, teCount: 1 })).toBe(true);
   });
 
   it("exports runCoverageAudit function for integration use", () => {

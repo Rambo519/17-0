@@ -271,7 +271,7 @@ describe("scoring calibration (Phase 5B)", () => {
             interceptions: 16,
           }),
         ]),
-        lineupPick("RB", 2, "Weak RB", "RB", [
+        lineupPick("RB1", 2, "Weak RB", "RB", [
           season({
             season: 1990,
             playerId: 2,
@@ -281,7 +281,7 @@ describe("scoring calibration (Phase 5B)", () => {
             rushingTouchdowns: 4,
           }),
         ]),
-        lineupPick("FB", 3, "Weak FB", "FB", [
+        lineupPick("RB2", 3, "Weak RB2", "RB", [
           season({
             season: 1990,
             playerId: 3,
@@ -342,7 +342,7 @@ describe("scoring calibration (Phase 5B)", () => {
             interceptions: 8,
           }),
         ]),
-        lineupPick("RB", 8, "Elite RB", "RB", [
+        lineupPick("RB1", 8, "Elite RB", "RB", [
           season({
             season: 1990,
             playerId: 8,
@@ -354,7 +354,7 @@ describe("scoring calibration (Phase 5B)", () => {
             receivingYards: 420,
           }),
         ]),
-        lineupPick("FB", 9, "Elite FB", "FB", [
+        lineupPick("RB2", 9, "Elite RB2", "RB", [
           season({
             season: 1990,
             playerId: 9,

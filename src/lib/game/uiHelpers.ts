@@ -1,4 +1,9 @@
-import { NORMALIZED_POSITIONS, type LineupSlot, type NormalizedPosition } from "@/lib/football/positions";
+import {
+  NORMALIZED_POSITIONS,
+  positionForSlot,
+  type LineupSlot,
+  type NormalizedPosition,
+} from "@/lib/football/positions";
 import { formatPlayerDisplayName } from "@/lib/game/playerName";
 import type { CardProduction, GameMode } from "@/lib/game/types";
 import type { SpinCandidate } from "@/lib/game/spin";
@@ -17,6 +22,13 @@ export function highlightedSlotsForCandidate(
 export function slotDisplayLabel(slot: LineupSlot): string {
   if (slot === "WR1" || slot === "WR2") return "WR";
   return slot;
+}
+
+/** Player-facing position labels; FB is historical data only. */
+export function playableDisplayPositions(
+  positions: readonly NormalizedPosition[],
+): NormalizedPosition[] {
+  return positions.filter((position) => position !== "FB");
 }
 
 export function formatStat(value: number | null | undefined): string {
@@ -127,7 +139,9 @@ export function availableCandidatePositions(
 ): NormalizedPosition[] {
   const present = new Set<NormalizedPosition>();
   for (const candidate of candidates) {
-    for (const position of candidate.card.positions) present.add(position);
+    for (const slot of candidate.eligibleSlots) {
+      present.add(positionForSlot(slot));
+    }
   }
   return NORMALIZED_POSITIONS.filter((position) => present.has(position));
 }

@@ -22,6 +22,13 @@
       "when": 1787430495139,
       "tag": "0002_game_mode_and_skips",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1788130800000,
+      "tag": "0003_pro_set_lineup_slots",
+      "breakpoints": true
     }
   ]
 }

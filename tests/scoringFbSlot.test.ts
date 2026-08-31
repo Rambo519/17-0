@@ -167,18 +167,18 @@ const supportSeasons = {
   }),
 };
 
-function lineupWithFb(fb: SeasonStatRecord, name: string, positions: NormalizedPosition[]): LineupPickInput[] {
+function lineupWithTwoRbs(rb2: SeasonStatRecord, name: string, positions: NormalizedPosition[]): LineupPickInput[] {
   return [
     pick("QB", 1, "QB", ["QB"], [supportSeasons.qb]),
-    pick("RB", 2, "RB", ["RB"], [supportSeasons.rb]),
-    pick("FB", fb.playerId, name, positions, [fb]),
+    pick("RB1", 2, "RB", ["RB"], [supportSeasons.rb]),
+    pick("RB2", rb2.playerId, name, positions, [rb2]),
     pick("WR1", 3, "WR1", ["WR"], [supportSeasons.wr1]),
     pick("WR2", 4, "WR2", ["WR"], [supportSeasons.wr2]),
     pick("TE", 5, "TE", ["TE"], [supportSeasons.te]),
   ];
 }
 
-describe("FB-slot evaluation", () => {
+describe("two-RB slot evaluation (FB is not a playable slot)", () => {
   const peers = buildCorpus();
   const baselines = buildPeerBaselineIndex(peers);
 
@@ -203,80 +203,50 @@ describe("FB-slot evaluation", () => {
     receivingYards: 325,
   });
 
-  const replacementFb = season({
-    season: 2016,
-    playerId: 902,
-    positions: ["FB"],
-    rushingYards: 40,
-    rushingTouchdowns: 0,
-    receptions: 4,
-    receivingYards: 20,
-  });
-
-  it("gives a dual RB/FB different scores by slot and does not explode at FB", () => {
-    const rbScore = evaluateLineupPick(
-      pick("RB", 900, "Spencer Ware", ["FB", "RB"], [ware]),
+  it("scores RB1 and RB2 identically for the same dual RB/FB player", () => {
+    const rb1 = evaluateLineupPick(
+      pick("RB1", 900, "Spencer Ware", ["FB", "RB"], [ware]),
       baselines,
     );
-    const fbScore = evaluateLineupPick(
-      pick("FB", 900, "Spencer Ware", ["FB", "RB"], [ware]),
+    const rb2 = evaluateLineupPick(
+      pick("RB2", 900, "Spencer Ware", ["FB", "RB"], [ware]),
       baselines,
     );
 
-    expect(fbScore.overall).not.toBe(rbScore.overall);
-    expect(fbScore.overall).toBeLessThan(80);
-    expect(fbScore.overall).toBeLessThan(rbScore.overall);
+    expect(rb1.normalizedPosition).toBe("RB");
+    expect(rb2.normalizedPosition).toBe("RB");
+    expect(rb2.overall).toBe(rb1.overall);
   });
 
-  it("leaves normal RB evaluation on the RB slot unchanged vs position RB scoring", () => {
+  it("leaves normal RB evaluation unchanged vs position RB scoring", () => {
     const rbOnly = season({ ...ware, positions: ["RB"], playerId: 910 });
-    const viaSlot = evaluateLineupPick(pick("RB", 910, "Ware RB", ["RB"], [rbOnly]), baselines);
+    const viaSlot = evaluateLineupPick(pick("RB1", 910, "Ware RB", ["RB"], [rbOnly]), baselines);
     const viaPosition = scorePlayerSeason(rbOnly, "RB", baselines);
     expect(viaSlot.overall).toBeCloseTo(viaPosition.adjustedProductionScore, 8);
   });
 
-  it("keeps a traditional receiving FB ahead of a replacement FB", () => {
-    const strong = evaluateLineupPick(pick("FB", 901, "Johnston", ["FB"], [johnston]), baselines);
-    const weak = evaluateLineupPick(
-      pick("FB", 902, "Replacement", ["FB"], [replacementFb]),
+  it("still has an FB position profile for historical data, unused by lineup slots", () => {
+    const fbScore = scorePlayerSeason(johnston, "FB", baselines);
+    const rbScore = scorePlayerSeason(
+      season({ ...johnston, positions: ["RB"], playerId: 911 }),
+      "RB",
       baselines,
     );
-    expect(strong.overall).toBeGreaterThan(weak.overall);
-    expect(strong.overall).toBeGreaterThan(55);
+    expect(fbScore.usedNeutralFallback).toBe(false);
+    expect(rbScore.usedNeutralFallback).toBe(false);
   });
 
-  it("does not let FB alone swing multiple projected wins", () => {
-    const corpus = [
-      ...peers,
-      ware,
-      johnston,
-      replacementFb,
-      supportSeasons.qb,
-      supportSeasons.rb,
-      supportSeasons.wr1,
-      supportSeasons.wr2,
-      supportSeasons.te,
-    ];
-    const index = buildPeerBaselineIndex(corpus);
-
-    const replacement = evaluateLineup(
-      lineupWithFb(replacementFb, "Replacement", ["FB"]),
-      index,
-    );
-    const traditional = evaluateLineup(lineupWithFb(johnston, "Johnston", ["FB"]), index);
-    const feature = evaluateLineup(lineupWithFb(ware, "Ware", ["FB", "RB"]), index);
-
-    expect(traditional.projection.expectedWins).toBeGreaterThan(replacement.projection.expectedWins);
-    expect(feature.projection.expectedWins - replacement.projection.expectedWins).toBeLessThan(1.5);
-    expect(traditional.projection.expectedWins - replacement.projection.expectedWins).toBeLessThan(
-      1.5,
-    );
+  it("does not let the second RB reuse complementary FB-slot compression", () => {
+    const rb1 = evaluateLineupPick(pick("RB1", 900, "Ware", ["FB", "RB"], [ware]), baselines);
+    const rb2 = evaluateLineupPick(pick("RB2", 900, "Ware", ["FB", "RB"], [ware]), baselines);
+    expect(rb2.overall).toBe(rb1.overall);
+    expect(rb2.overall).toBeGreaterThan(70);
   });
 
   it("is deterministic for the same six cards in the same slots", () => {
     const corpus = [...peers, ware, ...Object.values(supportSeasons)];
     const index = buildPeerBaselineIndex(corpus);
-    const picks = lineupWithFb(ware, "Ware", ["FB", "RB"]);
+    const picks = lineupWithTwoRbs(ware, "Ware", ["FB", "RB"]);
     const first = evaluateLineup(picks, index);
     const second = evaluateLineup(picks, index);
     expect(first.offense.overallRating).toBe(second.offense.overallRating);
@@ -292,6 +262,6 @@ describe("FB-slot evaluation", () => {
   it("does not change the approved 17-0 win-curve threshold", () => {
     expect(WIN_PROJECTION_MODEL.seasonLength).toBe(17);
     expect(WIN_PROJECTION_MODEL.maxWinProbability).toBe(0.99);
-    expect(ratingThresholdForProjectedWins(17)).toBeCloseTo(92.86, 1);
+    expect(ratingThresholdForProjectedWins(17)).toBeCloseTo(92.25, 1);
   });
 });

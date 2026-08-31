@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { GameApp } from "@/components/game/GameApp";
 import { ResultsPageClient } from "@/components/game/ResultsPageClient";
 import { ResultsView } from "@/components/game/ResultsView";
+import { LINEUP_SLOTS, positionForSlot } from "@/lib/football/positions";
 import type { GameStateView } from "@/lib/game/view";
 import type { ScoringResultView } from "@/lib/scoring/view";
 
@@ -37,7 +38,6 @@ function stubReducedMotion(reduce: boolean) {
 }
 
 function completedGame(mode: GameStateView["mode"] = "CLASSIC"): GameStateView {
-  const slots = ["QB", "RB", "FB", "WR1", "WR2", "TE"] as const;
   return {
     sessionId: "session-1",
     mode,
@@ -49,9 +49,9 @@ function completedGame(mode: GameStateView["mode"] = "CLASSIC"): GameStateView {
     usefulPositions: [],
     teamSkipRemaining: 1,
     eraSkipRemaining: 1,
-    lineup: slots.map((slot, index) => ({
+    lineup: LINEUP_SLOTS.map((slot, index) => ({
       slot,
-      accepts: slot === "WR1" || slot === "WR2" ? "WR" : slot,
+      accepts: positionForSlot(slot),
       filled: true,
       player: {
         playerId: index + 1,
@@ -66,7 +66,7 @@ function completedGame(mode: GameStateView["mode"] = "CLASSIC"): GameStateView {
 }
 
 function scoreFixture(overrides: Partial<ScoringResultView> = {}): ScoringResultView {
-  const slots = ["QB", "RB", "FB", "WR1", "WR2", "TE"] as const;
+  const slots = ["QB", "RB1", "RB2", "WR1", "WR2", "TE"] as const;
   return {
     offenseRating: 87.4,
     weightedTalentRating: 86.0,
@@ -173,7 +173,7 @@ describe("ResultsView", () => {
     );
 
     const lineup = screen.getByRole("heading", { name: /^lineup$/i }).closest("section");
-    const field = screen.getByRole("region", { name: /i-formation lineup/i });
+    const field = screen.getByRole("region", { name: /pro-set lineup/i });
     expect(lineup?.parentElement?.contains(field)).toBe(true);
     expect(screen.getAllByText("Player QB").length).toBeGreaterThan(1);
     expect(screen.getAllByText("84.5")).toHaveLength(6);

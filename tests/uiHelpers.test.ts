@@ -8,6 +8,7 @@ import {
   classicProductionStats,
   filterSpinCandidates,
   highlightedSlotsForCandidate,
+  playableDisplayPositions,
   shouldShowClassicStats,
   slotDisplayLabel,
   userFacingError,
@@ -38,10 +39,10 @@ function candidate(overrides: Partial<SpinCandidate["card"]> & { eligibleSlots: 
 
 describe("uiHelpers", () => {
   it("highlights only open eligible slots for a selected candidate", () => {
-    const selected = candidate({ eligibleSlots: ["RB", "FB"], positions: ["RB", "FB"] });
-    expect(highlightedSlotsForCandidate(selected, ["QB", "RB", "WR1"])).toEqual(["RB"]);
-    expect(highlightedSlotsForCandidate(selected, ["FB"])).toEqual(["FB"]);
-    expect(highlightedSlotsForCandidate(null, ["RB", "FB"])).toEqual([]);
+    const selected = candidate({ eligibleSlots: ["RB1", "RB2"], positions: ["RB", "FB"] });
+    expect(highlightedSlotsForCandidate(selected, ["QB", "RB1", "WR1"])).toEqual(["RB1"]);
+    expect(highlightedSlotsForCandidate(selected, ["RB2"])).toEqual(["RB2"]);
+    expect(highlightedSlotsForCandidate(null, ["RB1", "RB2"])).toEqual([]);
   });
 
   it("keeps WR1 and WR2 as distinct highlight targets", () => {
@@ -54,6 +55,8 @@ describe("uiHelpers", () => {
     expect(slotDisplayLabel("WR1")).toBe("WR");
     expect(slotDisplayLabel("WR2")).toBe("WR");
     expect(slotDisplayLabel("QB")).toBe("QB");
+    expect(slotDisplayLabel("RB1")).toBe("RB1");
+    expect(slotDisplayLabel("RB2")).toBe("RB2");
   });
 
   it("shows Classic stats only in CLASSIC mode", () => {
@@ -91,8 +94,9 @@ describe("uiHelpers", () => {
 
   it("lists only positions present among current eligible candidates", () => {
     const wr = candidate({ eligibleSlots: ["WR1", "WR2"], positions: ["WR"], cardId: 2, playerId: 2 });
-    const rbFb = candidate({ eligibleSlots: ["RB", "FB"], positions: ["RB", "FB"], cardId: 3, playerId: 3 });
-    expect(availableCandidatePositions([wr, rbFb])).toEqual(["RB", "FB", "WR"]);
+    const rbFb = candidate({ eligibleSlots: ["RB1", "RB2"], positions: ["RB", "FB"], cardId: 3, playerId: 3 });
+    expect(availableCandidatePositions([wr, rbFb])).toEqual(["RB", "WR"]);
+    expect(playableDisplayPositions(["RB", "FB"])).toEqual(["RB"]);
   });
 
   it("filters candidates without re-sorting or changing eligibility", () => {
@@ -111,7 +115,7 @@ describe("uiHelpers", () => {
       playerName: "Jerry Rice",
     });
     const rb = candidate({
-      eligibleSlots: ["RB"],
+      eligibleSlots: ["RB1", "RB2"],
       positions: ["RB"],
       cardId: 3,
       playerId: 3,

@@ -144,12 +144,12 @@ describe("historical scoring fairness", () => {
           passingTouchdowns: 10,
           interceptions: 18,
         }),
-        pick("RB", 2, "Weak RB", {
+        pick("RB1", 2, "Weak RB", {
           positions: ["RB"],
           rushingYards: 650,
           rushingTouchdowns: 4,
         }),
-        pick("FB", 3, "Weak FB", {
+        pick("RB2", 3, "Weak RB2", {
           positions: ["FB"],
           rushingYards: 250,
           receptions: 12,
@@ -185,14 +185,14 @@ describe("historical scoring fairness", () => {
           passingTouchdowns: 34,
           interceptions: 8,
         }),
-        pick("RB", 8, "Elite RB", {
+        pick("RB1", 8, "Elite RB", {
           positions: ["RB"],
           rushingYards: 2100,
           rushingTouchdowns: 18,
           receptions: 45,
           receivingYards: 420,
         }),
-        pick("FB", 9, "Elite FB", {
+        pick("RB2", 9, "Elite RB2", {
           positions: ["FB"],
           rushingYards: 700,
           rushingTouchdowns: 6,

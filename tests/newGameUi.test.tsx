@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { GameApp } from "@/components/game/GameApp";
 import { SOUND_STORAGE_KEY } from "@/lib/audio/events";
 import { resetSoundEngineForTests } from "@/lib/audio/soundEngine";
+import { LINEUP_SLOTS, positionForSlot } from "@/lib/football/positions";
 import { EMPTY_PRODUCTION } from "@/lib/game/production";
 import type { SpinResult } from "@/lib/game/spin";
 import type { GameStateView } from "@/lib/game/view";
@@ -44,10 +45,9 @@ afterEach(() => {
 });
 
 function emptyLineup(): GameStateView["lineup"] {
-  const slots = ["QB", "RB", "FB", "WR1", "WR2", "TE"] as const;
-  return slots.map((slot) => ({
+  return LINEUP_SLOTS.map((slot) => ({
     slot,
-    accepts: slot === "WR1" || slot === "WR2" ? "WR" : slot,
+    accepts: positionForSlot(slot),
     filled: false,
     player: null,
   }));
@@ -61,8 +61,8 @@ function activeGame(overrides: Partial<GameStateView> = {}): GameStateView {
     isComplete: false,
     roundNumber: 1,
     nextRoundNumber: 1,
-    openSlots: ["QB", "RB", "FB", "WR1", "WR2", "TE"],
-    usefulPositions: ["QB", "RB", "FB", "WR", "TE"],
+    openSlots: ["QB", "RB1", "RB2", "WR1", "WR2", "TE"],
+    usefulPositions: ["QB", "RB", "WR", "TE"],
     teamSkipRemaining: 1,
     eraSkipRemaining: 1,
     lineup: emptyLineup(),
@@ -75,7 +75,7 @@ function qbSpin(sessionId = "session-1"): SpinResult {
     sessionId,
     franchise: { id: 1, name: "San Francisco 49ers", abbreviation: "SF" },
     era: { id: 1, label: "1980s" },
-    openSlots: ["QB", "RB", "FB", "WR1", "WR2", "TE"],
+    openSlots: ["QB", "RB1", "RB2", "WR1", "WR2", "TE"],
     candidates: [
       {
         eligibleSlots: ["QB"],
@@ -107,8 +107,8 @@ function pickedGame(sessionId: string): GameStateView {
     nextRoundNumber: 2,
     teamSkipRemaining: 0,
     eraSkipRemaining: 0,
-    openSlots: ["RB", "FB", "WR1", "WR2", "TE"],
-    usefulPositions: ["RB", "FB", "WR", "TE"],
+    openSlots: ["RB1", "RB2", "WR1", "WR2", "TE"],
+    usefulPositions: ["RB", "WR", "TE"],
     lineup: emptyLineup().map((slot) =>
       slot.slot === "QB"
         ? {

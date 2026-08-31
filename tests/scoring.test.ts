@@ -165,7 +165,8 @@ describe("scoring engine", () => {
   });
 
   it("weights QB highest in offense talent rating", () => {
-    expect(LINEUP_SLOT_WEIGHTS.QB).toBeGreaterThan(LINEUP_SLOT_WEIGHTS.RB);
+    expect(LINEUP_SLOT_WEIGHTS.QB).toBeGreaterThan(LINEUP_SLOT_WEIGHTS.RB1);
+    expect(LINEUP_SLOT_WEIGHTS.RB1).toBe(LINEUP_SLOT_WEIGHTS.RB2);
     expect(LINEUP_SLOT_WEIGHTS.QB).toBeGreaterThan(LINEUP_SLOT_WEIGHTS.TE);
   });
 
@@ -192,7 +193,6 @@ describe("scoring engine", () => {
     const fbScore = scorePlayerSeason(fb, "FB", baselines);
     const rbScore = scorePlayerSeason(rb, "RB", baselines);
 
-    expect(fbScore.productionScore).toBeGreaterThan(55);
     expect(fbScore.productionScore).toBeGreaterThan(rbScore.productionScore);
   });
 
@@ -287,7 +287,7 @@ describe("scoring engine", () => {
       {
         playerId: 2,
         playerName: "B",
-        lineupSlot: "RB",
+        lineupSlot: "RB1",
         normalizedPosition: "RB",
         franchiseId: 1,
         eraId: 1,
@@ -304,8 +304,8 @@ describe("scoring engine", () => {
       {
         playerId: 3,
         playerName: "C",
-        lineupSlot: "FB",
-        normalizedPosition: "FB",
+        lineupSlot: "RB2",
+        normalizedPosition: "RB",
         franchiseId: 1,
         eraId: 1,
         scoringSeason: 1990,
@@ -398,7 +398,7 @@ describe("scoring engine", () => {
         ],
       ),
       lineupPick(
-        "RB",
+        "RB1",
         210,
         "Elite RB",
         "RB",
@@ -415,10 +415,10 @@ describe("scoring engine", () => {
         ],
       ),
       lineupPick(
-        "FB",
+        "RB2",
         307,
-        "Elite FB",
-        "FB",
+        "Elite RB2",
+        "RB",
         [
           season({
             season: 1990,

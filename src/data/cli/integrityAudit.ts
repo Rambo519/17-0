@@ -217,10 +217,13 @@ async function main(): Promise<void> {
       seasonsByCard.set(card.id, seasons);
     }
 
-    const fbEvals = fbCards.map((card) => {
+    const rbEligibleFbCards = fbCards.filter((card) =>
+      (allPosByCard.get(card.id) ?? []).includes("RB"),
+    );
+    const fbEvals = rbEligibleFbCards.map((card) => {
       const seasons = seasonsByCard.get(card.id) ?? [];
       const pick: LineupPickInput = {
-        lineupSlot: "FB",
+        lineupSlot: "RB1",
         playerId: card.playerId,
         playerName: playerById.get(card.playerId)?.displayName ?? "",
         franchiseId: card.franchiseId,
@@ -242,8 +245,12 @@ async function main(): Promise<void> {
     for (const row of fbEvals) byEra.set(row.eraLabel, (byEra.get(row.eraLabel) ?? 0) + 1);
 
     const weightSum = Object.values(LINEUP_SLOT_WEIGHTS).reduce((sum, value) => sum + value, 0);
-    console.log("\n=== FB scoring (no calibration changes) ===");
-    console.log(`FB slot weight=${LINEUP_SLOT_WEIGHTS.FB} / ${weightSum} = ${(LINEUP_SLOT_WEIGHTS.FB / weightSum).toFixed(4)}`);
+    console.log("\n=== Historical FB coverage (FB is not a playable slot) ===");
+    console.log(
+      `RB1 weight=${LINEUP_SLOT_WEIGHTS.RB1} RB2 weight=${LINEUP_SLOT_WEIGHTS.RB2} / ${weightSum}` +
+        ` = ${((LINEUP_SLOT_WEIGHTS.RB1 + LINEUP_SLOT_WEIGHTS.RB2) / weightSum).toFixed(4)} combined`,
+    );
+    console.log(`FB-only draftable cards=${fbCards.length - rbEligibleFbCards.length} dual RB/FB=${rbEligibleFbCards.length}`);
     console.log("FB draftable cards by era:", Object.fromEntries([...byEra.entries()].sort()));
     console.log(`MIN_PEER_SAMPLE=${MIN_PEER_SAMPLE} FB_PEER_FALLBACK=${FB_PEER_FALLBACK_POSITIONS.join(",")}`);
     console.log("FB vs RB peer-season counts (rushing_yards sample proxy = seasons with that position):");
@@ -293,7 +300,8 @@ async function main(): Promise<void> {
 
     const supportNames = [
       { slot: "QB" as const, name: "Al Woodall", era: "1970s" },
-      { slot: "RB" as const, name: "Johnny Hector", era: "1990s" },
+      { slot: "RB1" as const, name: "Johnny Hector", era: "1990s" },
+      { slot: "RB2" as const, name: "Earnest Byner", era: "1980s" },
       { slot: "WR1" as const, name: "Jim Beirne", era: "1970s" },
       { slot: "WR2" as const, name: "Paul Flatley", era: "1970s" },
       { slot: "TE" as const, name: "Rich Kotite", era: "1970s" },
@@ -316,7 +324,12 @@ async function main(): Promise<void> {
             )
         : [];
       if (!player || !card) {
-        const position = spec.slot === "WR1" || spec.slot === "WR2" ? "WR" : spec.slot;
+        const position =
+          spec.slot === "WR1" || spec.slot === "WR2"
+            ? "WR"
+            : spec.slot === "RB1" || spec.slot === "RB2"
+              ? "RB"
+              : spec.slot;
         const fallback = allCards.find(
           (row) =>
             row.draftable &&
@@ -367,18 +380,20 @@ async function main(): Promise<void> {
       );
     }
 
-    function lineupWithFb(fb: (typeof ranked)[number]) {
+    function lineupWithSecondRb(rb: (typeof ranked)[number]) {
       const picks: LineupPickInput[] = [
-        ...supportPicks.map((row) => ({
-          ...row,
-          seasons: seasonsForCard(row.cardId, row.playerId, row.franchiseId, row.firstSeason, row.lastSeason),
-        })),
-        { ...fb.pick, seasons: seasonsByCard.get(fb.pick.cardId) ?? [] },
+        ...supportPicks
+          .filter((row) => row.lineupSlot !== "RB2")
+          .map((row) => ({
+            ...row,
+            seasons: seasonsForCard(row.cardId, row.playerId, row.franchiseId, row.firstSeason, row.lastSeason),
+          })),
+        { ...rb.pick, lineupSlot: "RB2" as const, seasons: seasonsByCard.get(rb.pick.cardId) ?? [] },
       ];
       return evaluateLineup(picks, baselines);
     }
 
-    console.log("\n=== FB sensitivity (identical non-FB five) ===");
+    console.log("\n=== Dual RB/FB sensitivity at RB2 (identical other five) ===");
     const variants = [
       ["replacement", replacement],
       ["average", average],
@@ -387,15 +402,15 @@ async function main(): Promise<void> {
     ] as const;
     const results = [];
     for (const [label, fb] of variants) {
-      const scored = lineupWithFb(fb);
+      const scored = lineupWithSecondRb(fb);
       results.push({ label, fb: fb.pick.playerName, scored });
       console.log(
-        `  ${label} FB=${fb.pick.playerName} overallFB=${fb.evaluation.overall.toFixed(1)}` +
+        `  ${label} RB2=${fb.pick.playerName} overall=${fb.evaluation.overall.toFixed(1)}` +
           ` offense=${scored.offense.overallRating.toFixed(2)} p=${scored.projection.perGameWinProbability.toFixed(4)}` +
           ` xW=${scored.projection.expectedWins.toFixed(2)} rec=${scored.projection.projectedWins}-${scored.projection.projectedLosses}`,
       );
     }
-    const twice = lineupWithFb(top);
+    const twice = lineupWithSecondRb(top);
     const replacementScored = results[0]?.scored;
     const topScored = results[3]?.scored;
     if (replacementScored && topScored) {

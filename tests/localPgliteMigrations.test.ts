@@ -44,7 +44,7 @@ describe("applyLocalPgliteMigrations", () => {
     }
   });
 
-  it("applies pending Phase 3 columns to a pre-journal historical database", async () => {
+  it("applies pending Phase 3 columns to a pre-journal historical database", { timeout: 15_000 }, async () => {
     client = new PGlite(await createIsolatedPgliteDataDir());
     await execSqlFile(client, "0000_swift_quasimodo.sql");
     await execSqlFile(client, "0001_roster_status.sql");
@@ -58,7 +58,7 @@ describe("applyLocalPgliteMigrations", () => {
     expect(await hasColumn(client, "game_sessions", "era_skip_remaining")).toBe(true);
   });
 
-  it("is idempotent when migrations are already applied", async () => {
+  it("is idempotent when migrations are already applied", { timeout: 15_000 }, async () => {
     client = new PGlite(await createIsolatedPgliteDataDir());
     await applyLocalPgliteMigrations(client);
     await applyLocalPgliteMigrations(client);

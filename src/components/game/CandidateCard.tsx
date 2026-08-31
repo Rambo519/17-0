@@ -5,6 +5,7 @@ import { formatPlayerDisplayName } from "@/lib/game/playerName";
 import type { GameMode } from "@/lib/game/types";
 import {
   classicProductionStats,
+  playableDisplayPositions,
   shouldShowClassicStats,
   yearsWithFranchiseLabel,
 } from "@/lib/game/uiHelpers";
@@ -21,6 +22,7 @@ export function CandidateCard({ candidate, mode, selected, onSelect }: Candidate
   const showStats = shouldShowClassicStats(mode);
   const stats = showStats ? classicProductionStats(card.positions, card.production) : null;
   const years = yearsWithFranchiseLabel(card.firstSeason, card.lastSeason);
+  const displayPositions = playableDisplayPositions(card.positions);
 
   return (
     <button
@@ -33,7 +35,7 @@ export function CandidateCard({ candidate, mode, selected, onSelect }: Candidate
         <span className={styles.name}>{formatPlayerDisplayName(card.playerName)}</span>
         <span className={styles.meta}>
           <span className={styles.identity}>
-            {card.positions.join(" · ")}
+            {displayPositions.join(" · ")}
             <span aria-hidden> | </span>
             {years}
           </span>

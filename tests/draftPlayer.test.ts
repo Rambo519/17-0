@@ -52,7 +52,7 @@ describe("draftPlayer", () => {
     const result = await spinAndDraft(101, "QB");
 
     expect(result.state.lineup.QB?.playerName).toBe("Dev QB");
-    expect(result.state.openSlots).toEqual(["RB", "FB", "WR1", "WR2", "TE"]);
+    expect(result.state.openSlots).toEqual(["RB1", "RB2", "WR1", "WR2", "TE"]);
 
     await spinGame(repository, sessionId, () => 0);
     await expect(
@@ -74,38 +74,61 @@ describe("draftPlayer", () => {
 
     expect(result.state.lineup.WR1?.playerId).toBe(104);
     expect(result.state.lineup.WR2?.playerId).toBe(105);
-    expect(result.state.usefulPositions).toEqual(["QB", "RB", "FB", "TE"]);
+    expect(result.state.usefulPositions).toEqual(["QB", "RB", "TE"]);
   });
 
   it("rejects a tight end in the running back slot", async () => {
     await spinGame(repository, sessionId, () => 0);
     await expect(
-      draftPlayer(repository, { sessionId, playerTeamEraCardId: 106, lineupSlot: "RB" }),
+      draftPlayer(repository, { sessionId, playerTeamEraCardId: 106, lineupSlot: "RB1" }),
     ).rejects.toMatchObject({ code: "POSITION_NOT_ELIGIBLE" });
   });
 
-  it("lets a multi-position RB/FB fill either slot", async () => {
-    const asFullback = await spinAndDraft(108, "FB");
-    expect(asFullback.state.lineup.FB?.playerId).toBe(108);
+  it("lets a multi-position RB/FB fill either RB slot", async () => {
+    const asRb2 = await spinAndDraft(108, "RB2");
+    expect(asRb2.state.lineup.RB2?.playerId).toBe(108);
 
     const other = createInMemoryGameRepository(testCards());
     const fresh = await startGame(other, { mode: "CLASSIC" });
     await spinGame(other, fresh.sessionId, () => 0);
-    const asRunningBack = await draftPlayer(other, {
+    const asRb1 = await draftPlayer(other, {
       sessionId: fresh.sessionId,
       playerTeamEraCardId: 108,
-      lineupSlot: "RB",
+      lineupSlot: "RB1",
     });
 
-    expect(asRunningBack.state.lineup.RB?.playerId).toBe(108);
+    expect(asRb1.state.lineup.RB1?.playerId).toBe(108);
+  });
+
+  it("rejects an FB-only card in both RB slots", async () => {
+    const fbOnly = createInMemoryGameRepository([
+      ...testCards(),
+      card({ cardId: 111, playerId: 111, playerName: "Dev FB only", positions: ["FB"] }),
+    ]);
+    const fresh = await startGame(fbOnly, { mode: "CLASSIC" });
+    await fbOnly.setCurrentSpin(fresh.sessionId, { franchiseId: 1, eraId: 1 });
+    await expect(
+      draftPlayer(fbOnly, {
+        sessionId: fresh.sessionId,
+        playerTeamEraCardId: 111,
+        lineupSlot: "RB1",
+      }),
+    ).rejects.toMatchObject({ code: "POSITION_NOT_ELIGIBLE" });
+    await expect(
+      draftPlayer(fbOnly, {
+        sessionId: fresh.sessionId,
+        playerTeamEraCardId: 111,
+        lineupSlot: "RB2",
+      }),
+    ).rejects.toMatchObject({ code: "POSITION_NOT_ELIGIBLE" });
   });
 
   it("refuses to draft the same player twice", async () => {
-    await spinAndDraft(108, "RB");
+    await spinAndDraft(108, "RB1");
 
     await spinGame(repository, sessionId, () => 0);
     await expect(
-      draftPlayer(repository, { sessionId, playerTeamEraCardId: 108, lineupSlot: "FB" }),
+      draftPlayer(repository, { sessionId, playerTeamEraCardId: 108, lineupSlot: "RB2" }),
     ).rejects.toMatchObject({ code: "PLAYER_ALREADY_DRAFTED" });
 
     await spinAndDraft(104, "WR1");
@@ -141,8 +164,8 @@ describe("draftPlayer", () => {
   it("completes the game after all six slots are filled", async () => {
     const plan: [number, LineupSlot][] = [
       [101, "QB"],
-      [102, "RB"],
-      [103, "FB"],
+      [102, "RB1"],
+      [103, "RB2"],
       [104, "WR1"],
       [105, "WR2"],
       [106, "TE"],

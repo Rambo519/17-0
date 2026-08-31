@@ -83,28 +83,28 @@ describe("team skip", () => {
     expect(after.teamSkipRemaining).toBe(1);
   });
 
-  it("respects open-position eligibility (FB-only cannot skip to a team without FB)", async () => {
+  it("respects open-position eligibility (RB2 cannot skip to a team without RB)", async () => {
     const repo = createInMemoryGameRepository(skipScenarioCards());
     const game = await startGame(repo, { mode: "CLASSIC" });
 
-    // Manually occupy all non-FB slots from franchise 1 / era 1.
+    // Manually occupy all non-RB2 slots from franchise 1 / era 1.
     const session = repo.sessions.get(game.sessionId)!;
     session.currentFranchiseId = 1;
     session.currentEraId = 1;
     const picks = [
       { roundNumber: 1, lineupSlot: "QB" as const, playerId: 301, playerTeamEraCardId: 301, franchiseId: 1, eraId: 1 },
-      { roundNumber: 2, lineupSlot: "RB" as const, playerId: 302, playerTeamEraCardId: 302, franchiseId: 1, eraId: 1 },
+      { roundNumber: 2, lineupSlot: "RB1" as const, playerId: 302, playerTeamEraCardId: 302, franchiseId: 1, eraId: 1 },
       { roundNumber: 3, lineupSlot: "WR1" as const, playerId: 304, playerTeamEraCardId: 304, franchiseId: 1, eraId: 1 },
       { roundNumber: 4, lineupSlot: "WR2" as const, playerId: 305, playerTeamEraCardId: 305, franchiseId: 1, eraId: 1 },
       { roundNumber: 5, lineupSlot: "TE" as const, playerId: 306, playerTeamEraCardId: 306, franchiseId: 1, eraId: 1 },
     ];
     repo.picks.set(game.sessionId, picks);
 
-    // Franchise 3 has no FB in era 1; franchise 2 does. Team skip must pick franchise 2.
+    // Franchise 3 has no RB in era 1; franchise 2 does. Team skip must pick franchise 2.
     const skipped = await teamSkipGame(repo, game.sessionId, () => 0);
     expect(skipped.era.id).toBe(1);
     expect(skipped.franchise.id).toBe(2);
-    expect(skipped.candidates.every((c) => c.card.positions.includes("FB"))).toBe(true);
+    expect(skipped.candidates.every((c) => c.card.positions.includes("RB"))).toBe(true);
   });
 });
 
