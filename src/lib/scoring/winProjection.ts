@@ -26,14 +26,15 @@ export function perfectSeasonProbabilityFromWinProbability(
 }
 
 /**
- * Maps offense rating to per-game win probability via a tunable logistic curve
- * with an elite-only tail extension above `tailExtension.startRating`.
+ * Maps offense rating to per-game win probability via a logistic curve
+ * below `upperLadder.joinRating`, then a monotonic piecewise-linear ladder
+ * through the 15-2 / 16-1 / 17-0 knots.
  */
 export function perGameWinProbabilityFromRating(rating: number): number {
   const model = WIN_PROJECTION_MODEL;
-  const tail = model.tailExtension;
+  const ladder = model.upperLadder;
 
-  if (rating <= tail.startRating) {
+  if (rating <= ladder.joinRating) {
     return clamp(
       baseLogisticWinProbability(rating),
       model.minWinProbability,
@@ -41,14 +42,36 @@ export function perGameWinProbabilityFromRating(rating: number): number {
     );
   }
 
-  const baseAtTailStart = baseLogisticWinProbability(tail.startRating);
-  const span = tail.endRating - tail.startRating;
-  const progress = clamp((rating - tail.startRating) / span, 0, 1);
-  const tailProgress = progress ** tail.exponent;
-  const probability =
-    baseAtTailStart + tailProgress * (model.maxWinProbability - baseAtTailStart);
+  const knots = [
+    { rating: ladder.joinRating, p: baseLogisticWinProbability(ladder.joinRating) },
+    { rating: ladder.fifteenTwoRating, p: minimumPerGameProbabilityForProjectedWins(15) },
+    { rating: ladder.sixteenOneRating, p: minimumPerGameProbabilityForProjectedWins(16) },
+    { rating: ladder.seventeenOhRating, p: minimumPerGameProbabilityForProjectedWins(17) },
+    { rating: ladder.endRating, p: model.maxWinProbability },
+  ];
 
-  return clamp(probability, model.minWinProbability, model.maxWinProbability);
+  return clamp(interpolateProbability(rating, knots), model.minWinProbability, model.maxWinProbability);
+}
+
+function interpolateProbability(
+  rating: number,
+  knots: ReadonlyArray<{ rating: number; p: number }>,
+): number {
+  const first = knots[0];
+  const last = knots[knots.length - 1];
+  if (!first || !last) return 0;
+  if (rating <= first.rating) return first.p;
+  if (rating >= last.rating) return last.p;
+  for (let index = 1; index < knots.length; index += 1) {
+    const right = knots[index]!;
+    const left = knots[index - 1]!;
+    if (rating <= right.rating) {
+      const span = right.rating - left.rating;
+      const t = span === 0 ? 1 : (rating - left.rating) / span;
+      return left.p + t * (right.p - left.p);
+    }
+  }
+  return last.p;
 }
 
 export function projectWinsFromRating(rating: number): WinProjection {

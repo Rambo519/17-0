@@ -167,6 +167,68 @@ describe("scoring calibration (Phase 5B)", () => {
     );
   });
 
+  it("keeps the earlier full season unless a later one beats it by more than 0.5", () => {
+    const rbPeers = (year: number, idOffset: number) => {
+      const rows: SeasonStatRecord[] = [];
+      for (let i = 0; i < 300; i += 1) {
+        rows.push(
+          season({
+            season: year,
+            playerId: idOffset + i,
+            positions: ["RB"],
+            games: 16,
+            rushingYards: 400 + i * 5,
+            rushingTouchdowns: 6,
+            receptions: 20,
+            receivingYards: 180,
+            receivingTouchdowns: 1,
+          }),
+        );
+      }
+      return rows;
+    };
+    const earlier = season({
+      season: 1990,
+      playerId: 4,
+      positions: ["RB"],
+      games: 16,
+      rushingYards: 1200,
+      rushingTouchdowns: 6,
+      receptions: 20,
+      receivingYards: 180,
+      receivingTouchdowns: 1,
+    });
+    const yearPeers = [...rbPeers(1990, 1000), ...rbPeers(1991, 2000)];
+
+    let found = false;
+    for (let extraYards = 1; extraYards <= 80; extraYards += 1) {
+      const candidate = season({
+        season: 1991,
+        playerId: 4,
+        positions: ["RB"],
+        games: 16,
+        rushingYards: 1200 + extraYards,
+        rushingTouchdowns: 6,
+        receptions: 20,
+        receivingYards: 180,
+        receivingTouchdowns: 1,
+      });
+      const eraBaselines = buildPeerBaselineIndex([...yearPeers, earlier, candidate]);
+      const candidateGap =
+        scorePlayerSeason(candidate, "RB", eraBaselines).adjustedProductionScore -
+        scorePlayerSeason(earlier, "RB", eraBaselines).adjustedProductionScore;
+      if (candidateGap > 0.08 && candidateGap < 0.45) {
+        expect(selectScoringSeason([earlier, candidate], "RB", eraBaselines).season).toBe(1990);
+        expect(
+          selectScoringSeason([earlier, candidate], "RB", eraBaselines, { switchThreshold: 0 }).season,
+        ).toBe(1991);
+        found = true;
+        break;
+      }
+    }
+    expect(found).toBe(true);
+  });
+
   it("increases reliability monotonically with games when production is similar", () => {
     const rel4 = computeSeasonReliability(
       season({

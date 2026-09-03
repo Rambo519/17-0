@@ -101,14 +101,13 @@ export const BALANCE_ADJUSTMENT = {
 
 /**
  * Logistic win model: per-game win probability from offense rating.
- * Below `tailExtension.startRating`, uses standard logistic curve.
- * Above that, a power-curve tail extends toward `maxWinProbability` so only
- * extraordinary offenses can project a perfect season
- * (requires p >= (seasonLength - 0.5) / seasonLength).
+ * Below `upperLadder.joinRating`, uses the standard logistic curve so
+ * midrange records stay put. Above that, a piecewise-linear ladder in
+ * probability space hits explicit 15-2 / 16-1 / 17-0 rating knots, then
+ * continues to `maxWinProbability` at `endRating`.
  *
- * Tail start sits at the 16-1 rounding boundary (~90.5) so the midrange
- * logistic is unchanged and 16-1 no longer begins at the old 88.5 tail.
- * Exponent is set so 17-0 begins near offense 92.25.
+ * Knots are the minimum ratings that round to each record
+ * (p = (wins - 0.5) / seasonLength).
  */
 export const WIN_PROJECTION_MODEL = {
   midpointRating: 62,
@@ -116,10 +115,12 @@ export const WIN_PROJECTION_MODEL = {
   minWinProbability: 0.05,
   maxWinProbability: 0.99,
   seasonLength: REGULAR_SEASON_GAMES,
-  tailExtension: {
-    startRating: 90.5,
+  upperLadder: {
+    joinRating: 80,
+    fifteenTwoRating: 85,
+    sixteenOneRating: 89,
+    seventeenOhRating: 90.75,
     endRating: 95,
-    exponent: 0.292,
   },
 } as const;
 
@@ -130,6 +131,38 @@ export const DATA_CONFIDENCE_THRESHOLDS = {
 
 /** Minimum peer sample before falling back to adjacent position pool. */
 export const MIN_PEER_SAMPLE = 5;
+
+/**
+ * 1982 and 1987 regular seasons were strike-shortened and include
+ * replacement-player dilution. Percentile comparison pools the strike year
+ * with the adjacent full seasons so a player's own totals stay intact while
+ * the peer distribution is not an artifact of the lockout pool.
+ */
+export const STRIKE_PEER_WINDOW_SEASONS = [1982, 1987] as const;
+
+export function peerComparisonSeasons(season: number): readonly number[] {
+  if (season === 1982) return [1981, 1982, 1983];
+  if (season === 1987) return [1986, 1987, 1988];
+  return [season];
+}
+
+/**
+ * Elite same-season rushing cannot collapse solely from low receiving.
+ * Floor applies only when rushing-only percentile is already extreme, so
+ * ordinary rushers are unchanged and receiving backs can still outscore the floor.
+ */
+export const RB_ELITE_RUSHING_FLOOR = {
+  rushingOnlyThreshold: 98.5,
+  maxPercentileDrop: 2,
+} as const;
+
+/**
+ * A later season must beat the current best by more than this many points
+ * after reliability adjustment before it replaces it. Inside the band, the
+ * selector prefers higher reliability and then more games, so tiny score
+ * jitter does not flip the engine-selected year.
+ */
+export const SCORING_SEASON_SWITCH_THRESHOLD = 0.5;
 
 /** FB peer fallback order when FB-eligible sample is thin. */
 export const FB_PEER_FALLBACK_POSITIONS: readonly NormalizedPosition[] = ["FB", "RB"];

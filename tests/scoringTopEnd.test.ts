@@ -63,17 +63,19 @@ describe("scoring top-end win projection", () => {
     expect(perGameWinProbabilityFromRating(73)).toBeCloseTo(baseline, 10);
   });
 
-  it("starts 16-1 near offense 90.5–91.0 and keeps 17-0 near 92.25", () => {
+  it("starts 16-1 near offense 89 and 17-0 near 90.75", () => {
     const sixteen = ratingThresholdForProjectedWins(16);
     const seventeen = ratingThresholdForProjectedWins(REGULAR_SEASON_GAMES);
-    expect(sixteen).toBeGreaterThanOrEqual(90.5);
-    expect(sixteen).toBeLessThanOrEqual(91.0);
-    expect(seventeen).toBeGreaterThan(92.2);
-    expect(seventeen).toBeLessThan(92.3);
-    expect(projectWinsFromRating(88.5).projectedWins).toBe(15);
-    expect(projectWinsFromRating(90).projectedWins).toBe(15);
-    expect(projectWinsFromRating(92.24).projectedWins).toBe(16);
-    expect(projectWinsFromRating(92.25).projectedWins).toBe(17);
+    expect(sixteen).toBeGreaterThanOrEqual(88.9);
+    expect(sixteen).toBeLessThanOrEqual(89.2);
+    expect(seventeen).toBeGreaterThan(90.7);
+    expect(seventeen).toBeLessThan(90.85);
+    expect(projectWinsFromRating(84.9).projectedWins).toBe(14);
+    expect(projectWinsFromRating(85).projectedWins).toBe(15);
+    expect(projectWinsFromRating(88.9).projectedWins).toBe(15);
+    expect(projectWinsFromRating(89).projectedWins).toBe(16);
+    expect(projectWinsFromRating(90.74).projectedWins).toBe(16);
+    expect(projectWinsFromRating(90.75).projectedWins).toBe(17);
     expect(projectWinsFromRating(100).projectedWins).toBe(17);
     expect(perGameWinProbabilityFromRating(100)).toBe(
       WIN_PROJECTION_MODEL.maxWinProbability,

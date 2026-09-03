@@ -2,7 +2,9 @@ import {
   calibratePercentileToScore,
   DATA_CONFIDENCE_THRESHOLDS,
   POSITION_METRIC_WEIGHTS,
+  RB_ELITE_RUSHING_FLOOR,
   SCORE_CALIBRATION,
+  type PositionMetricWeights,
 } from "./config";
 import { metricValueFromSeason } from "./metrics";
 import type { PeerBaselineIndex } from "./peerBaselines";
@@ -63,6 +65,28 @@ function neutralFallback(position: NormalizedPosition): PlayerSeasonScoreResult 
   };
 }
 
+function applyEliteRushingFloor(
+  position: NormalizedPosition,
+  composite: number,
+  metrics: readonly MetricEvaluation[],
+  weights: PositionMetricWeights,
+): number {
+  if (position !== "RB") return composite;
+  const rushKeys: MetricKey[] = ["rushing_yards", "rushing_touchdowns"];
+  let rushWeight = 0;
+  let rushSum = 0;
+  for (const metric of metrics) {
+    if (!rushKeys.includes(metric.key) || metric.percentile == null) continue;
+    const weight = weights[metric.key] ?? 0;
+    rushWeight += weight;
+    rushSum += weight * metric.percentile;
+  }
+  if (rushWeight <= 0) return composite;
+  const rushingOnly = rushSum / rushWeight;
+  if (rushingOnly < RB_ELITE_RUSHING_FLOOR.rushingOnlyThreshold) return composite;
+  return Math.max(composite, rushingOnly - RB_ELITE_RUSHING_FLOOR.maxPercentileDrop);
+}
+
 export interface ScorePlayerSeasonOptions {
   lineupSlot?: LineupSlot;
   cardPositions?: readonly NormalizedPosition[];
@@ -103,7 +127,12 @@ export function scorePlayerSeason(
     return neutralFallback(scoringPosition);
   }
 
-  const compositePercentile = weightedPercentileSum / availableWeight;
+  const compositePercentile = applyEliteRushingFloor(
+    scoringPosition,
+    weightedPercentileSum / availableWeight,
+    metrics,
+    weights,
+  );
   const rawProductionScore = calibratePercentileToScore(compositePercentile);
   const coverageRatio = availableWeight / metricEntries.reduce((sum, [, w]) => sum + w, 0);
 
