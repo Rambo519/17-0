@@ -51,11 +51,11 @@ describe("17-game season length", () => {
 
   it("can project 17-0 only at the extreme elite tail", () => {
     const threshold = ratingThresholdForProjectedWins(REGULAR_SEASON_GAMES);
-    expect(threshold).toBeGreaterThan(90);
+    expect(threshold).toBeGreaterThan(88);
     expect(projectWinsFromRating(threshold - 1).projectedWins).toBe(16);
     expect(projectWinsFromRating(threshold).projectedWins).toBe(17);
     expect(projectWinsFromRating(threshold).projectedLosses).toBe(0);
-    expect(projectWinsFromRating(90).projectedWins).toBeLessThan(17);
+    expect(projectWinsFromRating(88.4).projectedWins).toBeLessThan(17);
     expect(
       projectWinsFromRating(threshold).perGameWinProbability,
     ).toBeGreaterThanOrEqual(minimumPerGameProbabilityForProjectedWins(17));

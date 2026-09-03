@@ -259,9 +259,9 @@ describe("two-RB slot evaluation (FB is not a playable slot)", () => {
     expect(PROJECTED_RECORD_ASSUMPTION).toContain("league-average");
   });
 
-  it("places the 17-0 win-curve threshold near offense 90.75", () => {
+  it("places the 17-0 win-curve threshold near offense 88.5", () => {
     expect(WIN_PROJECTION_MODEL.seasonLength).toBe(17);
     expect(WIN_PROJECTION_MODEL.maxWinProbability).toBe(0.99);
-    expect(ratingThresholdForProjectedWins(17)).toBeCloseTo(90.75, 1);
+    expect(ratingThresholdForProjectedWins(17)).toBeCloseTo(88.5, 1);
   });
 });

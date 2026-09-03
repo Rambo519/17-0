@@ -117,9 +117,9 @@ export const WIN_PROJECTION_MODEL = {
   seasonLength: REGULAR_SEASON_GAMES,
   upperLadder: {
     joinRating: 80,
-    fifteenTwoRating: 85,
-    sixteenOneRating: 89,
-    seventeenOhRating: 90.75,
+    fifteenTwoRating: 84,
+    sixteenOneRating: 87,
+    seventeenOhRating: 88.5,
     endRating: 95,
   },
 } as const;
