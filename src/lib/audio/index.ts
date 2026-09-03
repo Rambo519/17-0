@@ -2,6 +2,7 @@ export { SOUND_EVENTS, SOUND_FILES, SOUND_MASTER_VOLUME, SOUND_STORAGE_KEY, soun
 export type { SoundEvent } from "./events";
 export {
   playDraftLockSound,
+  playFailTierSound,
   playFinalRecordSound,
   playJackpotIfPerfect,
   playShowResultsSound,

@@ -323,7 +323,7 @@ describe("ResultsView record count", () => {
     );
 
     expect(screen.getByText("0–17")).toBeInTheDocument();
-    expect(screen.getByText(/projecting record/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/final record/i).length).toBeGreaterThan(0);
     expect(screen.queryByText(/iq results/i)).not.toBeInTheDocument();
     await vi.advanceTimersByTimeAsync(1600);
     expect(screen.getByText("14–3")).toBeInTheDocument();

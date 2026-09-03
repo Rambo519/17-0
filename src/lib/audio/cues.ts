@@ -1,4 +1,4 @@
-import { isPerfectProjectedSeason } from "@/lib/results/tiers";
+import { isPerfectProjectedSeason, resultTierFromProjectedWins } from "@/lib/results/tiers";
 
 import { playGameSound } from "./soundEngine";
 
@@ -12,9 +12,14 @@ export function playDraftLockSound(): void {
   playGameSound("DRAFT_LOCK");
 }
 
-/** Played once when a non-perfect projected record first lands. */
+/** Played once when a non-perfect, non-fail record first lands. */
 export function playShowResultsSound(): void {
   playGameSound("SHOW_RESULTS");
+}
+
+/** Played once when a ROUGH SEASON (6 wins or fewer) first lands. */
+export function playFailTierSound(): void {
+  playGameSound("FAIL_TIER");
 }
 
 /** Played only for a server-projected perfect season, after that record lands. */
@@ -29,11 +34,15 @@ export function playStadiumCrowdIfPerfect(projectedWins: number): void {
   playGameSound("STADIUM_CROWD");
 }
 
-/** Landing cue: jackpot + crowd for 17-0, otherwise show-results. Never jackpot and show-results together. */
+/** Landing cue: jackpot + crowd for 17-0, fail-tier for ROUGH SEASON, otherwise show-results. Never mixes jackpot with fail or show-results. */
 export function playFinalRecordSound(projectedWins: number): void {
   if (isPerfectProjectedSeason(projectedWins)) {
     playGameSound("JACKPOT");
     playStadiumCrowdIfPerfect(projectedWins);
+    return;
+  }
+  if (resultTierFromProjectedWins(projectedWins).id === "rough") {
+    playFailTierSound();
     return;
   }
   playGameSound("SHOW_RESULTS");

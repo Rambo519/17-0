@@ -201,7 +201,7 @@ export function ResultsView({
             className={perfect ? styles.heroJackpot : styles.hero}
             aria-labelledby="projected-record-heading"
           >
-            <p className={styles.tier}>{reveal.counting ? "Projecting record" : tier?.label}</p>
+            <p className={styles.tier}>{reveal.counting ? "Final Record" : tier?.label}</p>
             <h1 id="projected-record-heading" className={styles.recordLabel}>
               Final Record
             </h1>

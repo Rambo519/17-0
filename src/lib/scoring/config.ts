@@ -210,4 +210,4 @@ export const FB_SLOT_FEATURE_PERCENTILE_BLEND = 0.6;
  * are the only units the player chooses; remaining team quality is average.
  */
 export const PROJECTED_RECORD_ASSUMPTION =
-  "Projected record assumes league-average offensive line, defense, special teams, coaching, and schedule. You are drafting the skill-position core.";
+  "Final record assumes league-average offensive line, defense, special teams, coaching, and schedule. You are drafting the skill-position core.";

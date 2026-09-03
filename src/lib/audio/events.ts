@@ -5,6 +5,7 @@ export const SOUND_EVENTS = [
   "DRAFT_LOCK",
   "SKIP",
   "SHOW_RESULTS",
+  "FAIL_TIER",
   "JACKPOT",
   "STADIUM_CROWD",
 ] as const;
@@ -19,6 +20,7 @@ export const SOUND_FILES = {
   DRAFT_LOCK: "/sounds/draft-lock.mp3",
   SKIP: "/sounds/reveal-hit.mp3",
   SHOW_RESULTS: "/sounds/show-results.mp3",
+  FAIL_TIER: "/sounds/bad-luck-fail.mp3",
   JACKPOT: "/sounds/jackpot.mp3",
   STADIUM_CROWD: "/sounds/stadium-crowd.mp3",
 } as const satisfies Record<SoundEvent, string>;
@@ -38,6 +40,7 @@ export const SOUND_DEFAULTS: Readonly<Record<SoundEvent, SoundCueDefaults>> = {
   DRAFT_LOCK: { volume: 0.72, gain: 0.75, playbackRate: 1, throttleMs: 0 },
   SKIP: { volume: 0.62, gain: 1, playbackRate: 0.96, throttleMs: 0 },
   SHOW_RESULTS: { volume: 0.8, gain: 1, playbackRate: 1, throttleMs: 2500 },
+  FAIL_TIER: { volume: 0.8, gain: 1, playbackRate: 1, throttleMs: 2500 },
   JACKPOT: { volume: 0.85, gain: 1, playbackRate: 1, throttleMs: 2500 },
   STADIUM_CROWD: { volume: 0.75, gain: 1, playbackRate: 1, throttleMs: 2500 },
 };

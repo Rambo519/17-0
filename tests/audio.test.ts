@@ -58,6 +58,7 @@ describe("audio event mapping", () => {
     expect(soundFileForEvent("DRAFT_LOCK")).toBe("/sounds/draft-lock.mp3");
     expect(soundFileForEvent("SKIP")).toBe("/sounds/reveal-hit.mp3");
     expect(soundFileForEvent("SHOW_RESULTS")).toBe("/sounds/show-results.mp3");
+    expect(soundFileForEvent("FAIL_TIER")).toBe("/sounds/bad-luck-fail.mp3");
     expect(soundFileForEvent("JACKPOT")).toBe("/sounds/jackpot.mp3");
     expect(soundFileForEvent("STADIUM_CROWD")).toBe("/sounds/stadium-crowd.mp3");
     expect(SOUND_FILES.TEAM_REVEAL).toBe(SOUND_FILES.ERA_REVEAL);
@@ -71,6 +72,7 @@ describe("audio event mapping", () => {
     expect(cuePlaybackVolume("TEAM_REVEAL")).toBe(SOUND_DEFAULTS.TEAM_REVEAL.volume);
     expect(cuePlaybackVolume("ERA_REVEAL")).toBe(SOUND_DEFAULTS.ERA_REVEAL.volume);
     expect(cuePlaybackVolume("SHOW_RESULTS")).toBe(SOUND_DEFAULTS.SHOW_RESULTS.volume);
+    expect(cuePlaybackVolume("FAIL_TIER")).toBe(SOUND_DEFAULTS.FAIL_TIER.volume);
     expect(cuePlaybackVolume("JACKPOT")).toBe(SOUND_DEFAULTS.JACKPOT.volume);
     expect(cuePlaybackVolume("STADIUM_CROWD")).toBe(0.75);
     expect(SOUND_DEFAULTS.STADIUM_CROWD.volume).toBe(0.75);
@@ -79,6 +81,8 @@ describe("audio event mapping", () => {
     expect(SOUND_DEFAULTS.TEAM_REVEAL.gain).toBe(1);
     expect(SOUND_DEFAULTS.ERA_REVEAL.gain).toBe(1);
     expect(SOUND_DEFAULTS.SHOW_RESULTS.gain).toBe(1);
+    expect(SOUND_DEFAULTS.FAIL_TIER.gain).toBe(1);
+    expect(SOUND_DEFAULTS.FAIL_TIER.throttleMs).toBe(2500);
     expect(SOUND_DEFAULTS.JACKPOT.gain).toBe(1);
   });
 
@@ -275,10 +279,51 @@ describe("sound engine", () => {
     unlockGameAudio();
     played.length = 0;
     play.mockClear();
+    playFinalRecordSound(7);
+    expect(play).toHaveBeenCalledTimes(1);
+    expect(played).toEqual(["/sounds/show-results.mp3"]);
+
+    resetSoundEngineForTests();
+    unlockGameAudio();
+    played.length = 0;
+    play.mockClear();
+    playFinalRecordSound(6);
+    expect(play).toHaveBeenCalledTimes(1);
+    expect(played).toEqual(["/sounds/bad-luck-fail.mp3"]);
+    expect(played).not.toContain("/sounds/show-results.mp3");
+    expect(played).not.toContain("/sounds/jackpot.mp3");
+
+    resetSoundEngineForTests();
+    unlockGameAudio();
+    played.length = 0;
+    play.mockClear();
     playFinalRecordSound(17);
     expect(play).toHaveBeenCalledTimes(2);
     expect(played).toEqual(["/sounds/jackpot.mp3", "/sounds/stadium-crowd.mp3"]);
     expect(played).not.toContain("/sounds/show-results.mp3");
+    expect(played).not.toContain("/sounds/bad-luck-fail.mp3");
+  });
+
+  it("plays the fail cue for a 6-win landing and not SHOW_RESULTS", () => {
+    const played: string[] = [];
+    class TrackingAudio extends FakeAudio {
+      play = () => {
+        played.push(this.src);
+        this.paused = false;
+        return play();
+      };
+    }
+    vi.stubGlobal("Audio", TrackingAudio);
+    unlockGameAudio();
+    played.length = 0;
+    play.mockClear();
+
+    playFinalRecordSound(6);
+    expect(play).toHaveBeenCalledTimes(1);
+    expect(played).toEqual(["/sounds/bad-luck-fail.mp3"]);
+    expect(played).not.toContain("/sounds/show-results.mp3");
+    expect(played).not.toContain("/sounds/jackpot.mp3");
+    expect(played).not.toContain("/sounds/stadium-crowd.mp3");
   });
 
   it("plays stadium crowd at configured 0.75, effective 0.5625, once and without looping", () => {
