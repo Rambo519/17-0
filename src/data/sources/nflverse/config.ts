@@ -66,6 +66,7 @@ export function createEmptyManifest(cutoffSeason: number): NflverseManifest {
       "Raw CSVs are cached under .cache/nflverse/ and are not committed.",
       "Game engine never calls nflverse at spin time.",
       "Import cutoff is the latest completed season configured for this run.",
+      "player_stats week rows are regular-season (REG) only; POST is excluded.",
     ],
   };
 }
