@@ -21,3 +21,6 @@ next-env.d.ts
 # Regenerated coverage audits (re-run `npm run data:audit`)
 data/reports/*
 !data/reports/.gitkeep
+
+# Local scoring/balance audit harnesses and dumps
+tmp-*

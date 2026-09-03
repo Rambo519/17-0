@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { REGULAR_SEASON_GAMES } from "@/lib/football/season";
 import { WIN_PROJECTION_MODEL } from "@/lib/scoring/config";
 import {
+  expectedRecordWinsFromRating,
   minimumPerGameProbabilityForProjectedWins,
   perGameWinProbabilityFromRating,
   perfectSeasonProbabilityFromWinProbability,
@@ -16,20 +17,20 @@ describe("scoring top-end win projection", () => {
     expect(projection.perGameWinProbability).toBeGreaterThanOrEqual(
       minimumPerGameProbabilityForProjectedWins(REGULAR_SEASON_GAMES),
     );
-    expect(projection.projectedWins).toBe(17);
+    expect(expectedRecordWinsFromRating(93)).toBe(17);
     expect(projection.projectedLosses).toBe(0);
   });
 
   it("requires an extreme rating for 17-0 projection", () => {
     const threshold = ratingThresholdForProjectedWins(REGULAR_SEASON_GAMES);
-    expect(threshold).toBeGreaterThan(90);
-    expect(projectWinsFromRating(threshold - 1).projectedWins).toBeLessThan(17);
-    expect(projectWinsFromRating(threshold).projectedWins).toBe(17);
+    expect(threshold).toBeGreaterThan(88);
+    expect(expectedRecordWinsFromRating(threshold - 1)).toBeLessThan(17);
+    expect(expectedRecordWinsFromRating(threshold)).toBe(17);
   });
 
   it("keeps elite but non-extreme teams below 17 projected wins", () => {
-    for (const rating of [82, 85, 88, 90]) {
-      expect(projectWinsFromRating(rating).projectedWins).toBeLessThan(17);
+    for (const rating of [82, 85, 88, 88.4]) {
+      expect(expectedRecordWinsFromRating(rating)).toBeLessThan(17);
     }
   });
 
@@ -63,18 +64,20 @@ describe("scoring top-end win projection", () => {
     expect(perGameWinProbabilityFromRating(73)).toBeCloseTo(baseline, 10);
   });
 
-  it("starts 16-1 near offense 90.5–91.0 and keeps 17-0 near 92.25", () => {
+  it("starts 16-1 near offense 87 and 17-0 near 88.5", () => {
     const sixteen = ratingThresholdForProjectedWins(16);
     const seventeen = ratingThresholdForProjectedWins(REGULAR_SEASON_GAMES);
-    expect(sixteen).toBeGreaterThanOrEqual(90.5);
-    expect(sixteen).toBeLessThanOrEqual(91.0);
-    expect(seventeen).toBeGreaterThan(92.2);
-    expect(seventeen).toBeLessThan(92.3);
-    expect(projectWinsFromRating(88.5).projectedWins).toBe(15);
-    expect(projectWinsFromRating(90).projectedWins).toBe(15);
-    expect(projectWinsFromRating(92.24).projectedWins).toBe(16);
-    expect(projectWinsFromRating(92.25).projectedWins).toBe(17);
-    expect(projectWinsFromRating(100).projectedWins).toBe(17);
+    expect(sixteen).toBeGreaterThanOrEqual(86.9);
+    expect(sixteen).toBeLessThanOrEqual(87.2);
+    expect(seventeen).toBeGreaterThan(88.4);
+    expect(seventeen).toBeLessThan(88.6);
+    expect(expectedRecordWinsFromRating(83.9)).toBe(14);
+    expect(expectedRecordWinsFromRating(84)).toBe(15);
+    expect(expectedRecordWinsFromRating(86.9)).toBe(15);
+    expect(expectedRecordWinsFromRating(87)).toBe(16);
+    expect(expectedRecordWinsFromRating(88.49)).toBe(16);
+    expect(expectedRecordWinsFromRating(88.5)).toBe(17);
+    expect(expectedRecordWinsFromRating(100)).toBe(17);
     expect(perGameWinProbabilityFromRating(100)).toBe(
       WIN_PROJECTION_MODEL.maxWinProbability,
     );

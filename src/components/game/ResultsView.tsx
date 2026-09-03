@@ -203,7 +203,7 @@ export function ResultsView({
           >
             <p className={styles.tier}>{reveal.counting ? "Projecting record" : tier?.label}</p>
             <h1 id="projected-record-heading" className={styles.recordLabel}>
-              Projected Record
+              Final Record
             </h1>
             <p
               className={perfect ? `${styles.record} ${styles.recordJackpot}` : styles.record}
@@ -229,7 +229,7 @@ export function ResultsView({
               <dd>{formatWinProbability(score.perGameWinProbability)}</dd>
             </div>
             <div className={styles.metric}>
-              <dt>{formatProjectedRecord(REGULAR_SEASON_GAMES, 0)} Chance</dt>
+              <dt>Perfect Season Chance</dt>
               <dd>{formatPerfectSeasonChance(score.perfectSeasonProbability)}</dd>
             </div>
             <div className={`${styles.metric} ${styles.metricWide}`}>

@@ -4,6 +4,7 @@ import {
   FB_PEER_FALLBACK_POSITIONS,
   MIN_PEER_SAMPLE,
   POSITION_METRIC_WEIGHTS,
+  peerComparisonSeasons,
 } from "./config";
 import { metricValueFromSeason } from "./metrics";
 import { percentileRank } from "./percentile";
@@ -70,14 +71,16 @@ export class PeerBaselineIndex {
     position: NormalizedPosition,
     metric: MetricKey,
   ): readonly number[] {
-    const positions =
-      position === "FB" ? this.resolveFbPeerPositions(season, metric) : [position];
-
+    const years = peerComparisonSeasons(season);
     const merged: number[] = [];
-    for (const peerPosition of positions) {
-      const key = `${seasonPositionKey(season, peerPosition)}:${metric}`;
-      const values = this.valuesBySeasonPositionMetric.get(key);
-      if (values) merged.push(...values);
+    for (const year of years) {
+      const positions =
+        position === "FB" ? this.resolveFbPeerPositions(year, metric) : [position];
+      for (const peerPosition of positions) {
+        const key = `${seasonPositionKey(year, peerPosition)}:${metric}`;
+        const values = this.valuesBySeasonPositionMetric.get(key);
+        if (values) merged.push(...values);
+      }
     }
     return merged;
   }
@@ -102,9 +105,7 @@ export class PeerBaselineIndex {
     if (peerPosition === "FB") {
       return this.percentile(season, "FB", metric, value);
     }
-    const key = `${seasonPositionKey(season, peerPosition)}:${metric}`;
-    const exact = this.valuesBySeasonPositionMetric.get(key) ?? [];
-    const peers = exact.length > 0 ? exact : this.peerValues(season, peerPosition, metric);
+    const peers = this.peerValues(season, peerPosition, metric);
     return percentileRank(value, peers, metric);
   }
 

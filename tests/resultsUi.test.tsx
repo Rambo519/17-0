@@ -118,7 +118,7 @@ describe("ResultsView", () => {
       />,
     );
 
-    expect(screen.getByRole("heading", { name: /projected record/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /final record/i })).toBeInTheDocument();
     expect(screen.getByText("14–3")).toBeInTheDocument();
     expect(screen.getByText("87.4")).toBeInTheDocument();
     expect(screen.getByText("14.3")).toBeInTheDocument();
@@ -143,7 +143,7 @@ describe("ResultsView", () => {
       />,
     );
 
-    const recordCard = screen.getByRole("heading", { name: /projected record/i }).closest("section");
+    const recordCard = screen.getByRole("heading", { name: /final record/i }).closest("section");
     const metricsCard = screen.getByLabelText(/season summary/i);
     expect(recordCard).toBeTruthy();
     expect(metricsCard).toBeTruthy();
@@ -155,7 +155,7 @@ describe("ResultsView", () => {
     expect(screen.getByText("Offense Rating")).toBeInTheDocument();
     expect(screen.getByText("Expected Wins")).toBeInTheDocument();
     expect(screen.getByText("Win Probability")).toBeInTheDocument();
-    expect(screen.getByText("17–0 Chance")).toBeInTheDocument();
+    expect(screen.getByText("Perfect Season Chance")).toBeInTheDocument();
     expect(screen.getByText("Team Data Confidence")).toBeInTheDocument();
   });
 
@@ -230,7 +230,7 @@ describe("ResultsView", () => {
 
     expect(screen.getByText("17–0")).toBeInTheDocument();
     expect(screen.getAllByText("17-0").length).toBeGreaterThan(1);
-    expect(screen.getByText("17–0 Chance")).toBeInTheDocument();
+    expect(screen.getByText("Perfect Season Chance")).toBeInTheDocument();
     expect(screen.queryByText("16–0 Chance")).not.toBeInTheDocument();
     expect(screen.queryByTestId("perfect-season-confetti")).not.toBeInTheDocument();
   });

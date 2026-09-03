@@ -67,8 +67,13 @@ export interface OffenseEvaluation {
 }
 
 export interface WinProjection {
-  /** Decimal expected wins across the regular season (debugging / calibration). */
+  /** Lineup expected wins: seasonLength × per-game win probability. */
   expectedWins: number;
+  /**
+   * Displayed regular-season wins. Completed games seed a k-blend binomial
+   * season from the session id. Unseeded calls keep round(expectedWins),
+   * which is what the C6 record ladder is defined on.
+   */
   projectedWins: number;
   projectedLosses: number;
   /**

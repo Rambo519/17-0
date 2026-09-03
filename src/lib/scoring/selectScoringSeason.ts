@@ -1,6 +1,7 @@
 import { isLegitimateScoringSeason } from "./metrics";
 import { scorePlayerSeason, type PlayerSeasonScoreResult } from "./playerSeasonScore";
 import type { PeerBaselineIndex } from "./peerBaselines";
+import { SCORING_SEASON_SWITCH_THRESHOLD } from "./config";
 import type { SeasonStatRecord } from "./types";
 import type { LineupSlot, NormalizedPosition } from "@/lib/football/positions";
 
@@ -26,8 +27,13 @@ export function selectScoringSeason(
   seasons: readonly SeasonStatRecord[],
   scoringPosition: NormalizedPosition,
   baselines: PeerBaselineIndex,
-  options?: { lineupSlot?: LineupSlot; cardPositions?: readonly NormalizedPosition[] },
+  options?: {
+    lineupSlot?: LineupSlot;
+    cardPositions?: readonly NormalizedPosition[];
+    switchThreshold?: number;
+  },
 ): SelectedScoringSeason {
+  const switchThreshold = options?.switchThreshold ?? SCORING_SEASON_SWITCH_THRESHOLD;
   const eligible = seasons.filter(isLegitimateScoringSeason);
 
   if (eligible.length === 0) {
@@ -54,12 +60,12 @@ export function selectScoringSeason(
   for (const entry of scored.slice(1)) {
     const adjustedGap =
       entry.score.adjustedProductionScore - best.score.adjustedProductionScore;
-    if (adjustedGap > 0.5) {
+    if (adjustedGap > switchThreshold) {
       best = entry;
       continue;
     }
-    if (adjustedGap < -0.5) continue;
-  // Tie-break toward more reliable seasons when adjusted scores are close.
+    if (adjustedGap < -switchThreshold) continue;
+    // Tie-break toward more reliable seasons when adjusted scores are close.
     if (entry.score.reliability > best.score.reliability + 0.05) {
       best = entry;
       continue;

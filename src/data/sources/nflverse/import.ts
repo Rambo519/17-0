@@ -53,6 +53,10 @@ import {
 } from "./download";
 import { isSkillEligibleRosterRow, normalizeRosterPositions } from "./positions";
 import { nflverseProductionJoinKey } from "./productionJoin";
+import {
+  accumulateNflverseRegularSeasonWeek,
+  type NflverseSeasonProduction,
+} from "./regularSeasonProduction";
 
 const SOURCE = "nflverse";
 const INSERT_CHUNK = 400;
@@ -101,6 +105,7 @@ interface PendingSeason {
   games: number | null;
   passingYards: number | null;
   passingTouchdowns: number | null;
+  interceptions: number | null;
   rushingYards: number | null;
   rushingTouchdowns: number | null;
   receptions: number | null;
@@ -110,16 +115,7 @@ interface PendingSeason {
   overrideNotes: string[];
 }
 
-interface SeasonProduction {
-  games: number;
-  passingYards: number;
-  passingTouchdowns: number;
-  rushingYards: number;
-  rushingTouchdowns: number;
-  receptions: number;
-  receivingYards: number;
-  receivingTouchdowns: number;
-}
+type SeasonProduction = NflverseSeasonProduction;
 
 function bump(map: Map<string, number>, key: string): void {
   map.set(key, (map.get(key) ?? 0) + 1);
@@ -152,16 +148,11 @@ async function insertChunks<T>(
   }
 }
 
-function parseStatNumber(value: string | undefined): number {
-  if (value == null || value.trim() === "") return 0;
-  const n = Number(value);
-  return Number.isFinite(n) ? n : 0;
-}
 
 /**
  * Collapse weekly nflverse player_stats rows into per player/team/season totals.
- * Presence of any week means production is known (zeros remain zeros).
- * Absence of the key means the season has no player_stats coverage → leave null.
+ * Presence of any regular-season week means production is known (zeros remain zeros).
+ * POST / preseason weeks are ignored. Absence of the key means no player_stats coverage.
  */
 async function loadProductionByPlayerTeamSeason(
   cutoffSeason: number,
@@ -185,30 +176,7 @@ async function loadProductionByPlayerTeamSeason(
         const seasonKey = nflverseProductionJoinKey(gsisId, team, season);
         if (!seasonKey) continue;
 
-        const weekKey = `${seasonKey}|${week}|${row.season_type ?? ""}`;
-        if (weekKeys.has(weekKey)) continue;
-        weekKeys.add(weekKey);
-
-        const current = totals.get(seasonKey) ?? {
-          games: 0,
-          passingYards: 0,
-          passingTouchdowns: 0,
-          rushingYards: 0,
-          rushingTouchdowns: 0,
-          receptions: 0,
-          receivingYards: 0,
-          receivingTouchdowns: 0,
-        };
-
-        current.games += 1;
-        current.passingYards += parseStatNumber(row.passing_yards);
-        current.passingTouchdowns += parseStatNumber(row.passing_tds);
-        current.rushingYards += parseStatNumber(row.rushing_yards);
-        current.rushingTouchdowns += parseStatNumber(row.rushing_tds);
-        current.receptions += parseStatNumber(row.receptions);
-        current.receivingYards += parseStatNumber(row.receiving_yards);
-        current.receivingTouchdowns += parseStatNumber(row.receiving_tds);
-        totals.set(seasonKey, current);
+        accumulateNflverseRegularSeasonWeek(totals, weekKeys, seasonKey, row);
       }
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === "ENOENT") continue;
@@ -439,6 +407,7 @@ export async function importNflverseHistoricalData(
           existing.games = Math.max(existing.games ?? 0, production.games);
           existing.passingYards ??= production.passingYards;
           existing.passingTouchdowns ??= production.passingTouchdowns;
+          existing.interceptions ??= production.interceptions;
           existing.rushingYards ??= production.rushingYards;
           existing.rushingTouchdowns ??= production.rushingTouchdowns;
           existing.receptions ??= production.receptions;
@@ -459,6 +428,7 @@ export async function importNflverseHistoricalData(
         games: production?.games ?? null,
         passingYards: production?.passingYards ?? null,
         passingTouchdowns: production?.passingTouchdowns ?? null,
+        interceptions: production?.interceptions ?? null,
         rushingYards: production?.rushingYards ?? null,
         rushingTouchdowns: production?.rushingTouchdowns ?? null,
         receptions: production?.receptions ?? null,
@@ -500,6 +470,7 @@ export async function importNflverseHistoricalData(
     games: number | null;
     passingYards: number | null;
     passingTouchdowns: number | null;
+    interceptions: number | null;
     rushingYards: number | null;
     rushingTouchdowns: number | null;
     receptions: number | null;
@@ -525,6 +496,7 @@ export async function importNflverseHistoricalData(
       games: pending.games,
       passingYards: pending.passingYards,
       passingTouchdowns: pending.passingTouchdowns,
+      interceptions: pending.interceptions,
       rushingYards: pending.rushingYards,
       rushingTouchdowns: pending.rushingTouchdowns,
       receptions: pending.receptions,
@@ -551,6 +523,7 @@ export async function importNflverseHistoricalData(
           games: row.games,
           passingYards: row.passingYards,
           passingTouchdowns: row.passingTouchdowns,
+          interceptions: row.interceptions,
           rushingYards: row.rushingYards,
           rushingTouchdowns: row.rushingTouchdowns,
           receptions: row.receptions,
