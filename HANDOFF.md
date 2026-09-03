@@ -1,48 +1,96 @@
-# 17-0 handoff (2026-09-03, session interrupted)
+# 17-0 handoff (2026-09-03)
 
-This file is for a **fresh agent**. Do not treat chat memory as required. Player evaluation is **LOCKED** on `E:\Dev\17-0` unless the user explicitly reopens it.
+This file is for a **fresh agent**. Do not treat chat memory as required. Player evaluation is **LOCKED** unless the user explicitly reopens it.
 
-**Do not commit. Do not push. Do not touch Supabase. Do not touch Vercel.** Do not rebuild nflverse / peer baselines / cards unless the user asks. Do not restart the killed human-strategy audit unless the user asks.
+**Do not push. Do not touch Supabase. Do not touch Vercel.** Do not rebuild nflverse / peer baselines / cards unless the user asks. Do not restart the killed human-strategy audit unless the user asks.
 
 Prior chat: Cursor agent transcript [`17-0 scoring lock through skips`](C:\Users\kevin\.cursor\projects\e-Dev-17-0\agent-transcripts\5e001301-a67f-4b74-a2f5-fd602854e6c4) (uuid `5e001301-a67f-4b74-a2f5-fd602854e6c4`).
 
 ---
 
+## Current branch and production
+
+Work in `E:\Dev\17-0` on branch **`scoring-lock`**. That branch holds **all scoring-lock work plus the C6 record ladder, committed**. **`master` is still `9bf72f03`.** **Nothing has been pushed.**
+
+**Latest commit on `scoring-lock`:** `610e0c73` — record ladder C6.
+
+| Knot | Config | Live binary-search threshold |
+|---|---:|---:|
+| 14-3 | logistic (unchanged) | **78.668** |
+| 15-2 | **84.0** | **84.003** |
+| 16-1 | **87.0** | **87.006** |
+| 17-0 | **88.5** | **88.501** |
+
+Join remains 80; end remains 95 at p = 0.99. Logistic at or below 80 is unchanged.
+
+**Design rationale:** the old ladder (15-2=85, 16-1=89, 17-0=90.75) made 17-0 unreachable (no-skip BEST max 90.794; skip-aware GREEDY max 91.151; 4/10000 at 90.753). C6 targets roughly **10% 17-0 for excellent play**, about **5 in 50 games**. Measured by re-projecting saved paired ratings (`tmp-variance-decomposition-ratings.json`, 10k seeds, no skips): **BEST 10.17% 17-0**, **TOP_3 0.73%**. RANDOM remains **0% at 15-2 and above**.
+
+**Vercel production tracks branch `master` and currently runs `9bf72f03`**, which does **not** include any of this lock or C6 work.
+
+Player evaluation remains **LOCKED**. Do not reopen.
+
+---
+
+## NEXT PLANNED WORK: stochastic season variance
+
+The displayed record is currently **deterministic**: `round(17 × p)`. The same lineup always yields the same record.
+
+Plan: add variance so a strong team varies between 15-2, 16-1, and 17-0 rather than returning one fixed result. Candidate model (not implemented):
+
+```
+B ~ Binomial(17, p)
+wins = round(17p + k * (B - 17p))  clamped 0..17
+```
+
+Sweep **k** over `0, 0.25, 0.4, 0.6, 0.8, 1.0`. Do not start unless the user asks.
+
+---
+
 ## 1. Worktrees and branches
 
-Two git worktrees, **same origin commit**, **different uncommitted work**. They must not be mixed.
+Two git worktrees, **same origin `master` commit**, **different uncommitted / committed work**. They must not be mixed.
 
 | Path | Branch | Tracks | HEAD | What it is |
 |---|---|---|---|---|
-| `E:\Dev\17-0` | `master` | `origin/master` | `9bf72f03a2c0ad85655906fd7640c16631c4e0cc` | **Gameplay / scoring lock worktree.** INT fix, peer snapshot, win-curve knots, all balance/variance/skip audits. |
-| `E:\Dev\17-0-telemetry` | `telemetry-picks` | **`origin/master`** (not a distinct remote branch) | **same** `9bf72f03` | **Telemetry-only worktree.** Anonymous pick/spin logging, drizzle `0004`, **older** peer snapshot than the lock. |
+| `E:\Dev\17-0` | **`scoring-lock`** | *(no upstream; not pushed)* | **`610e0c73`** | **Gameplay / scoring lock.** INT fix, peer snapshot, C6 win-curve, audits. Forked from `master` `9bf72f03`. |
+| `E:\Dev\17-0-telemetry` | `telemetry-picks` | **`origin/master`** (not a distinct remote branch) | **`9bf72f03`** | **Telemetry-only worktree.** Anonymous pick/spin logging, drizzle `0004`, **older** peer snapshot than the lock. |
 
-Local branch **not** checked out as a worktree:
+Local branches **not** checked out as this worktree:
 
-- `pro-set-two-rb` at `433270c` — “Replace fullback with two-RB pro set”. Historical. Pro-set is already in `master` at `9bf72f03` plus uncommitted lock work.
+- `master` at `9bf72f03` — “Add 17-0 celebration and rebalance audio volume”. Vercel production.
+- `pro-set-two-rb` at `433270c` — “Replace fullback with two-RB pro set”. Historical. Pro-set is already in `master` at `9bf72f03` plus committed lock work on `scoring-lock`.
 
-HEAD commit (both worktrees):
+`scoring-lock` tip:
 
 ```
-9bf72f03a2c0ad85655906fd7640c16631c4e0cc
-Rambo519 <nothingiwant12@gmail.com>
-Add 17-0 celebration and rebalance audio volume
-2026-08-30 23:26:16 -0400
+610e0c7393e20883032a34eb2f15a24620c46cd4
+Lower the upper record ladder to 15-2 at 84, 16-1 at 87, and 17-0 at 88.5.
 ```
 
-Neither worktree is ahead of `origin/master` with extra **commits**. All lock + telemetry + audit work is **uncommitted**.
+Commits on `scoring-lock` after `9bf72f03` (oldest first):
+
+```
+530bc1d Ignore local tmp-* audit harnesses and dumps.
+b7d30fc Score modern QBs on regular-season passing interceptions.
+6494b3c Lock player evaluation: INT-aware peers, strike windows, RB floor, and record ladder.
+568105d Rename results record copy and add fail-tier sound.
+6b02a74 Record the scoring-lock handoff and read-only project audit.
+610e0c7 Lower the upper record ladder to 15-2 at 84, 16-1 at 87, and 17-0 at 88.5.
+```
+
+`master` / `origin/master` remain `9bf72f03`. Telemetry worktree has **uncommitted** telemetry only.
 
 ---
 
 ## 2. Current git status
 
-### `E:\Dev\17-0` (`master`)
+### `E:\Dev\17-0` (`scoring-lock`)
 
-```
-## master...origin/master
-```
+Committed lock + C6. Leftovers (do not commit unless asked):
 
-Nothing staged. Modified + added (intent-to-add) + untracked as listed in sections 3–4.
+- `M data/manifests/historical-stats.json` — `downloadedAt` timestamp only
+- `?? AGENTS.md` / `?? CLAUDE.md` — Next.js `generate-agent-files` stubs
+- `tmp-*` gitignored
 
 ### `E:\Dev\17-0-telemetry` (`telemetry-picks`)
 
@@ -50,37 +98,36 @@ Nothing staged. Modified + added (intent-to-add) + untracked as listed in sectio
 ## telemetry-picks...origin/master
 ```
 
-Nothing staged. Telemetry schema/API/tests uncommitted. **Does not contain** the INT/lock scoring source changes from `E:\Dev\17-0` except an **older** modified `peer-baselines.json` and `historical-stats.json` timestamp.
+Nothing staged. Telemetry schema/API/tests uncommitted. **Does not contain** the INT/lock/C6 scoring source changes except an **older** modified `peer-baselines.json` and `historical-stats.json` timestamp.
 
 ---
 
-## 3. Uncommitted **source** changes (file by file)
+## 3. Scoring-lock source (now committed on `scoring-lock`)
 
-### `E:\Dev\17-0` — production / tests (scoring lock + small UI copy)
+| File | What it does and why |
+|---|---|
+| `src/data/sources/nflverse/regularSeasonProduction.ts` | REG-only weekly aggregation; `"0"` INT stays 0, blank stays NULL; POST weeks ignored. Fixes modern QBs missing interceptions. |
+| `src/data/sources/nflverse/import.ts` | Threads `interceptions` through pending seasons and insert. Same INT hole. |
+| `src/data/sources/nflverse/config.ts` | Manifest note: player_stats weeks are REG only. |
+| `src/lib/scoring/config.ts` | Strike 3-year peers (1982/1987); `RB_ELITE_RUSHING_FLOOR` 98.5/−2; `SCORING_SEASON_SWITCH_THRESHOLD = 0.5`; **C6** `upperLadder` 15-2=84, 16-1=87, 17-0=88.5. RB metric weights remain 65% rush / 35% receive. |
+| `src/lib/scoring/playerSeasonScore.ts` | Applies RB elite rushing floor after composite percentile. |
+| `src/lib/scoring/peerBaselines.ts` | Uses `peerComparisonSeasons()` so only 1982/1987 expand; other years including early-1970s stay **same-season**. |
+| `src/lib/scoring/selectScoringSeason.ts` | Optional `switchThreshold` (tests/audits); production default 0.50 hysteresis. |
+| `src/lib/scoring/winProjection.ts` | Upper-ladder piecewise win curve through those knots; `ratingThresholdForProjectedWins` binary search. |
+| `src/lib/scoring/generated/peer-baselines.json` | Regenerated **2026-09-03T02:34:26.373Z**, 39,795 seasons, **1,229** buckets after INT-aware rebuild. |
+| `src/components/game/ResultsView.tsx` | Copy: “Projected Record” → “Expected Record”; “17–0 Chance” → “Perfect Season Chance”. Not a scoring change. |
+| `tests/resultsUi.test.tsx` | Matches that ResultsView copy. |
+| `tests/scoringCalibration.test.ts` | Switch-threshold hysteresis fixture. |
+| `tests/scoringFbSlot.test.ts` | Expectation updates after lock / C6. |
+| `tests/scoringTopEnd.test.ts` | Top-end expectations after INT/floor/C6 curve. |
+| `tests/seasonLength.test.ts` | 17-0 threshold expectations after C6. |
+| `tests/nflverseRegularSeasonProduction.test.ts` | REG vs POST; true-zero vs null INT; cache examples (Rodgers 2011 REG yards 4636). |
+| `tests/scoringStrikeAndRushFloor.test.ts` | Strike windows + RB floor. |
+| `public/sounds/bad-luck-fail.mp3` | Fail-tier SFX (pairs with committed 17-0 celebration audio). |
+| `HANDOFF.md` / `PROJECT-AUDIT.md` | Agent handoff and read-only project audit. |
+| `.gitignore` | `tmp-*` ignored. |
 
-| File | Status | What it does and why |
-|---|---|---|
-| `src/data/sources/nflverse/regularSeasonProduction.ts` | **A** (new) | REG-only weekly aggregation; `"0"` INT stays 0, blank stays NULL; POST weeks ignored. Fixes modern QBs missing interceptions. |
-| `src/data/sources/nflverse/import.ts` | M | Threads `interceptions` through pending seasons and insert. Same INT hole. |
-| `src/data/sources/nflverse/config.ts` | M | Manifest note: player_stats weeks are REG only. |
-| `src/lib/scoring/config.ts` | M | Strike 3-year peers (1982/1987); `RB_ELITE_RUSHING_FLOOR` 98.5/−2; `SCORING_SEASON_SWITCH_THRESHOLD = 0.5`; frozen `WIN_PROJECTION_MODEL.upperLadder` 15-2=85, 16-1=89, 17-0=90.75. RB metric weights remain 65% rush / 35% receive (0.40+0.25 vs 0.10+0.15+0.10). |
-| `src/lib/scoring/playerSeasonScore.ts` | M | Applies RB elite rushing floor after composite percentile. |
-| `src/lib/scoring/peerBaselines.ts` | M | Uses `peerComparisonSeasons()` so only 1982/1987 expand; other years including early-1970s stay **same-season**. |
-| `src/lib/scoring/selectScoringSeason.ts` | M | Optional `switchThreshold` (tests/audits); production default 0.50 hysteresis. |
-| `src/lib/scoring/winProjection.ts` | M | Upper-ladder piecewise win curve through those knots; `ratingThresholdForProjectedWins` binary search. |
-| `src/lib/scoring/generated/peer-baselines.json` | M | Regenerated **2026-09-03T02:34:26.373Z**, 39,795 seasons, **1,229** buckets after INT-aware rebuild. |
-| `data/manifests/historical-stats.json` | M | `downloadedAt` → `2026-09-03T02:33:46.074Z` from the local rebuild. |
-| `src/components/game/ResultsView.tsx` | M | Copy: “Projected Record” → “Expected Record”; “17–0 Chance” → “Perfect Season Chance”. Not a scoring change. |
-| `tests/resultsUi.test.tsx` | M | Matches that ResultsView copy. |
-| `tests/scoringCalibration.test.ts` | M | Switch-threshold hysteresis fixture. |
-| `tests/scoringFbSlot.test.ts` | M | Small expectation updates after lock. |
-| `tests/scoringTopEnd.test.ts` | M | Top-end expectations after INT/floor/curve. |
-| `tests/nflverseRegularSeasonProduction.test.ts` | ?? | REG vs POST; true-zero vs null INT; cache examples (Rodgers 2011 REG yards 4636). |
-| `tests/scoringStrikeAndRushFloor.test.ts` | ?? | Strike windows + RB floor. |
-| `public/sounds/bad-luck-fail.mp3` | ?? | Fail-tier SFX (pairs with committed 17-0 celebration audio). |
-| `AGENTS.md` / `CLAUDE.md` | ?? | Next.js `generate-agent-files` stubs. Reappear if removed. |
-
-**Not in this list:** `tmp-*.ts` / `tmp-*.json` (section 4). Do not commit those unless the user asks.
+**Still uncommitted (intentionally):** `data/manifests/historical-stats.json` timestamp; `AGENTS.md` / `CLAUDE.md`.
 
 ### `E:\Dev\17-0-telemetry` — telemetry (do not copy into scoring lock tree)
 
@@ -115,19 +162,19 @@ Telemetry tmp: `tmp-dump-pre-correction-card-ratings.ts`, `tmp-telemetry-spin-be
 
 ## 4. Generated / audit artifacts **do not recompute** unless asked
 
-Scripts are untracked `tmp-*.ts`. JSON is the result. **Prefer reading JSON.**
+Scripts are gitignored `tmp-*.ts`. JSON is the result. **Prefer reading JSON.**
 
-### Must-keep (this session’s lock + skip work)
+### Must-keep (lock + skip + C6 measurement)
 
 | Path | Contains |
 |---|---|
 | `tmp-variance-decomposition-results.json` | Paired 10k seeds **1–10000**, five strategies, **no skips**. BEST mean **86.658**, SD **1.506**, max **90.794**. TOP_3 beats greedy on **704/10000 (7.04%)**. ANOVA / regret / elite frequencies. Generated 2026-09-03T03:48:01Z. |
-| `tmp-variance-decomposition-ratings.json` | Per-seed ratings + regrets + first pool sizes for that run. |
+| `tmp-variance-decomposition-ratings.json` | Per-seed ratings + regrets + first pool sizes. **Used to re-project C6** without re-running the harness. |
 | `tmp-variance-decomposition-extra.json` | Restricted ANOVA (no RANDOM; BEST vs TOP_3) + conditional elite tails. |
 | `tmp-variance-decomposition.ts` | Harness. Split RNGs: `mulberry32(seed)` spins, `mulberry32(seed ^ 0x9e3779b9)` picks. |
 | `tmp-ceiling-stage1-results.json` | GREEDY_POSTHOC Hungarian/exhaustive slot reassignment on **same six greedy cards**. Mean lift **+0.021**. Recovers **24/704** TOP_3 wins. Cause split S=24, P=673, D=7. Gate opened for search; Stage 2/3 **not** run. |
 | `tmp-ceiling-stage1.ts` | Stage 1 harness. |
-| `tmp-skip-aware-ceiling-results.json` | Skip-aware **GREEDY only**, policy = hidden **#1** combo-best. Tuning 2k + final 10k seeds **1–10000**. Honest **P30 both skips**: mean **87.420**, max **91.151**, ≥90.753 **4/10000**. Clairvoyant immediate mean **87.242** (worse mean than honest). Team-only +0.345, Era-only +0.360, Both +0.762 on those seeds. Generated 2026-09-03T04:45:39Z. |
+| `tmp-skip-aware-ceiling-results.json` | Skip-aware **GREEDY only**, policy = hidden **#1** combo-best. Tuning 2k + final 10k seeds **1–10000**. Honest **P30 both skips**: mean **87.420**, max **91.151**, ≥90.753 **4/10000** (old knot). Clairvoyant immediate mean **87.242** (worse mean than honest). Team-only +0.345, Era-only +0.360, Both +0.762 on those seeds. Generated 2026-09-03T04:45:39Z. |
 | `tmp-skip-aware-ceiling.ts` | That harness. |
 | `tmp-skip-aware-human-strategy.ts` | **Revised** policy-conditional skip harness (TOP_N/RANDOM expected pick, not hidden #1). Tuning 1–2000, eval 2001–12000, optional tail 12001+. |
 | `tmp-skip-aware-human-strategy-results.json` | **SMOKE TEST ONLY** (`games: 15`, `generatedAt` 2026-09-03T20:44:11Z). **Not** the killed 10k run. Do not cite as evaluation. |
@@ -170,7 +217,7 @@ Local durable DB: `.data/pglite` (not rebuilt this handoff). Audits copy it excl
 
 ## 5. FROZEN decisions (do not reopen)
 
-**PLAYER EVALUATION = LOCKED (OPTION A)** on `E:\Dev\17-0`.
+**PLAYER EVALUATION = LOCKED (OPTION A)** on `E:\Dev\17-0` / `scoring-lock`.
 
 | Decision | Exact lock | Why |
 |---|---|---|
@@ -184,10 +231,10 @@ Local durable DB: `.data/pglite` (not rebuilt this handoff). Audits copy it excl
 | Unified P90-excess tail | **Rejected (OPTION B).** Not in production `src/lib/scoring/` | Elite RB/WR Jaccard collapse (Faulk, CMC, Charles). |
 | Positional metric weights | QB 35/30/15/10/10 (pass yds/TD/INT/rush yds/TD) unchanged | INT restore uses existing weights. |
 | Lineup slot weights | QB 0.30, RB1/RB2 0.115 each, WR1 0.16, WR2 0.14, TE 0.12 | Unchanged. |
-| **Record ladder (provisional, not final)** | `upperLadder`: 15-2 **85.00**, 16-1 **89.00**, 17-0 **90.75**; join 80; end 95 | Frozen for audits. `ratingThresholdForProjectedWins(17)` ≈ **90.753** (binary search). **Do not recalibrate** until skip-aware human ladder + stochastic seasons are done. |
+| **Record ladder C6** | `upperLadder`: 15-2 **84.00**, 16-1 **87.00**, 17-0 **88.50**; join 80; end 95 | Live thresholds 15-2 **84.003**, 16-1 **87.006**, 17-0 **88.501**. 14-3 **78.668** unchanged. Do not retune player eval to chase records. Next record work is **stochastic k**, not another knot sweep, unless the user asks. |
 | **IQ pick-time season hidden** | IQ candidate UI must **not** show scoring season / engine score / rank. Results **may** show selected-slot season (`ResultsView` “Season …”). | Product rule. Do not “help” IQ by revealing the engine year at pick time. |
 | Candidate pools | No caps. Prior audit: early-game median ~63, max 106; QB/RB/WR/TE filter medians ~9/20/21/11 | Pool size ~uncorrelated with BEST rating. |
-| Stochastic seasons | **Not implemented.** Do not start unless asked. | Next-phase candidate after skip-aware human ladder. |
+| Stochastic seasons | **Not implemented.** Candidate Binomial blend with k sweep. | **Next planned work** when the user asks. |
 | Telemetry | Lives only in `E:\Dev\17-0-telemetry`. Do not port into lock tree unless asked. | Separate dirty tree. |
 
 Known locked-model characteristics (do not “fix”): Peyton 2013 rank ~163 with rush/INT shape; 2025-only roster rows undraftable without weekly stats.
@@ -199,12 +246,12 @@ Known locked-model characteristics (do not “fix”): Peyton 2013 rank ~163 wit
 1. **Skip-aware TOP_3 / TOP_5 / TOP_7 / RANDOM distributions** — harness exists (`tmp-skip-aware-human-strategy.ts`); **full eval JSON was never written** (killed mid-tail). Smoke JSON is n=15 only.
 2. Whether **P20 vs P30 vs P40** for TOP_N is truly tied: the script’s tie band used `max(0.04, 2*unpaired SE)`, which on 2000 games with SD~3 forced **P20 for every TOP_N/RANDOM**. Revisit with **paired** mean differences before locking those thresholds.
 3. **Team vs Era / superadditivity CIs** on the **policy-conditional** definition and held-out seeds 2001–12000 — not on disk. Prior CIs exist only for **GREEDY + hidden #1** on seeds 1–10000 (`tmp-skip-aware-ceiling-results.json` `incrementalLiftVsNoSkip` / would need SE from ratings if recomputed).
-4. **17-0 / ≥90.753 rates** for skip-aware TOP_N — unknown. GREEDY honest P30 was **4/10000** (Wilson ~0.016%–0.10%) under hidden-#1 skips.
+4. **C6 17-0 rates for skip-aware TOP_N** — unknown. Under the **old** 90.753 knot, GREEDY honest P30 was **4/10000**. Skip-aware GREEDY share ≥89.0 was **10.63%** (summary CDF only).
 5. **Beam / ORACLE_HONEST vs ORACLE_CLAIRVOYANT path search** — Stage 1 said greedy 7% is **player/path (P)**, not slots. Stages 2–3 of the ceiling prompt were **never started**. Immediate-skip clairvoyant is **not** a mean upper bound (it burned skips).
-6. **Final record calibration** — still waiting on skip-aware human ladder + possibly stochastic k. Do not retune 85/89/90.75 yet.
-7. **What BEST means for calibration** — recommendation from skip-aware GREEDY work: **GREEDY + honest P30 skips**, not no-skip 86.66/90.794, not GREEDY_POSTHOC (+0.021), not immediate clairvoyant.
-8. **Anecdotal testers** (old live model: A ~40 games ~75% at 15-2-ish; B ~50 games ~38 at 13-4/14-3 combined) — **not validation**. Current knots: 13-4 ≈74.62, 14-3 ≈78.67, 15-2 ≈85.00, 16-1 ≈89.00, 17-0 ≈90.75. B’s combined bucket is **not** a ≥14-3 rate.
-9. **Telemetry `0004` vs Supabase** — not applied in this session; do not apply without explicit ask.
+6. **Stochastic k** — not implemented. Record is still `round(17 × p)`.
+7. **What BEST means for calibration** — skip-aware GREEDY work recommended **GREEDY + honest P30 skips**. C6 was chosen against **no-skip paired BEST** (10.17% / ~5 in 50). Those populations differ.
+8. **Anecdotal testers** (old live model: A ~40 games ~75% at 15-2-ish; B ~50 games ~38 at 13-4/14-3 combined) — **not validation**. C6 knots: 13-4 ≈74.62, 14-3 ≈78.67, 15-2 ≈84.00, 16-1 ≈87.00, 17-0 ≈88.50. B’s combined bucket is **not** a ≥14-3 rate.
+9. **Telemetry `0004` vs Supabase** — not applied; do not apply without explicit ask.
 10. Whether to merge telemetry worktree with locked scoring snapshot (1,229 buckets) — not decided.
 
 ---
@@ -212,10 +259,10 @@ Known locked-model characteristics (do not “fix”): Peyton 2013 rank ~163 wit
 ## 7. Known hazards
 
 1. **Supabase migration 0003 (`0003_pro_set_lineup_slots.sql`)**  
-   Changes `lineup_slot` enum RB/FB → RB1/RB2. **`tmp-confirm-local-0003.ts` is local PGlite only** and throws if `DATABASE_URL` is set. This session **did not** apply 0003 on Supabase. Remote may still be pre-pro-set. **Do not run drizzle migrate against production.** Telemetry worktree adds **0004** on top; applying 0004 remotely without 0003/lock awareness is unsafe.
+   Changes `lineup_slot` enum RB/FB → RB1/RB2. **`tmp-confirm-local-0003.ts` is local PGlite only** and throws if `DATABASE_URL` is set. **Did not** apply 0003 on Supabase. Remote may still be pre-pro-set. **Do not run drizzle migrate against production.** Telemetry worktree adds **0004** on top; applying 0004 remotely without 0003/lock awareness is unsafe.
 
 2. **Turbopack / `next build` in the telemetry worktree**  
-   Scoring-lock tree previously completed `next build`. Telemetry tree has extra API/schema and was reported to have **Turbopack build failures**. Do not “fix” by changing lock-tree Next config. Diagnose only in `E:\Dev\17-0-telemetry`.
+   Scoring-lock tree completed `next build`. Telemetry tree has extra API/schema and was reported to have **Turbopack build failures**. Do not “fix” by changing lock-tree Next config. Diagnose only in `E:\Dev\17-0-telemetry`.
 
 3. **Two peer snapshots**  
    Lock: 2026-09-03 02:34Z, 1229 buckets. Telemetry working copy: 2026-09-02 21:10Z, 1203 buckets. Mixing them silently rescoring live games vs audits.
@@ -223,8 +270,8 @@ Known locked-model characteristics (do not “fix”): Peyton 2013 rank ~163 wit
 4. **`SKIP_SPINS=1` ≠ Team/Era Skip**  
    It skips the extra 10k presentation-spin pass in `tmp-game-balance-audit.ts`. All prior 10k/variance/ceiling-stage1 runs used **zero** user skips.
 
-5. **Paired vs unpaired 10k greedy max**  
-   Unpaired int-lock BEST max **≈90.748** (under 90.753). Paired no-skip BEST max **90.794** (1/10000 ≥90.753). The “unreachable by 0.005” line is **obsolete**.
+5. **Old “unreachable 17-0” line is obsolete twice**  
+   Paired no-skip BEST max **90.794** already cleared the old 90.753 knot (1/10000). C6 moved 17-0 to **88.5** (BEST 10.17% on those same saved ratings). Do not cite 90.753 as the live threshold.
 
 6. **PGlite lock**  
    Audits `cp` `.data/pglite` excluding `postmaster.pid`. Don’t run `data:import` while `next dev` holds the live DB; copy like the harnesses.
@@ -232,9 +279,12 @@ Known locked-model characteristics (do not “fix”): Peyton 2013 rank ~163 wit
 7. **Killed Node/tsx**  
    PID 10144 / `npx tsx tmp-skip-aware-human-strategy.ts` was **Stop-Process**’d. Windows `exit_code: 4294967295`. Do not assume a results file was flushed — `writeFile` is at the **end** of `main()`.
 
+8. **Vercel ≠ scoring-lock**  
+   Production is `master` `9bf72f03`. Deploying C6 requires an explicit push / branch change. Do not push unless asked.
+
 ---
 
-## 8. What was running when interrupted
+## 8. What was running when interrupted (historical)
 
 **Command** (cwd `E:\Dev\17-0`):
 
@@ -259,7 +309,7 @@ Started **2026-09-03T20:49:28Z**, killed **2026-09-03T21:24:41Z** (~35 min). Ter
 
 **Not on disk:** the 10k human-strategy evaluation object. `tmp-skip-aware-human-strategy-results.json` is still the **n=15 smoke test** from 20:44Z.
 
-**Do not restart** this run unless the user asks. If resumed: fix the P20 tie-band first; consider writing incremental JSON after held-out (before 40k tail); tail was optional for rare ≥90.5 / ≥90.753 counts.
+**Do not restart** this run unless the user asks. If resumed: fix the P20 tie-band first; consider writing incremental JSON after held-out (before 40k tail). Tail counts at ≥90.5 / ≥90.753 are **old-knot** rarities; under C6, 17-0 is `rating >= 88.5`.
 
 ---
 
@@ -267,9 +317,9 @@ Started **2026-09-03T20:49:28Z**, killed **2026-09-03T21:24:41Z** (~35 min). Ter
 
 | Next likely task | Start from |
 |---|---|
+| **Stochastic season variance** | Candidate `wins = round(17p + k*(B−17p))`, `B~Binomial(17,p)`, sweep k ∈ {0, 0.25, 0.4, 0.6, 0.8, 1.0}. Re-project saved ratings; do not reopen player eval. |
 | Finish skip-aware human ladder | `tmp-skip-aware-human-strategy.ts`; **discard** smoke JSON; do not cite killed RAM run |
-| Calibrate records | Wait; use GREEDY+honest P30 from `tmp-skip-aware-ceiling-results.json` as interim GREEDY reference only |
 | Beam / oracle path ceiling | Stage 1 said **P dominates**; Stages 2–3 not started |
-| Stochastic seasons | Not started |
 | Telemetry ship | `E:\Dev\17-0-telemetry` only; 0004; don’t apply to Supabase unasked |
-| Scoring edits | **Forbidden** unless user reopens the lock |
+| Push / Vercel | **Forbidden** unless user asks. Production is `master` `9bf72f03`. |
+| Player-eval / scoring edits | **Forbidden** unless user reopens the lock |
