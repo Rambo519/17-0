@@ -29,7 +29,7 @@ describe("evaluateCompletedGame", () => {
     await expect(evaluateCompletedGame(repository, sessionId)).rejects.toThrow(ScoringError);
   });
 
-  it("evaluates a completed six-pick session from stored cards", async () => {
+  it("evaluates a completed six-pick session and returns the same record on a second score", async () => {
     const db = await createTestDatabase();
     await seedDevelopmentData(db);
     const repository = createDrizzleScoringRepository(db);
@@ -59,5 +59,13 @@ describe("evaluateCompletedGame", () => {
     );
     expect(result.projection.perfectSeasonProbability).toBeGreaterThan(0);
     expect(result.projection.perfectSeasonProbability).toBeLessThanOrEqual(1);
+
+    const again = await evaluateCompletedGame(repository, sessionId);
+    expect(again.projection.projectedWins).toBe(result.projection.projectedWins);
+    expect(again.projection.projectedLosses).toBe(result.projection.projectedLosses);
+    expect(again.projection.expectedWins).toBe(result.projection.expectedWins);
+    expect(again.projection.perfectSeasonProbability).toBe(
+      result.projection.perfectSeasonProbability,
+    );
   });
 });

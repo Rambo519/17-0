@@ -124,6 +124,21 @@ export const WIN_PROJECTION_MODEL = {
   },
 } as const;
 
+/**
+ * Mixes expected wins toward a binomial 17-game season for the displayed record.
+ *
+ *   B ~ Binomial(seasonLength, p)
+ *   wins = clamp(round(17p + k * (B - 17p)), 0, 17)
+ *
+ * k = 0 is deterministic round(17p). k = 1 is a full Binomial(17, p) season.
+ * Locked at 0.35 after the 2026-09-03 measurement sweep: elite drafts trend
+ * 17-0 with 16-1 common, BEST stays near five 17-0s in 50 games, and a
+ * rating at the 17-0 knot does not fall to 14-3.
+ *
+ * Expected wins (17p) and perfect-season chance (p^17) do not use this k.
+ */
+export const SEASON_VARIANCE_K = 0.35;
+
 export const DATA_CONFIDENCE_THRESHOLDS = {
   high: 0.7,
   medium: 0.4,

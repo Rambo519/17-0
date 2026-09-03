@@ -69,5 +69,5 @@ export async function evaluateCompletedGame(
     };
   });
 
-  return evaluateLineup(lineupInputs, baselines);
+  return evaluateLineup(lineupInputs, baselines, sessionId);
 }
