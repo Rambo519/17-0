@@ -118,7 +118,7 @@ describe("ResultsView", () => {
       />,
     );
 
-    expect(screen.getByRole("heading", { name: /expected record/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /final record/i })).toBeInTheDocument();
     expect(screen.getByText("14–3")).toBeInTheDocument();
     expect(screen.getByText("87.4")).toBeInTheDocument();
     expect(screen.getByText("14.3")).toBeInTheDocument();
@@ -143,7 +143,7 @@ describe("ResultsView", () => {
       />,
     );
 
-    const recordCard = screen.getByRole("heading", { name: /expected record/i }).closest("section");
+    const recordCard = screen.getByRole("heading", { name: /final record/i }).closest("section");
     const metricsCard = screen.getByLabelText(/season summary/i);
     expect(recordCard).toBeTruthy();
     expect(metricsCard).toBeTruthy();

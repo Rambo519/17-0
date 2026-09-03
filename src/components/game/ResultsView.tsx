@@ -203,7 +203,7 @@ export function ResultsView({
           >
             <p className={styles.tier}>{reveal.counting ? "Projecting record" : tier?.label}</p>
             <h1 id="projected-record-heading" className={styles.recordLabel}>
-              Expected Record
+              Final Record
             </h1>
             <p
               className={perfect ? `${styles.record} ${styles.recordJackpot}` : styles.record}
