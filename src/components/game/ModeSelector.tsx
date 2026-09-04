@@ -4,7 +4,7 @@ import { ShareButton } from "./ShareButton";
 import { SoundToggle } from "./SoundToggle";
 import styles from "./modeSelector.module.css";
 
-import { copyrightYear, deployedAppVersion } from "@/lib/appVersion";
+import { copyrightYear, formatReleaseLabel } from "@/lib/appVersion";
 import { PRODUCT_NAME } from "@/lib/brand";
 
 export const START_HEADLINE = "TEST YOUR FOOTBALL IQ";
@@ -22,7 +22,7 @@ export function ModeSelector({
   onStart,
   busy,
   onNewGame,
-  appVersion = deployedAppVersion(),
+  appVersion,
 }: ModeSelectorProps) {
   return (
     <section className={styles.root} aria-labelledby="start-heading">
@@ -65,7 +65,10 @@ export function ModeSelector({
         <span aria-hidden className={styles.footerSep}>
           ·
         </span>
-        <span>{appVersion}</span>
+        <span>
+          {formatReleaseLabel()}
+          {appVersion ? <span className={styles.footerBuild}> ({appVersion})</span> : null}
+        </span>
         <span aria-hidden className={styles.footerSep}>
           ·
         </span>
