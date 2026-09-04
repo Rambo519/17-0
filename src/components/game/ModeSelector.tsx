@@ -1,5 +1,6 @@
 import { FieldDecor } from "./FieldDecor";
 import { NewGameButton } from "./NewGameButton";
+import { ShareButton } from "./ShareButton";
 import { SoundToggle } from "./SoundToggle";
 import styles from "./modeSelector.module.css";
 
@@ -29,6 +30,7 @@ export function ModeSelector({ onStart, busy, onNewGame }: ModeSelectorProps) {
       <div className={styles.topBar}>
         <SoundToggle />
         {onNewGame ? <NewGameButton onClick={onNewGame} disabled={busy} /> : null}
+        <ShareButton />
       </div>
 
       <div className={styles.content}>

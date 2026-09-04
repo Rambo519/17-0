@@ -4,6 +4,7 @@ import { PRODUCT_NAME } from "@/lib/brand";
 import type { GameMode } from "@/lib/game/types";
 import { GameProgress } from "./GameProgress";
 import { NewGameButton } from "./NewGameButton";
+import { ShareButton } from "./ShareButton";
 import { SoundToggle } from "./SoundToggle";
 
 interface GameHeaderProps {
@@ -39,6 +40,7 @@ export function GameHeader({
         <div className={styles.actions}>
           <SoundToggle />
           {onNewGame ? <NewGameButton onClick={onNewGame} disabled={newGameDisabled} /> : null}
+          <ShareButton />
         </div>
         <div className={styles.progress}>
           <GameProgress filledCount={filledCount} />

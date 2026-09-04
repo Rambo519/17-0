@@ -1,6 +1,6 @@
 /** @vitest-environment jsdom */
 
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { GameApp } from "@/components/game/GameApp";
@@ -423,10 +423,36 @@ describe("ResultsPageClient", () => {
 
     expect(await screen.findByText("14–3")).toBeInTheDocument();
     expect(screen.getByText("87.4")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^share$/i })).toBeInTheDocument();
 
     const fetchMock = vi.mocked(fetch);
     expect(fetchMock).toHaveBeenCalledWith("/api/game/session-1");
     expect(fetchMock).toHaveBeenCalledWith("/api/game/session-1/score");
+  });
+
+  it("shares the origin invite from results without the record or stats", async () => {
+    const share = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "share", {
+      configurable: true,
+      writable: true,
+      value: share,
+    });
+    Object.defineProperty(navigator, "canShare", {
+      configurable: true,
+      writable: true,
+      value: () => true,
+    });
+
+    render(<ResultsPageClient sessionId="session-1" />);
+    expect(await screen.findByText("14–3")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /^share$/i }));
+    await waitFor(() => expect(share).toHaveBeenCalledTimes(1));
+
+    const payload = share.mock.calls[0]![0] as { text: string; url: string };
+    expect(payload.url).toBe(`${window.location.origin}/`);
+    expect(JSON.stringify(payload)).not.toMatch(/14–3/);
+    expect(JSON.stringify(payload)).not.toMatch(/87\.4/);
   });
 
   it("retries the score API after a failure without dropping the lineup", async () => {

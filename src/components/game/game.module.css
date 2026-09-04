@@ -8,6 +8,22 @@
   margin: 0 auto;
 }
 
+.shell.landing {
+  padding: 0;
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  gap: 0;
+  background: #071018;
+  height: 100dvh;
+  min-height: 100dvh;
+}
+
+.shell.landing > :last-child {
+  flex: 1;
+  min-height: 0;
+}
+
 .panel {
   background: var(--panel);
   border: 1px solid var(--panel-border);
@@ -244,6 +260,17 @@
     gap: 12px;
     overflow-x: clip;
     min-height: 100dvh;
+  }
+
+  .shell.landing {
+    padding: 0;
+    gap: 0;
+    max-width: none;
+    width: 100%;
+    margin: 0;
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow-x: clip;
   }
 
   .playing {

@@ -269,7 +269,7 @@ export function GameApp() {
 
   if (screen === "mode") {
     return (
-      <main className={shell.shell}>
+      <main className={`${shell.shell} ${shell.landing}`}>
         {error ? <p className={shell.errorBanner}>{error}</p> : null}
         <ModeSelector
           onStart={handleStart}

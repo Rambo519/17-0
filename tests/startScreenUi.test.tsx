@@ -4,6 +4,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { GameApp } from "@/components/game/GameApp";
+import shell from "@/components/game/game.module.css";
 import {
   ModeSelector,
   START_ACTION_LABEL,
@@ -62,6 +63,7 @@ describe("player-facing start screen", () => {
     expect(screen.getByText(START_SUBTITLE)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: START_ACTION_LABEL })).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: START_ACTION_LABEL })).toHaveLength(1);
+    expect(screen.getByRole("button", { name: /^share$/i })).toBeInTheDocument();
 
     expect(screen.queryByRole("radiogroup", { name: /game mode/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /classic/i })).not.toBeInTheDocument();
@@ -109,10 +111,22 @@ describe("PROVE IT starts an IQ game", () => {
 
   it("starts through the existing start-game API with mode IQ", async () => {
     render(<GameApp />);
+    expect(screen.getByRole("button", { name: /sound on/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /new game/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^share$/i })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: START_ACTION_LABEL }));
     expect(await screen.findByText("IQ")).toBeInTheDocument();
     expect(await screen.findByRole("button", { name: /^spin$/i })).toBeInTheDocument();
     expect(startBodies).toEqual([{ mode: "IQ" }]);
+  });
+
+  it("uses the full-bleed landing shell only on the start screen", async () => {
+    render(<GameApp />);
+    expect(document.querySelector("main")?.classList.contains(shell.landing)).toBe(true);
+
+    fireEvent.click(screen.getByRole("button", { name: START_ACTION_LABEL }));
+    expect(await screen.findByRole("button", { name: /^spin$/i })).toBeInTheDocument();
+    expect(document.querySelector("main")?.classList.contains(shell.landing)).toBe(false);
   });
 
   it("returns to the simplified start screen on NEW GAME", async () => {

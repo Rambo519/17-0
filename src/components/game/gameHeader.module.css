@@ -1,9 +1,13 @@
 .root {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
   padding: 2px 2px 6px;
+  background: var(--bg);
 }
 
 .left {
@@ -55,7 +59,8 @@
 .actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  flex-wrap: nowrap;
+  gap: 10px;
 }
 
 .progress {
@@ -96,7 +101,7 @@
   .actions {
     grid-area: actions;
     justify-self: end;
-    gap: 8px;
+    gap: 6px;
   }
 
   .progress {
