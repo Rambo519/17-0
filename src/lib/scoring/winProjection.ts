@@ -14,15 +14,38 @@ function baseLogisticWinProbability(rating: number): number {
 }
 
 /**
- * Perfect-season chance from the engine win probability. Never round `p`
- * to a display percentage before raising it to season length — that is what
- * turned 0.96605^17 (55.6%) into a lower figure from 0.966^17.
+ * Displayed wins from one binomial draw under the locked k-blend:
+ *   wins = clamp(round(17p + k * (B - 17p)), 0, 17)
+ */
+export function displayedSeasonWins(
+  binomialWins: number,
+  perGameWinProbability: number,
+  k: number = SEASON_VARIANCE_K,
+  seasonLength: number = WIN_PROJECTION_MODEL.seasonLength,
+): number {
+  const p = clamp(perGameWinProbability, 0, 1);
+  const expectedWins = seasonLength * p;
+  return clamp(Math.round(expectedWins + k * (binomialWins - expectedWins)), 0, seasonLength);
+}
+
+/**
+ * Perfect-season chance under the displayed-record model: the probability that
+ * `displayedSeasonWins` is 17. Exact binomial sum, not a Monte Carlo sample.
+ * Uses `SEASON_VARIANCE_K` so a k change updates this automatically.
  */
 export function perfectSeasonProbabilityFromWinProbability(
   perGameWinProbability: number,
   seasonLength: number = WIN_PROJECTION_MODEL.seasonLength,
+  k: number = SEASON_VARIANCE_K,
 ): number {
-  return perGameWinProbability ** seasonLength;
+  const p = clamp(perGameWinProbability, 0, 1);
+  let probability = 0;
+  for (let binomialWins = 0; binomialWins <= seasonLength; binomialWins += 1) {
+    if (displayedSeasonWins(binomialWins, p, k, seasonLength) === seasonLength) {
+      probability += binomialPmf(seasonLength, binomialWins, p);
+    }
+  }
+  return probability;
 }
 
 /**
@@ -129,10 +152,9 @@ export function simulateSeasonWins(
   seasonLength: number = WIN_PROJECTION_MODEL.seasonLength,
 ): number {
   const p = clamp(perGameWinProbability, 0, 1);
-  const expectedWins = seasonLength * p;
   const rng = mulberry32(hashStringToUint32(`17-0:season:${seasonSeed}`));
   const binomialWins = sampleBinomial(seasonLength, p, rng());
-  return clamp(Math.round(expectedWins + k * (binomialWins - expectedWins)), 0, seasonLength);
+  return displayedSeasonWins(binomialWins, p, k, seasonLength);
 }
 
 /**

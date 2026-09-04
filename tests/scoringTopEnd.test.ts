@@ -50,12 +50,13 @@ describe("scoring top-end win projection", () => {
     }
   });
 
-  it("maintains perfect-season probability as p^seasonLength", () => {
+  it("maintains perfect-season probability under the k-blend season model", () => {
     for (const rating of [62, 82, 90, 93, 96]) {
       const projection = projectWinsFromRating(rating);
-      const expected =
-        projection.perGameWinProbability ** WIN_PROJECTION_MODEL.seasonLength;
-      expect(projection.perfectSeasonProbability).toBeCloseTo(expected, 10);
+      expect(projection.perfectSeasonProbability).toBeCloseTo(
+        perfectSeasonProbabilityFromWinProbability(projection.perGameWinProbability),
+        10,
+      );
     }
   });
 
@@ -91,7 +92,7 @@ describe("scoring top-end win projection", () => {
     );
     const displayRoundedP = Number((projection.perGameWinProbability * 100).toFixed(1)) / 100;
     expect(projection.perfectSeasonProbability).not.toBeCloseTo(
-      displayRoundedP ** WIN_PROJECTION_MODEL.seasonLength,
+      perfectSeasonProbabilityFromWinProbability(displayRoundedP),
       5,
     );
   });

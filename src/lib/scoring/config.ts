@@ -135,7 +135,8 @@ export const WIN_PROJECTION_MODEL = {
  * 17-0 with 16-1 common, BEST stays near five 17-0s in 50 games, and a
  * rating at the 17-0 knot does not fall to 14-3.
  *
- * Expected wins (17p) and perfect-season chance (p^17) do not use this k.
+ * Expected wins stay 17p. Perfect-season chance is P(displayed wins = 17)
+ * under this k-blend, not p^17.
  */
 export const SEASON_VARIANCE_K = 0.35;
 

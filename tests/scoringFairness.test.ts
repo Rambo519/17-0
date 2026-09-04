@@ -222,7 +222,8 @@ describe("historical scoring fairness", () => {
     );
 
     expect(weak.projection.projectedWins).toBeLessThan(elite.projection.projectedWins);
-    expect(elite.projection.perfectSeasonProbability).toBeGreaterThan(
+    expect(elite.projection.expectedWins).toBeGreaterThan(weak.projection.expectedWins);
+    expect(elite.projection.perfectSeasonProbability).toBeGreaterThanOrEqual(
       weak.projection.perfectSeasonProbability,
     );
   });

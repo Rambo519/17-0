@@ -11,6 +11,7 @@ import { WIN_PROJECTION_MODEL } from "@/lib/scoring/config";
 import {
   expectedRecordWinsFromRating,
   minimumPerGameProbabilityForProjectedWins,
+  perfectSeasonProbabilityFromWinProbability,
   projectWinsFromRating,
   ratingThresholdForProjectedWins,
 } from "@/lib/scoring/winProjection";
@@ -38,14 +39,14 @@ describe("17-game season length", () => {
     );
   });
 
-  it("uses p^17 for perfect-season probability", () => {
+  it("uses the k-blend P(17-0) for perfect-season probability", () => {
     const projection = projectWinsFromRating(80);
     expect(projection.perfectSeasonProbability).toBeCloseTo(
-      projection.perGameWinProbability ** 17,
+      perfectSeasonProbabilityFromWinProbability(projection.perGameWinProbability),
       10,
     );
-    expect(projection.perfectSeasonProbability).toBeCloseTo(
-      projection.perGameWinProbability ** REGULAR_SEASON_GAMES,
+    expect(projection.expectedWins).toBeCloseTo(
+      REGULAR_SEASON_GAMES * projection.perGameWinProbability,
       10,
     );
   });

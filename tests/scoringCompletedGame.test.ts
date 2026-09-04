@@ -57,7 +57,7 @@ describe("evaluateCompletedGame", () => {
     expect(result.projection.projectedLosses).toBe(
       REGULAR_SEASON_GAMES - result.projection.projectedWins,
     );
-    expect(result.projection.perfectSeasonProbability).toBeGreaterThan(0);
+    expect(result.projection.perfectSeasonProbability).toBeGreaterThanOrEqual(0);
     expect(result.projection.perfectSeasonProbability).toBeLessThanOrEqual(1);
 
     const again = await evaluateCompletedGame(repository, sessionId);

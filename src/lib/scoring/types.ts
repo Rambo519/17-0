@@ -81,7 +81,7 @@ export interface WinProjection {
    * A game-model estimate, not a claim of real-world certainty.
    */
   perGameWinProbability: number;
-  /** Independent-game baseline: perGameWinProbability^REGULAR_SEASON_GAMES */
+  /** Per-game win probability raised through the k-blend season, P(wins = 17). */
   perfectSeasonProbability: number;
 }
 

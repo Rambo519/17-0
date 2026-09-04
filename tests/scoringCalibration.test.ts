@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  calibratePercentileToScore,
-  SCORE_CALIBRATION,
-  WIN_PROJECTION_MODEL,
-} from "@/lib/scoring/config";
+import { calibratePercentileToScore, SCORE_CALIBRATION } from "@/lib/scoring/config";
 import { evaluateLineup } from "@/lib/scoring/evaluateLineup";
 import { buildPeerBaselineIndex } from "@/lib/scoring/peerBaselines";
 import {
@@ -14,7 +10,10 @@ import {
 import { scorePlayerSeason } from "@/lib/scoring/playerSeasonScore";
 import { selectScoringSeason } from "@/lib/scoring/selectScoringSeason";
 import type { LineupPickInput, SeasonStatRecord } from "@/lib/scoring/types";
-import { projectWinsFromRating } from "@/lib/scoring/winProjection";
+import {
+  projectWinsFromRating,
+  perfectSeasonProbabilityFromWinProbability,
+} from "@/lib/scoring/winProjection";
 import type { LineupSlot } from "@/lib/football/positions";
 
 function season(
@@ -477,11 +476,12 @@ describe("scoring calibration (Phase 5B)", () => {
     }
   });
 
-  it("maintains perfect-season probability as p^seasonLength", () => {
+  it("maintains perfect-season probability under the k-blend season model", () => {
     const projection = projectWinsFromRating(82);
-    const expected =
-      projection.perGameWinProbability ** WIN_PROJECTION_MODEL.seasonLength;
-    expect(projection.perfectSeasonProbability).toBeCloseTo(expected, 10);
+    expect(projection.perfectSeasonProbability).toBeCloseTo(
+      perfectSeasonProbabilityFromWinProbability(projection.perGameWinProbability),
+      10,
+    );
   });
 
   it("places elite QB seasons from multiple eras in comparable bands", () => {

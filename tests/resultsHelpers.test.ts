@@ -36,6 +36,7 @@ describe("result presentation helpers", () => {
     expect(formatProbability(0.0048)).toBe("0.48%");
     expect(formatProbability(0.00004)).not.toBe("0%");
     expect(formatProbability(0)).toBe("0%");
+    expect(formatPerfectSeasonChance(0)).toBe("0%");
   });
 });
 

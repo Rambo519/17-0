@@ -16,6 +16,7 @@ import { selectScoringSeason } from "@/lib/scoring/selectScoringSeason";
 import type { LineupPickInput, SeasonStatRecord } from "@/lib/scoring/types";
 import {
   perGameWinProbabilityFromRating,
+  perfectSeasonProbabilityFromWinProbability,
   projectWinsFromRating,
 } from "@/lib/scoring/winProjection";
 import type { LineupSlot } from "@/lib/football/positions";
@@ -511,11 +512,12 @@ describe("scoring engine", () => {
     expect(high).toBeLessThanOrEqual(WIN_PROJECTION_MODEL.maxWinProbability);
   });
 
-  it("calculates perfect-season probability as p^seasonLength", () => {
+  it("calculates perfect-season probability from the k-blend season model", () => {
     const projection = projectWinsFromRating(80);
-    const expected =
-      projection.perGameWinProbability ** WIN_PROJECTION_MODEL.seasonLength;
-    expect(projection.perfectSeasonProbability).toBeCloseTo(expected, 8);
+    expect(projection.perfectSeasonProbability).toBeCloseTo(
+      perfectSeasonProbabilityFromWinProbability(projection.perGameWinProbability),
+      8,
+    );
   });
 
   it("calibrates percentiles without forcing 100 ratings", () => {

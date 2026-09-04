@@ -47,8 +47,8 @@ export function formatWinProbability(perGameWinProbability: number): string {
 }
 
 /**
- * 17-0 chance. Pass the engine's perfectSeasonProbability, never a
- * display-rounded win probability such as 0.966 from "96.6%".
+ * 17-0 chance. Pass the engine's perfectSeasonProbability (k-blend P(wins=17)),
+ * never a display-rounded win probability such as 0.966 from "96.6%".
  */
 export function formatPerfectSeasonChance(perfectSeasonProbability: number): string {
   return formatProbability(perfectSeasonProbability);
