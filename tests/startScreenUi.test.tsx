@@ -76,6 +76,15 @@ describe("player-facing start screen", () => {
     fireEvent.click(screen.getByRole("button", { name: START_ACTION_LABEL }));
     expect(onStart).toHaveBeenCalledTimes(1);
   });
+
+  it("shows a quiet version footer with the app name, version, and copyright year", () => {
+    render(<ModeSelector onStart={() => undefined} busy={false} appVersion="b3b447b" />);
+    const footer = screen.getByRole("contentinfo");
+    expect(footer).toHaveTextContent("17-0");
+    expect(footer).toHaveTextContent("b3b447b");
+    expect(footer).toHaveTextContent(`© ${new Date().getFullYear()}`);
+    expect(screen.getByRole("button", { name: START_ACTION_LABEL })).toBeInTheDocument();
+  });
 });
 
 describe("PROVE IT starts an IQ game", () => {

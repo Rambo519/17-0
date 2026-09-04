@@ -180,6 +180,31 @@
   line-height: 1.5;
 }
 
+.footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0.35em;
+  margin: 0;
+  padding: 6px 12px max(8px, env(safe-area-inset-bottom, 0px));
+  pointer-events: none;
+  color: rgba(158, 172, 196, 0.38);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.footerSep {
+  opacity: 0.7;
+}
+
 @media (min-width: 901px) {
   .watermark {
     font-size: clamp(12rem, 8rem + 18vw, 26rem);
@@ -187,7 +212,7 @@
 
   .content {
     width: min(72rem, calc(100% - 80px));
-    padding: 0 24px clamp(28px, 5dvh, 56px);
+    padding: 0 24px max(clamp(28px, 5dvh, 56px), 2.5rem);
   }
 
   .brand {
@@ -211,7 +236,7 @@
 
   .content {
     width: min(100%, calc(100% - 16px));
-    padding: 1.5dvh 12px 5dvh;
+    padding: 1.5dvh 12px max(5dvh, 2.75rem);
     justify-content: space-evenly;
   }
 

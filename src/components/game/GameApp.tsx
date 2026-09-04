@@ -38,7 +38,11 @@ type Screen = "mode" | "playing" | "complete";
 type MobileTab = "players" | "lineup";
 type BusyAction = "start" | "spin" | "pick" | "team-skip" | "era-skip" | null;
 
-export function GameApp() {
+interface GameAppProps {
+  appVersion?: string;
+}
+
+export function GameApp({ appVersion }: GameAppProps = {}) {
   const router = useRouter();
   const [screen, setScreen] = useState<Screen>("mode");
   const [game, setGame] = useState<GameStateView | null>(null);
@@ -277,6 +281,7 @@ export function GameApp() {
             void handleNewGame();
           }}
           busy={busy === "start"}
+          appVersion={appVersion}
         />
       </main>
     );
