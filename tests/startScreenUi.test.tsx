@@ -121,12 +121,17 @@ describe("PROVE IT starts an IQ game", () => {
   });
 
   it("uses the full-bleed landing shell only on the start screen", async () => {
+    const landingClass = shell.landing;
+    if (landingClass === undefined) {
+      throw new Error("game.module.css must export a landing class");
+    }
+
     render(<GameApp />);
-    expect(document.querySelector("main")?.classList.contains(shell.landing)).toBe(true);
+    expect(document.querySelector("main")?.classList.contains(landingClass)).toBe(true);
 
     fireEvent.click(screen.getByRole("button", { name: START_ACTION_LABEL }));
     expect(await screen.findByRole("button", { name: /^spin$/i })).toBeInTheDocument();
-    expect(document.querySelector("main")?.classList.contains(shell.landing)).toBe(false);
+    expect(document.querySelector("main")?.classList.contains(landingClass)).toBe(false);
   });
 
   it("returns to the simplified start screen on NEW GAME", async () => {
