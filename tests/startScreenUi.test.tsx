@@ -60,10 +60,13 @@ describe("player-facing start screen", () => {
     render(<ModeSelector onStart={onStart} busy={false} />);
 
     expect(screen.getByRole("heading", { name: START_HEADLINE })).toBeInTheDocument();
-    expect(screen.getByText(START_SUBTITLE)).toBeInTheDocument();
+    expect(
+      screen.getByText((_, node) => node?.tagName === "P" && node.textContent === START_SUBTITLE),
+    ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: START_ACTION_LABEL })).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: START_ACTION_LABEL })).toHaveLength(1);
     expect(screen.getByRole("button", { name: /^share$/i })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "17-0" })).toBeInTheDocument();
     expect(document.querySelector('img[src*="gold-football-17-0-landing"]')).toBeTruthy();
 
     expect(screen.queryByRole("radiogroup", { name: /game mode/i })).not.toBeInTheDocument();
@@ -153,7 +156,9 @@ describe("PROVE IT starts an IQ game", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /new game/i }));
     expect(screen.getByRole("heading", { name: START_HEADLINE })).toBeInTheDocument();
-    expect(screen.getByText(START_SUBTITLE)).toBeInTheDocument();
+    expect(
+      screen.getByText((_, node) => node?.tagName === "P" && node.textContent === START_SUBTITLE),
+    ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: START_ACTION_LABEL })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /^spin$/i })).not.toBeInTheDocument();
     expect(startBodies).toHaveLength(1);

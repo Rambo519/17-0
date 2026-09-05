@@ -11,7 +11,7 @@ const MASTER = path.join(
 );
 const OUTPUT = path.join(process.cwd(), "public", "brand", "gold-football-17-0-landing.png");
 
-const TARGET_WIDTH = 440;
+const TARGET_WIDTH = 1200;
 const MARGIN_RATIO = 0.035;
 const MATTE_LIMIT = 14;
 

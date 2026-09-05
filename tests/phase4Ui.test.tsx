@@ -72,7 +72,11 @@ describe("ModeSelector", () => {
     expect(screen.getAllByText("17-0").length).toBeGreaterThan(0);
     expect(screen.getByRole("heading", { name: /test your football iq/i })).toBeInTheDocument();
     expect(
-      screen.getByText("You know the team. You know the era. Can you build 17–0?"),
+      screen.getByText(
+        (_, node) =>
+          node?.tagName === "P" &&
+          node.textContent === "It's 4th and 1. You know the team. You know the era. Can you build 17–0?",
+      ),
     ).toBeInTheDocument();
     expect(screen.queryByRole("radio")).not.toBeInTheDocument();
     expect(screen.queryByText(/classic/i)).not.toBeInTheDocument();

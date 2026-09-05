@@ -10,7 +10,10 @@ import { copyrightYear, formatReleaseLabel } from "@/lib/appVersion";
 import { PRODUCT_NAME } from "@/lib/brand";
 
 export const START_HEADLINE = "TEST YOUR FOOTBALL IQ";
-export const START_SUBTITLE = "You know the team. You know the era. Can you build 17–0?";
+export const START_SUBTITLE =
+  "It's 4th and 1. You know the team. You know the era. Can you build 17–0?";
+export const START_SUBTITLE_LEAD = "It's 4th and 1. You know the team.";
+export const START_SUBTITLE_TAIL = "You know the era. Can you build 17–0?";
 export const START_ACTION_LABEL = "PROVE IT";
 
 interface ModeSelectorProps {
@@ -47,18 +50,21 @@ export function ModeSelector({
           <Image
             className={styles.emblem}
             src="/brand/gold-football-17-0-landing.png"
-            alt=""
-            width={440}
-            height={264}
-            sizes="(min-width: 901px) 216px, 90px"
+            alt={PRODUCT_NAME}
+            width={1200}
+            height={719}
+            sizes="(min-width: 901px) min(30.2rem, 8.6rem + 20vw), 56vw"
             preload
           />
-          <p className={styles.brand}>{PRODUCT_NAME}</p>
+          <h1 id="start-heading" className={styles.headline}>
+            {START_HEADLINE}
+          </h1>
         </div>
-        <h1 id="start-heading" className={styles.headline}>
-          {START_HEADLINE}
-        </h1>
-        <p className={styles.pitch}>{START_SUBTITLE}</p>
+        <p className={styles.pitch}>
+          <span className={styles.pitchLine}>{START_SUBTITLE_LEAD}</span>
+          <span className={styles.pitchGap}> </span>
+          <span className={styles.pitchLine}>{START_SUBTITLE_TAIL}</span>
+        </p>
 
         <button type="button" className={styles.start} onClick={onStart} disabled={busy}>
           {busy ? "Starting…" : START_ACTION_LABEL}
