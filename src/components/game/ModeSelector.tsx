@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import { FieldDecor } from "./FieldDecor";
 import { NewGameButton } from "./NewGameButton";
 import { ShareButton } from "./ShareButton";
@@ -41,7 +43,18 @@ export function ModeSelector({
       </div>
 
       <div className={styles.content}>
-        <p className={styles.brand}>{PRODUCT_NAME}</p>
+        <div className={styles.lockup}>
+          <Image
+            className={styles.emblem}
+            src="/brand/gold-football-17-emblem.png"
+            alt=""
+            width={360}
+            height={248}
+            sizes="(min-width: 901px) 180px, 74px"
+            preload
+          />
+          <p className={styles.brand}>{PRODUCT_NAME}</p>
+        </div>
         <h1 id="start-heading" className={styles.headline}>
           {START_HEADLINE}
         </h1>
