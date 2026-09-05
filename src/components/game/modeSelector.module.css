@@ -100,7 +100,7 @@
 
 .emblem {
   display: block;
-  width: clamp(4.4rem, 16vw, 7.5rem);
+  width: clamp(5.3rem, 19vw, 9.1rem);
   height: auto;
   margin: 0 0 -0.16em;
   filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.4));
@@ -244,7 +244,7 @@
   }
 
   .emblem {
-    width: clamp(7.5rem, 3.2rem + 6.2vw, 11.25rem);
+    width: clamp(9.1rem, 3.9rem + 7.5vw, 13.5rem);
     margin-bottom: -0.12em;
   }
 
@@ -274,7 +274,7 @@
   }
 
   .emblem {
-    width: clamp(3.2rem, 18vw, 4.6rem);
+    width: clamp(3.9rem, 22vw, 5.6rem);
     margin-bottom: -0.1em;
   }
 

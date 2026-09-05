@@ -26,7 +26,8 @@
     "scoring:audit": "tsx src/data/cli/scoringAudit.ts",
     "scoring:build-baselines": "tsx src/data/cli/buildPeerBaselines.ts",
     "icons:generate": "tsx scripts/generate-app-icons.mts",
-    "brand:emblem": "tsx scripts/generate-landing-emblem.mts"
+    "brand:emblem": "tsx scripts/generate-landing-emblem.mts",
+    "brand:emblem:17-0": "tsx scripts/generate-landing-17-0-emblem.mts"
   },
   "dependencies": {
     "dotenv": "^17.4.2",

@@ -46,11 +46,11 @@ export function ModeSelector({
         <div className={styles.lockup}>
           <Image
             className={styles.emblem}
-            src="/brand/gold-football-17-emblem.png"
+            src="/brand/gold-football-17-0-landing.png"
             alt=""
-            width={360}
-            height={248}
-            sizes="(min-width: 901px) 180px, 74px"
+            width={440}
+            height={264}
+            sizes="(min-width: 901px) 216px, 90px"
             preload
           />
           <p className={styles.brand}>{PRODUCT_NAME}</p>

@@ -64,7 +64,7 @@ describe("player-facing start screen", () => {
     expect(screen.getByRole("button", { name: START_ACTION_LABEL })).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: START_ACTION_LABEL })).toHaveLength(1);
     expect(screen.getByRole("button", { name: /^share$/i })).toBeInTheDocument();
-    expect(document.querySelector('img[src*="gold-football-17-emblem"]')).toBeTruthy();
+    expect(document.querySelector('img[src*="gold-football-17-0-landing"]')).toBeTruthy();
 
     expect(screen.queryByRole("radiogroup", { name: /game mode/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /classic/i })).not.toBeInTheDocument();
@@ -143,7 +143,7 @@ describe("PROVE IT starts an IQ game", () => {
     fireEvent.click(screen.getByRole("button", { name: START_ACTION_LABEL }));
     expect(await screen.findByRole("button", { name: /^spin$/i })).toBeInTheDocument();
     expect(document.querySelector("main")?.classList.contains(landingClass)).toBe(false);
-    expect(document.querySelector('img[src*="gold-football-17-emblem"]')).toBeNull();
+    expect(document.querySelector('img[src*="gold-football-17-0-landing"]')).toBeNull();
   });
 
   it("returns to the simplified start screen on NEW GAME", async () => {
